@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "read_file(/Users/vic/_Work/VXUtilities/vxkey/docs)",
+      "read_file(/Users/vic/_Work/VXUtilities/.agents/AGENTS.md)",
+      "read_file(/Users/vic/_Work/VXUtilities/_summary/standard_docs)",
+      "read_file(/Users/vic/_Work/VXUtilities/_summary/standard_codes)",
+      "read_file(/Users/vic/_Work/VXUtilities/vxshot/package.json)",
+      "read_file(/Users/vic/_Work/VXUtilities/vxkey/desktop)",
+      "write_file(/Users/vic/_Work/VXUtilities/vxkey/desktop/src)",
+      "write_file(/Users/vic/_Work/VXUtilities/vxkey/desktop/public)",
+      "write_file(/Users/vic/_Work/VXUtilities/vxkey/desktop/index.html)",
+      "write_file(/Users/vic/_Work/VXUtilities/vxkey/desktop/package.json)",
+      "write_file(/Users/vic/_Work/VXUtilities/vxkey/desktop/package-lock.json)",
+      "write_file(/Users/vic/_Work/VXUtilities/vxkey/desktop/tsconfig.json)",
+      "write_file(/Users/vic/_Work/VXUtilities/vxkey/desktop/tsconfig.app.json)",
+      "write_file(/Users/vic/_Work/VXUtilities/vxkey/desktop/tsconfig.node.json)",
+      "write_file(/Users/vic/_Work/VXUtilities/vxkey/desktop/vite.config.ts)",
+      "write_file(/Users/vic/_Work/VXUtilities/vxkey/desktop/scripts/check_settings_ui.mjs)",
+      "write_file(/Users/vic/_Work/VXUtilities/vxkey/docs/tasks/anti_ui_report.md)"
+    ]
+  }
+}

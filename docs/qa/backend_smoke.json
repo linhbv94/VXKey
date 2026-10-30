@@ -1,0 +1,14 @@
+{
+  "status": "pass",
+  "scope": "isolated JSON-lines developer service",
+  "checks": [
+    "fresh defaults",
+    "persisted revision",
+    "process restart readback",
+    "real charset converter",
+    "native action unsupported",
+    "unknown fields rejected",
+    "autostart remains off"
+  ],
+  "native_activation": false
+}

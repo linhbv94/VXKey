@@ -1,0 +1,478 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VXKey config version1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "revision": {
+      "$ref": "#/$defs/counter"
+    },
+    "ui": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "locale": {
+          "type": "string",
+          "enum": [
+            "vi",
+            "en"
+          ]
+        },
+        "theme": {
+          "type": "string",
+          "enum": [
+            "system",
+            "dark",
+            "light",
+            "pure_black"
+          ]
+        },
+        "tray_icon_style": {
+          "type": "string",
+          "enum": [
+            "serious",
+            "playful"
+          ],
+          "default": "serious"
+        }
+      },
+      "required": [
+        "locale",
+        "theme",
+        "tray_icon_style"
+      ]
+    },
+    "typing": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "input_method": {
+          "type": "string",
+          "enum": [
+            "telex",
+            "telex_advanced",
+            "vni"
+          ]
+        },
+        "tone_style": {
+          "type": "string",
+          "enum": [
+            "modern",
+            "traditional"
+          ]
+        },
+        "language_mode": {
+          "type": "string",
+          "enum": [
+            "vi",
+            "en"
+          ]
+        },
+        "composition_mode": {
+          "type": "string",
+          "enum": [
+            "preedit",
+            "direct_verified"
+          ]
+        },
+        "smart_restore": {
+          "type": "boolean"
+        },
+        "retone": {
+          "type": "boolean"
+        },
+        "auto_capitalize": {
+          "type": "boolean"
+        },
+        "eager_restore": {
+          "type": "boolean"
+        },
+        "spell_check": {
+          "type": "boolean"
+        },
+        "extra_onsets": {
+          "type": "array",
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "z",
+              "f",
+              "w",
+              "j"
+            ]
+          }
+        },
+        "double_space_period": {
+          "type": "boolean",
+          "description": "Fresh config default macOS=false, Windows=true; see platform_defaults.json. Never override stored user choice.",
+          "x-platform-defaults": {
+            "macos": false,
+            "windows": true
+          }
+        }
+      },
+      "required": [
+        "input_method",
+        "tone_style",
+        "language_mode",
+        "composition_mode",
+        "smart_restore",
+        "retone",
+        "auto_capitalize",
+        "eager_restore",
+        "spell_check",
+        "extra_onsets",
+        "double_space_period"
+      ]
+    },
+    "apps": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "remember_per_app": {
+          "type": "boolean"
+        },
+        "language_memory": {
+          "type": "object",
+          "maxProperties": 2000,
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "pattern": "^[A-Za-z0-9_]+(?:[.][A-Za-z0-9_-]+)+$"
+          },
+          "additionalProperties": {
+            "type": "string",
+            "enum": [
+              "vi",
+              "en"
+            ]
+          }
+        },
+        "policies": {
+          "type": "object",
+          "maxProperties": 2000,
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "pattern": "^[A-Za-z0-9_]+(?:[.][A-Za-z0-9_-]+)+$"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "input_bypass": {
+                "type": "boolean"
+              },
+              "clipboard_blocked": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "input_bypass",
+              "clipboard_blocked"
+            ]
+          }
+        }
+      },
+      "required": [
+        "remember_per_app",
+        "language_memory",
+        "policies"
+      ]
+    },
+    "macros": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "in_en": {
+          "type": "boolean"
+        },
+        "entries": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "trigger": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 32,
+                "pattern": "^[^\\s\\u0000-\\u001f\\u007f]+$"
+              },
+              "replacement": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 8192,
+                "description": "Additional semantic cap8192 UTF-8 bytes."
+              }
+            },
+            "required": [
+              "id",
+              "trigger",
+              "replacement"
+            ]
+          }
+        },
+        "smart_case": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled",
+        "in_en",
+        "entries",
+        "smart_case"
+      ]
+    },
+    "shortcuts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "toggle": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "modifier_chord"
+                },
+                "modifiers": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "minItems": 2,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "control",
+                      "alt",
+                      "shift",
+                      "meta"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "kind",
+                "modifiers"
+              ]
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "key_chord"
+                },
+                "modifiers": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "minItems": 1,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "control",
+                      "alt",
+                      "shift",
+                      "meta"
+                    ]
+                  }
+                },
+                "key_code": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9]{0,31}$"
+                }
+              },
+              "required": [
+                "kind",
+                "modifiers",
+                "key_code"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "flip": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "key_chord"
+                },
+                "modifiers": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "minItems": 1,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "control",
+                      "alt",
+                      "shift",
+                      "meta"
+                    ]
+                  }
+                },
+                "key_code": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9]{0,31}$"
+                }
+              },
+              "required": [
+                "kind",
+                "modifiers",
+                "key_code"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "history": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "key_chord"
+                },
+                "modifiers": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "minItems": 1,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "control",
+                      "alt",
+                      "shift",
+                      "meta"
+                    ]
+                  }
+                },
+                "key_code": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9]{0,31}$"
+                }
+              },
+              "required": [
+                "kind",
+                "modifiers",
+                "key_code"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "toggle",
+        "history",
+        "flip"
+      ]
+    },
+    "clipboard": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "history_mode": {
+          "type": "string",
+          "enum": [
+            "session",
+            "encrypted"
+          ]
+        },
+        "max_entries": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "ttl_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 7
+        },
+        "windows_history_provider": {
+          "type": "string",
+          "enum": [
+            "native",
+            "vxkey"
+          ],
+          "default": "native"
+        }
+      },
+      "required": [
+        "enabled",
+        "history_mode",
+        "max_entries",
+        "ttl_days",
+        "windows_history_provider"
+      ]
+    },
+    "system": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "launch_companion_at_login": {
+          "type": "boolean",
+          "default": false
+        },
+        "show_tray_icon": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "launch_companion_at_login",
+        "show_tray_icon"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "revision",
+    "ui",
+    "typing",
+    "apps",
+    "macros",
+    "shortcuts",
+    "clipboard",
+    "system"
+  ],
+  "$defs": {
+    "counter": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,19})$",
+      "description": "Decimal uint64; semantic range check <=18446744073709551615."
+    }
+  }
+}

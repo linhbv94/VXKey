@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "applies_when": "field_missing_only",
+  "macos": {
+    "typing.double_space_period": false,
+    "shortcuts.toggle": {
+      "kind": "modifier_chord",
+      "modifiers": [
+        "control",
+        "alt"
+      ]
+    },
+    "ui.tray_icon_style": "serious",
+    "system.launch_companion_at_login": false,
+    "shortcuts.history": {
+      "kind": "key_chord",
+      "modifiers": [
+        "control",
+        "meta"
+      ],
+      "key_code": "KeyV"
+    },
+    "clipboard.windows_history_provider": "native"
+  },
+  "windows": {
+    "typing.double_space_period": true,
+    "shortcuts.toggle": {
+      "kind": "modifier_chord",
+      "modifiers": [
+        "control",
+        "meta"
+      ]
+    },
+    "ui.tray_icon_style": "serious",
+    "system.launch_companion_at_login": false,
+    "shortcuts.history": {
+      "kind": "key_chord",
+      "modifiers": [
+        "meta"
+      ],
+      "key_code": "KeyV"
+    },
+    "clipboard.windows_history_provider": "native"
+  },
+  "preserve_explicit_user_choice": true,
+  "macos_native_period_enabled": "disable_vxkey_control_and_effective_transform_without_overwriting_preference",
+  "autostart_policy": "off_until_safety_verified_and_user_explicitly_approves_default_change",
+  "windows_history_shortcut_status": "win_v_provider_choice_native_or_vxkey_default_native_requires_scoped_adapter"
+}

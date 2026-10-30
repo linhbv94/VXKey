@@ -1,0 +1,1406 @@
+   Compiling vxkey-runtime v0.1.0 (/Users/vic/_Work/VXUtilities/vxkey/crates/vxkey-runtime)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.75s
+     Running unittests src/lib.rs (target/debug/deps/funput_config-416aa8f900fbcb0e)
+
+running 92 tests
+test settings::combo::tests::caps_lists_modifiers_then_label ... ok
+test settings::combo::tests::modifier_only_combo_has_no_key_cap ... ok
+test settings::io::tests::migration_never_overwrites_a_remembered_choice ... ok
+test settings::combo::tests::serializes_camel_case_and_round_trips ... ok
+test settings::model::tests::a_file_without_the_english_shortcut_switch_expands_in_english_mode ... ok
+test settings::io::tests::a_missing_or_corrupt_file_reads_as_defaults ... ok
+test settings::model::tests::a_file_without_the_per_app_switch_still_remembers_apps ... ok
+test settings::model::tests::a_file_without_the_foreign_layout_switch_still_auto_switches ... ok
+test settings::io::tests::a_pin_made_after_the_repair_survives ... ok
+test settings::io::tests::creates_the_parent_directory ... ok
+test settings::io::tests::legacy_excluded_apps_migrate_to_english_on_load ... ok
+test settings::model::tests::a_file_without_the_shortcut_switch_still_expands ... ok
+test settings::model::tests::a_new_install_defaults_to_modern_tone_placement ... ok
+test settings::model::tests::a_minimal_legacy_file_falls_back_to_defaults ... ok
+test settings::model::tests::a_file_without_the_smart_case_switch_still_matches_any_capitalization ... ok
+test settings::model::tests::an_explicit_traditional_tone_style_is_preserved ... ok
+test settings::model::tests::reads_every_field_of_a_full_file ... ok
+test settings::io::tests::saves_and_loads_back ... ok
+test settings::io::tests::the_explorer_pin_is_dropped_from_a_document_written_before_the_repair ... ok
+test settings::io::tests::the_legacy_key_is_dropped_on_the_next_save ... ok
+test settings::model::tests::round_trips_through_json_unchanged ... ok
+test settings::model::tests::serializes_with_the_documented_key_names ... ok
+test settings::model::tests::the_english_shortcut_switch_round_trips_when_turned_off ... ok
+test settings::model::tests::the_foreign_layout_switch_round_trips_when_turned_off ... ok
+test settings::model::tests::the_per_app_switch_round_trips_when_turned_off_and_keeps_the_pins ... ok
+test settings::model::tests::the_smart_case_switch_round_trips_when_turned_off ... ok
+test settings::onsets::tests::each_letter_admits_its_own_onset_in_the_engine ... ok
+test settings::onsets::tests::all_is_every_letter ... ok
+test settings::onsets::tests::every_example_opens_with_its_letter ... ok
+test settings::model::tests::the_shortcut_switch_round_trips_when_turned_off ... ok
+test settings::onsets::tests::every_letter_round_trips_through_its_symbol ... ok
+test settings::onsets::tests::from_id_ignores_case_repeats_and_strangers ... ok
+test settings::onsets::tests::id_spells_the_letters_in_settings_order ... ok
+test settings::onsets::tests::serializes_as_the_spelled_out_letters ... ok
+test settings::onsets::tests::with_adds_and_removes_one_letter_and_leaves_the_rest ... ok
+test transfer::tests::a_file_without_extra_onsets_keeps_the_local_letters ... ok
+test settings::path::tests::env_overrides_everything ... ok
+test settings::path::tests::falls_back_to_appdata_when_exe_not_writable ... ok
+test transfer::tests::a_file_without_the_per_app_switch_keeps_the_local_one ... ok
+test transfer::tests::a_legacy_export_migrates_its_excluded_apps_to_english ... ok
+test transfer::tests::a_newer_version_still_imports_and_is_flagged ... ok
+test transfer::tests::an_unknown_enum_value_leaves_the_local_preference ... ok
+test transfer::tests::extra_onsets_import_empty_as_none_and_skip_unknown_letters ... ok
+test transfer::tests::export_writes_empty_combo_fields_as_null ... ok
+test transfer::tests::app_language_memory_merges_without_overwriting_a_local_choice ... ok
+test transfer::tests::export_no_longer_writes_the_legacy_exclusion_list ... ok
+test transfer::tests::extra_onsets_survive_export_and_import ... ok
+test transfer::tests::imports_macos_file_ignoring_its_platform_block ... ok
+test settings::path::tests::prefers_writable_exe_dir ... ok
+test transfer::tests::rejects_foreign_schema ... ok
+test transfer::tests::merges_shortcuts_by_trigger ... ok
+test transfer::tests::legacy_file_without_combos_keeps_local_combo ... ok
+test settings::path::tests::an_appdata_file_is_never_read_or_copied ... ok
+test transfer::tests::round_trip_preserves_state ... ok
+test transfer::time::tests::formats_a_fixed_width_utc_timestamp ... ok
+test transfer::tests::source_is_written_as_given ... ok
+test unikey::encoding::tests::a_utf8_bom_is_stripped_rather_than_decoded_into_the_text ... ok
+test transfer::tests::the_per_app_switch_rides_along_in_the_windows_block ... ok
+test unikey::encoding::tests::only_the_value_side_of_a_line_is_judged ... ok
+test unikey::encoding::tests::a_truncated_utf16_file_is_refused_rather_than_half_read ... ok
+test unikey::encoding::tests::plain_utf8_without_a_bom_still_decodes ... ok
+test unikey::encoding::tests::both_utf16_byte_orders_decode ... ok
+test unikey::encoding::tests::an_ascii_file_names_no_charset ... ok
+test unikey::tests::a_clean_case_pattern_folds_so_the_engine_can_smart_case_it ... ok
+test unikey::encoding::tests::a_legacy_eight_bit_file_is_read_and_named ... ok
+test unikey::tests::a_deliberately_mixed_trigger_is_left_alone ... ok
+test unikey::encoding::tests::bytes_nothing_explains_are_still_refused ... ok
+test unikey::tests::a_repeated_trigger_keeps_its_last_value ... ok
+test unikey::tests::a_charset_nobody_implemented_imports_as_its_nearest_neighbour ... ok
+test unikey::tests::a_file_with_nothing_usable_is_an_error ... ok
+test unikey::tests::a_missing_file_is_unreadable ... ok
+test unikey::tests::a_combining_table_is_normalised_to_precomposed ... ok
+test unikey::tests::a_symbol_table_is_not_reinterpreted_as_vietnamese ... ok
+test unikey::tests::a_tcvn3_table_imports_and_names_its_charset ... ok
+test unikey::tests::a_file_no_charset_explains_is_still_refused ... ok
+test unikey::tests::a_table_mixing_vietnamese_with_urls_is_still_detected ... ok
+test unikey::tests::an_expansion_may_contain_colons ... ok
+test unikey::tests::comments_and_blank_lines_are_skipped ... ok
+test unikey::tests::a_file_with_no_pairs_is_reported_as_empty_not_as_an_encoding_problem ... ok
+test unikey::tests::crlf_and_lf_parse_the_same ... ok
+test unikey::tests::digits_do_not_stop_a_trigger_from_folding ... ok
+test unikey::tests::folding_makes_two_spellings_of_one_trigger_collide ... ok
+test unikey::tests::lines_with_a_blank_side_are_dropped ... ok
+test unikey::tests::a_utf8_bom_in_front_of_legacy_bytes_does_not_block_detection ... ok
+test unikey::tests::a_utf16_file_decodes_through_its_bom ... ok
+test unikey::tests::an_ascii_table_imports_unchanged_and_names_no_charset ... ok
+test unikey::tests::whitespace_around_the_separator_is_trimmed ... ok
+test unikey::tests::broken_utf8_is_refused_rather_than_imported_with_replacement_characters ... ok
+test unikey::tests::a_vni_table_imports_and_names_its_charset ... ok
+test unikey::tests::english_text_ties_every_candidate_and_is_refused ... ok
+test unikey::tests::the_stock_unikey_file_yields_its_one_pair ... ok
+test unikey::tests::the_bom_never_leaks_into_the_first_trigger ... ok
+
+test result: ok. 92 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src/lib.rs (target/debug/deps/funput_convert-5f107bc7c7d2a6d1)
+
+running 43 tests
+test casing::tests::a_position_from_a_longer_menu_is_clamped ... ok
+test batch::tests::several_source_folders_are_counted_rather_than_listed ... ok
+test casing::tests::every_position_names_one_transform_and_survives_a_round_trip ... ok
+test casing::tests::the_list_records_presses_in_order_and_a_second_press_removes_it ... ok
+test batch::write::tests::two_destinations_asked_for_before_either_is_written_do_not_collide ... ok
+test batch::write::tests::the_original_is_left_exactly_as_it_was ... ok
+test batch::tests::a_path_named_twice_is_read_once ... ok
+test casing::tests::the_reading_counts_are_not_disturbed_by_a_transform ... ok
+test batch::write::tests::a_file_with_no_charset_is_skipped_rather_than_guessed_at ... ok
+test batch::write::tests::a_second_run_does_not_overwrite_the_first ... ok
+test session::tests::a_charset_the_user_picked_outranks_the_detected_one ... ok
+test session::tests::a_document_with_no_charset_is_left_alone_by_both_axes ... ok
+test session::tests::a_fresh_paste_forgets_the_charset_of_the_last_one ... ok
+test session::tests::a_batch_writes_the_transformed_document ... ok
+test session::tests::an_index_from_a_longer_menu_is_clamped_rather_than_panicking ... ok
+test batch::tests::a_folder_of_mixed_charsets_is_read_one_file_at_a_time ... ok
+test session::tests::a_file_that_cannot_be_read_is_named ... ok
+test session::tests::pressing_a_transform_that_is_not_last_removes_it_and_keeps_the_rest ... ok
+test session::tests::a_view_is_never_stale_after_a_refresh ... ok
+test session::tests::pressing_the_only_applied_transform_again_restores_the_document ... ok
+test session::tests::the_order_the_transforms_were_pressed_in_is_the_order_they_run ... ok
+test session::tests::adopting_files_replaces_the_previous_document_and_the_row_position ... ok
+test session::tests::a_row_counts_what_the_transform_will_cost_not_what_the_document_costs_now ... ok
+test session::tests::the_preview_the_clipboard_and_the_saved_bytes_agree ... ok
+test session::tests::a_fresh_document_arrives_with_no_transforms_on_it ... ok
+test session::tests::the_switches_travel_with_the_transform ... ok
+test session::tests::undo_takes_off_one_transform_and_leaves_the_rest ... ok
+test session::tests::the_left_pane_is_only_ours_when_a_file_is_open ... ok
+test session::tests::saving_a_single_dropped_file_converts_the_file_not_the_empty_paste_box ... ok
+test session::tests::the_content_decides_the_shape ... ok
+test session::tests::adopting_files_keeps_the_row_cap_the_shell_asked_for ... ok
+test text::tests::a_character_the_source_charset_does_not_define_is_reported ... ok
+test text::tests::a_control_character_cannot_reach_the_preview ... ok
+test text::tests::a_long_list_is_cut_short_and_says_so ... ok
+test text::tests::a_windows_line_ending_is_not_marked_as_damage ... ok
+test text::tests::a_source_and_a_target_problem_are_reported_apart ... ok
+test text::tests::every_line_ending_becomes_exactly_one_break ... ok
+test session::tests::the_source_picker_lands_on_the_single_file_when_one_is_open ... ok
+test text::tests::the_warning_names_the_characters_that_will_not_survive ... ok
+test text::tests::nothing_is_said_when_nothing_is_lost ... ok
+test text::tests::respelling_is_not_reported_as_loss ... ok
+test session::tests::what_a_row_will_lose_is_measured_against_the_target_of_the_moment ... ok
+test session::tests::the_row_window_does_not_change_the_counts ... ok
+
+test result: ok. 43 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/c_host.rs (target/debug/deps/c_host-2d6f51abd85dd045)
+
+running 7 tests
+test the_work_a_shell_hands_off_can_leave_the_thread ... ok
+test a_session_given_nothing_answers_every_question ... ok
+test a_host_can_drive_the_casing_axis_by_index ... ok
+test an_index_a_host_made_up_is_answered_rather_than_fatal ... ok
+test a_host_can_run_the_window_without_a_single_rust_type ... ok
+test a_host_can_name_what_could_not_be_read ... ok
+test a_host_can_walk_the_batch_by_index ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/funput_core-b3ad777159cd4686)
+
+running 285 tests
+test charset::codecs::combining::marks::tests::a_letter_is_not_a_mark ... ok
+test charset::codecs::combining::marks::tests::the_map_covers_every_tone_and_shape ... ok
+test charset::codecs::combining::tests::a_combining_mark_passthrough_can_fuse_with_the_letter_before_it ... ok
+test charset::codecs::combining::tests::a_mark_with_no_base_passes_through_and_is_reported ... ok
+test charset::codecs::combining::tests::a_real_word_encodes_to_the_code_points_a_unikey_document_holds ... ok
+test charset::codecs::combining::tests::a_base_at_the_end_of_the_text_is_a_letter_on_its_own ... ok
+test charset::codecs::combining::tests::a_non_canonical_spelling_is_rewritten_not_lost ... ok
+test charset::codecs::combining::tests::a_non_vietnamese_character_is_spellable ... ok
+test charset::codecs::combining::tests::a_second_shape_mark_ends_the_letter ... ok
+test charset::codecs::combining::tests::a_second_tone_mark_ends_the_letter ... ok
+test charset::codecs::combining::tests::a_shape_a_vowel_cannot_take_is_not_applied ... ok
+test charset::codecs::combining::tests::a_third_mark_is_left_for_the_next_letter ... ok
+test charset::codecs::combining::tests::every_spelling_of_a_letter_decodes_to_the_same_letter ... ok
+test charset::codecs::combining::tests::the_stroke_is_never_decomposed ... ok
+test charset::codecs::combining::tests::the_tone_first_nfd_order_keeps_its_tone ... ok
+test charset::codecs::combining::tests::encode_never_emits_a_shape_mark ... ok
+test charset::codecs::tcvn3::tests::a_character_outside_the_charset_is_reported_and_kept ... ok
+test charset::codecs::tcvn3::tests::a_character_no_byte_could_hold_is_reported ... ok
+test charset::codecs::tcvn3::tests::a_real_word_encodes_to_the_bytes_a_vntime_document_holds ... ok
+test charset::codecs::tcvn3::tests::an_unassigned_byte_that_is_a_latin1_letter_is_reported_not_normalized_silently ... ok
+test charset::codecs::tcvn3::tests::an_unassigned_high_byte_passes_through_and_is_reported ... ok
+test charset::codecs::combining::tests::uppercase_is_the_same_marks_on_an_uppercase_base ... ok
+test charset::codecs::tcvn3::tests::ascii_survives_untouched ... ok
+test charset::codecs::tcvn3::tests::every_code_is_distinct_and_in_the_vietnamese_range ... ok
+test charset::codecs::tcvn3::tests::the_stroke_keeps_its_case_in_both_directions ... ok
+test charset::codecs::tests::a_character_with_no_byte_to_put_it_in_becomes_a_question_mark ... ok
+test charset::codecs::tests::a_byte_oriented_charset_is_written_one_byte_per_letter ... ok
+test charset::codecs::tests::a_replacement_character_in_the_source_is_not_counted_as_damage ... ok
+test charset::codecs::tests::a_unicode_charset_is_written_as_utf8 ... ok
+test charset::codecs::tests::broken_utf8_is_reported_rather_than_silently_replaced ... ok
+test charset::codecs::tests::legacy_bytes_are_read_one_to_one_as_code_points ... ok
+test charset::codecs::tests::only_the_legacy_charsets_are_byte_oriented ... ok
+test charset::codecs::combining::tests::the_whole_inventory_round_trips_with_nothing_lost ... ok
+test charset::codecs::tests::the_pivot_encodes_every_atom_exactly ... ok
+test charset::codecs::vni::bytes::tests::a_char_outside_latin1_has_no_byte ... ok
+test charset::codecs::tests::utf8_bytes_are_decoded_as_utf8 ... ok
+test charset::codecs::vni::bytes::tests::folding_an_uppercase_byte_near_the_top_does_not_overflow ... ok
+test charset::codecs::vni::bytes::tests::folding_refuses_bytes_the_charset_never_uses ... ok
+test charset::codecs::vni::tests::a_base_at_the_end_of_the_text_is_a_letter_on_its_own ... ok
+test charset::codecs::vni::tests::a_char_outside_latin1_after_a_base_is_not_eaten ... ok
+test charset::codecs::tcvn3::tests::the_whole_inventory_round_trips_except_uppercase_tones ... ok
+test charset::codecs::vni::tests::a_character_no_byte_could_hold_is_reported ... ok
+test charset::codecs::vni::tests::a_letter_can_be_two_characters ... ok
+test charset::codecs::vni::tests::a_mark_on_a_base_that_cannot_take_it_is_reported ... ok
+test charset::codecs::vni::tests::a_mixed_case_pair_reads_as_the_letter_and_is_reported ... ok
+test charset::codecs::vni::bytes::tests::folding_recovers_the_case_of_every_table_byte ... ok
+test charset::codecs::vni::tests::a_mark_with_no_base_passes_through_and_is_reported ... ok
+test charset::codecs::vni::tests::a_non_ascii_passthrough_can_fuse_with_the_letter_before_it ... ok
+test charset::codecs::vni::tests::a_real_word_encodes_to_the_bytes_a_vni_times_document_holds ... ok
+test charset::codecs::vni::tests::an_unassigned_byte_that_is_a_vietnamese_letter_changes_length_when_re_encoded ... ok
+test charset::codecs::vni::tests::an_unassigned_high_byte_passes_through_and_is_reported ... ok
+test charset::codecs::vni::tests::every_ascii_base_matches_the_inventory ... ok
+test charset::codecs::vni::tests::ascii_survives_untouched ... ok
+test charset::codecs::vni::tests::the_stroke_keeps_its_case_in_both_directions ... ok
+test charset::codecs::vni::tests::no_base_byte_is_ever_a_mark_byte ... ok
+test charset::codecs::vni::tests::every_spelling_is_distinct ... ok
+test charset::detect::score::tests::a_byte_order_mark_does_not_join_the_word_after_it ... ok
+test charset::detect::score::tests::a_majority_of_words_has_to_parse ... ok
+test charset::codecs::vni::tests::uppercase_is_every_byte_minus_the_case_offset ... ok
+test charset::detect::score::tests::a_word_keeps_its_combining_marks ... ok
+test charset::detect::score::tests::ascii_punctuation_separates_words ... ok
+test charset::detect::score::tests::a_word_keeps_the_legacy_symbol_that_identifies_its_charset ... ok
+test charset::detect::score::tests::non_ascii_punctuation_cannot_be_stripped ... ok
+test charset::detect::score::tests::digits_are_not_part_of_a_word ... ok
+test charset::detect::tests::a_word_two_charsets_spell_the_same_way_is_not_detected ... ok
+test charset::detect::tests::a_legacy_document_is_detected_by_the_letters_it_spells ... ok
+test charset::codecs::vni::tests::the_whole_inventory_round_trips_with_nothing_lost ... ok
+test charset::detect::tests::an_all_caps_legacy_heading_is_detected ... ok
+test charset::detect::tests::an_unimplemented_charset_is_answered_with_its_nearest_neighbour ... ok
+test charset::detect::tests::a_utf8_file_is_detected_from_its_bytes ... ok
+test charset::detect::tests::a_unikey_macro_file_is_detected_from_its_bytes ... ok
+test charset::detect::tests::the_prefix_cut_lands_on_a_character_boundary ... ok
+test charset::detect::tests::an_english_document_is_not_detected ... ok
+test charset::detect::tests::ordinary_unicode_is_detected_as_unicode ... ok
+test charset::detect::tests::text_that_reads_the_same_everywhere_is_not_detected ... ok
+test charset::document::tests::a_truncated_utf16_file_is_refused_rather_than_half_read ... ok
+test charset::document::tests::a_legacy_document_re_saved_as_utf8_is_read_as_text ... ok
+test charset::detect::tests::the_unikey_convention_and_full_nfd_both_read_as_combining ... ok
+test charset::detect::tests::the_two_doors_may_disagree_and_that_is_intended ... ok
+test charset::detect::tests::text_with_no_words_at_all_is_not_detected ... ok
+test charset::document::tests::a_utf8_mark_is_stripped_rather_than_converted ... ok
+test charset::document::tests::a_utf16_mark_is_never_part_of_the_document ... ok
+test charset::document::tests::a_legacy_document_stored_as_bytes_is_read_one_to_one ... ok
+test charset::document::tests::text_with_nothing_to_decide_is_unicode_rather_than_undecided ... ok
+test charset::document::tests::both_doors_agree_on_what_the_document_says ... ok
+test charset::identity::tests::a_slug_finds_its_charset_again ... ok
+test charset::document::tests::bytes_nothing_explains_are_left_undecided ... ok
+test charset::identity::tests::every_charset_has_a_distinct_name ... ok
+test charset::identity::tests::every_slug_is_distinct_and_typeable ... ok
+test charset::identity::tests::the_published_slugs_do_not_change ... ok
+test charset::identity::tests::the_two_unicode_charsets_are_told_apart_by_name ... ok
+test charset::document::tests::the_byte_door_never_answers_with_a_unicode_charset ... ok
+test charset::pipeline::tests::a_code_the_source_never_defined_is_reported_for_every_target ... ok
+test charset::document::tests::utf16_is_decoded_from_its_mark_in_both_byte_orders ... ok
+test charset::pipeline::tests::a_target_that_is_not_bytes_keeps_every_character ... ok
+test charset::pipeline::tests::distinct_characters_and_total_occurrences_are_counted_apart ... ok
+test charset::pipeline::tests::the_text_shown_is_the_bytes_written ... ok
+test charset::pivot::tests::a_stroke_is_not_an_other ... ok
+test charset::pipeline::tests::respelling_is_not_counted_as_loss ... ok
+test charset::pivot::tests::anything_outside_the_inventory_passes_through ... ok
+test charset::pipeline::tests::one_read_serves_every_target ... ok
+test charset::pivot::tests::coordinates_outside_the_inventory_are_refused ... ok
+test charset::transcode::tests::advance_never_stands_still ... ok
+test charset::pivot::tests::every_vietnamese_letter_round_trips_through_an_atom ... ok
+test charset::transcode::tests::advance_steps_over_whole_chars ... ok
+test charset::tests::every_listed_charset_can_be_converted_to_and_from ... ok
+test charset::transcode::tests::empty_text_converts_to_empty_text ... ok
+test charset::transcode::tests::following_stops_at_the_end_rather_than_repeating ... ok
+test charset::transcode::tests::unicode_to_unicode_is_an_exact_identity ... ok
+test composition::intent::kinds::stroke::tests::applies_and_reverts_the_existing_target ... ok
+test composition::intent::kinds::w::tests::marker_is_non_leading_unique_and_before_nucleus ... ok
+test composition::intent::kinds::w::tests::pending_marker_allows_one_stroke_intent ... ok
+test composition::intent::tests::early_tone_and_non_adjacent_revert ... ok
+test composition::intent::tests::leading_tone_letter_stays_a_literal_onset ... ok
+test composition::intent::tests::targeted_apply_case_tone_and_fallback ... ok
+test composition::revert::tests::revert_shape ... ok
+test composition::revert::tests::revert_stroke ... ok
+test composition::revert::tests::revert_tone ... ok
+test composition::revert::tests::revert_tone_keeps_shape ... ok
+test composition::transform::full_telex::tests::second_bracket_restores_the_literal_key ... ok
+test composition::transform::full_telex::tests::shortcut_vowel_takes_the_tone_parked_on_the_glide ... ok
+test composition::transform::full_telex::tests::shortcut_applies_and_leading_w_reverts ... ok
+test composition::transform::full_telex::tests::spell_check_reuses_literal_fallback ... ok
+test composition::transform::tests::modern_repositions_open_clusters ... ok
+test composition::transform::tests::shared_actions_and_reverts ... ok
+test composition::uo_horn::tests::applies_and_preserves_tone ... ok
+test input_method::role::tests::brackets_shape_only_in_advanced_telex ... ok
+test composition::transform::tests::compound_and_tone_order ... ok
+test composition::transform::tests::spell_check_and_pending ... ok
+test composition::uo_horn::tests::normalizes_both_intermediate_orders ... ok
+test composition::uo_horn::tests::pair_accepts_tone_but_not_shape ... ok
+test input_method::role::tests::case_does_not_matter ... ok
+test input_method::role::tests::punctuation_and_space_are_other ... ok
+test input_method::role::tests::telex_context_keys_are_letters ... ok
+test input_method::role::tests::vni_digits_by_role ... ok
+test input_method::role::tests::telex_modifiers_by_role ... ok
+test input_method::telex::tests::basic::action_stays_compact ... ok
+test input_method::telex::advanced::tests::recognizes_only_full_telex_extensions ... ok
+test input_method::telex::advanced::tests::gi_glide_is_part_of_the_onset ... ok
+test input_method::telex::tests::basic::stroke_and_remove ... ok
+test input_method::telex::tests::basic::adjacent_and_free_circumflex ... ok
+test input_method::telex::tests::basic::tones_and_literal_letters ... ok
+test input_method::telex::tests::w::adjacent_rules ... ok
+test input_method::telex::tests::w::free_position_rules ... ok
+test input_method::telex::tests::w::ua_targets_u_except_qu_glide ... ok
+test input_method::vni::tests::classify_remove_tone ... ok
+test input_method::vni::tests::classify_shapes ... ok
+test input_method::vni::tests::classify_stroke_and_tones ... ok
+test options::compose::tests::builders_set_one_field_each ... ok
+test options::compose::tests::new_matches_the_documented_defaults ... ok
+test options::compose::tests::stays_small_enough_to_pass_by_value ... ok
+test options::method::tests::telex_family_is_explicit_and_compact ... ok
+test orthography::tests::glide::at_locates_the_glide_by_byte_offset ... ok
+test orthography::tests::glide::in_onset_matches_whole_onsets ... ok
+test orthography::tests::glide::plain_glides_are_recognised ... ok
+test orthography::tests::glide::shaped_vowels_are_not_glides ... ok
+test orthography::tests::glide::the_consonant_must_be_the_whole_onset ... ok
+test orthography::tests::glide::toned_glides_are_recognised ... ok
+test orthography::tests::glide::wrong_consonant_or_vowel_is_not_a_glide ... ok
+test orthography::tests::placement::reposition_modern_moves_tone_to_second_vowel ... ok
+test orthography::tests::placement::reposition_moves_tone_to_first_vowel_of_open_diphthong ... ok
+test orthography::tests::placement::reposition_moves_a_tone_off_the_onset_glide ... ok
+test orthography::tests::placement::tone_vowel_index_keeps_a_lone_glide_vowel_as_the_nucleus ... ok
+test orthography::tests::placement::tone_target_vowel_ie_uses_circumflex_e ... ok
+test orthography::tests::placement::tone_vowel_index_modern_moves_oa_oe_uy_to_second ... ok
+test orthography::tests::placement::tone_vowel_index_modern_leaves_other_clusters_unchanged ... ok
+test orthography::tests::placement::tone_vowel_index_oa_with_coda_is_second_vowel ... ok
+test orthography::tests::placement::tone_vowel_index_open_diphthong_first_vowel ... ok
+test orthography::tests::placement::tone_vowel_index_open_diphthongs_ia_ua ... ok
+test orthography::tests::placement::tone_vowel_index_plain_triphthong_is_middle ... ok
+test orthography::tests::placement::tone_vowel_index_single_vowel ... ok
+test orthography::tests::placement::tone_vowel_index_skips_a_glide_that_already_carries_a_tone ... ok
+test orthography::tests::placement::tone_vowel_index_uo_horn_cluster ... ok
+test orthography::tests::placement::tone_vowel_index_skips_the_onset_glide ... ok
+test orthography::tests::placement::tone_vowel_index_uoi_cluster ... ok
+test orthography::tests::placement::tone_vowel_index_uy_open_is_first_vowel ... ok
+test sentence::tests::a_closer_alone_does_not_end_a_sentence ... ok
+test sentence::tests::a_decimal_point_is_not_an_ending ... ok
+test sentence::tests::a_digit_has_already_begun_the_sentence ... ok
+test sentence::tests::a_newline_is_a_boundary_without_punctuation ... ok
+test sentence::tests::a_resumed_scan_still_finds_the_next_sentence ... ok
+test sentence::tests::a_run_of_terminators_ends_one_sentence ... ok
+test sentence::tests::a_scan_resumed_mid_text_is_not_waiting_for_a_first_letter ... ok
+test sentence::tests::a_single_dotted_word_still_reads_as_an_ending ... ok
+test sentence::tests::a_word_does_not_start_mid_token ... ok
+test sentence::tests::a_word_starts_after_anything_that_is_not_a_letter_or_digit ... ok
+test sentence::tests::an_empty_document_starts_a_sentence ... ok
+test sentence::tests::a_terminator_needs_the_whitespace_that_confirms_it ... ok
+test sentence::tests::an_opener_leaves_the_sentence_waiting ... ok
+test sentence::tests::closers_between_the_terminator_and_the_space_are_transparent ... ok
+test sentence::tests::consuming_the_start_also_drops_a_pending_terminator ... ok
+test sentence::tests::consuming_the_start_closes_it_without_a_character ... ok
+test sentence::tests::every_terminator_ends_a_sentence ... ok
+test sentence::tests::the_transform_reading_takes_every_dot_as_an_ending ... ok
+test sentence::tests::typing_reads_a_repeated_dot_as_an_abbreviation ... ok
+test tests::apply_telex_tone ... ok
+test tests::apply_vni_appends_normal_key ... ok
+test textcase::case::tests::both_are_idempotent ... ok
+test textcase::case::tests::every_vowel_and_the_stroke_survive_a_round_trip ... ok
+test textcase::case::tests::stroke_d_has_an_uppercase ... ok
+test textcase::case::tests::text_that_has_no_case_is_left_alone ... ok
+test textcase::case::tests::the_combining_form_is_not_precomposed_on_the_way_out ... ok
+test textcase::case::tests::the_documented_examples ... ok
+test textcase::diacritics::tests::both_unicode_forms_reach_the_same_answer ... ok
+test textcase::diacritics::tests::case_survives ... ok
+test textcase::diacritics::tests::everything_else_is_passed_through ... ok
+test textcase::diacritics::tests::stripping_twice_changes_nothing ... ok
+test textcase::diacritics::tests::the_documented_example ... ok
+test textcase::diacritics::tests::the_stroke_is_a_switch_and_the_tones_are_not ... ok
+test textcase::diacritics::tests::what_it_cannot_separate ... ok
+test textcase::diacritics::tests::the_whole_inventory_becomes_ascii ... ok
+test textcase::sentence::tests::a_closing_quote_does_not_hide_the_ending_behind_it ... ok
+test textcase::sentence::tests::a_newline_is_a_boundary_without_punctuation ... ok
+test textcase::sentence::tests::a_terminator_needs_whitespace_after_it ... ok
+test textcase::sentence::tests::an_abbreviation_reads_as_the_end_of_a_sentence ... ok
+test textcase::sentence::tests::an_opener_is_skipped_but_a_digit_is_not ... ok
+test textcase::sentence::tests::text_with_no_letters_is_left_alone ... ok
+test textcase::sentence::tests::the_combining_form_capitalizes_its_base_letter ... ok
+test textcase::sentence::tests::the_documented_example ... ok
+test textcase::tests::apply_dispatches ... ok
+test textcase::sentence::tests::the_rest_of_the_sentence_is_untouched ... ok
+test textcase::tests::options_default_to_the_common_answer ... ok
+test textcase::title::tests::a_word_is_never_split_inside_a_grapheme_cluster ... ok
+test textcase::title::tests::an_all_caps_word_is_left_alone_unless_the_switch_is_off ... ok
+test textcase::title::tests::an_interior_capital_is_lost ... ok
+test textcase::title::tests::ascii_punctuation_splits_words_and_the_apostrophe_does_not ... ok
+test textcase::title::tests::text_with_no_letters_is_left_alone ... ok
+test textcase::title::tests::the_documented_example ... ok
+test textcase::title::tests::the_rest_of_a_word_is_lowercased ... ok
+test textcase::title::tests::the_search_is_for_the_first_letter_not_the_first_character ... ok
+test unicode::combining::tests::a_letter_is_not_a_mark ... ok
+test unicode::combining::tests::the_eight_marks_are_distinct_and_complete ... ok
+test unicode::marks::tests::apply_tone_basic_vowels ... ok
+test unicode::marks::tests::apply_tone_on_shaped_vowels ... ok
+test unicode::marks::tests::stroke_d_maps_correctly ... ok
+test unicode::shapes::tests::apply_shape_basic ... ok
+test unicode::shapes::tests::apply_shape_to_vowel_strips_tone ... ok
+test unicode::shapes::tests::shape_on_vowel_and_strip_shape ... ok
+test unicode::shapes::tests::shape_target_index_horn_on_uu_targets_first_u ... ok
+test unicode::shapes::tests::shape_target_index_picks_receiving_vowel ... ok
+test unicode::shapes::tests::shaped_vowel_index_finds_existing_shape ... ok
+test unicode::vowels::table::tests::non_vowels_have_no_entry ... ok
+test unicode::vowels::tests::non_vowels_rejected ... ok
+test unicode::vowels::table::tests::every_glyph_round_trips_and_uppercases_correctly ... ok
+test unicode::vowels::tests::table_covers_all_stems_and_tones ... ok
+test unicode::vowels::tests::toned_input_rejected_by_toned_vowel ... ok
+test unicode::vowels::tests::uppercase_round_trip ... ok
+test validation::ethnic::tests::cluster_kinds ... ok
+test validation::ethnic::tests::name_finals_follow_a_vowel_vietnamese_closes ... ok
+test validation::ethnic::tests::english_stays_restorable ... ok
+test validation::parse::tests::horned_u_is_not_a_qu_glide ... ok
+test validation::ethnic::tests::name_finals_live_in_vni_only ... ok
+test validation::parse::tests::onset_never_reaches_past_the_consonant_run ... ok
+test validation::parse::tests::is_well_ordered_cases ... ok
+test validation::parse::tests::parse_syllable_cases ... ok
+test validation::parse::tests::onset_survives_a_tone_parked_on_the_glide ... ok
+test validation::rhyme::tests::known_rhymes_present ... ok
+test validation::rules::tests::admits_exactly_the_listed_spellings_in_any_case ... ok
+test validation::rhyme::tests::nonexistent_rhymes_absent ... ok
+test validation::rhyme::tests::shaped_prefix_distinguishes_oe_from_nonexistent_o_circumflex_e ... ok
+test validation::rhyme::tests::deshaped_match_is_whole_and_shape_blind ... ok
+test validation::rules::tests::an_admitted_letter_parses_as_the_onset ... ok
+test validation::ethnic::tests::place_names_are_complete_syllables ... ok
+test validation::rules::tests::an_extra_onset_never_starts_a_cluster ... ok
+test validation::rules::tests::each_letter_is_admitted_on_its_own ... ok
+test validation::rules::tests::onset_sets_combine_like_sets ... ok
+test validation::rhyme::tests::binary_search_covers_the_whole_inventory ... ok
+test validation::syllable::tests::ckg_spelling ... ok
+test validation::syllable::tests::bare_shaped_vowel_cases ... ok
+test validation::rules::tests::extra_onsets_open_complete_syllables ... ok
+test validation::rules::tests::the_rhyme_must_still_be_vietnamese ... ok
+test validation::rules::tests::standard_is_the_default_and_admits_nothing_extra ... ok
+test validation::rules::tests::reachability_and_reopening_follow_the_rules ... ok
+test validation::syllable::tests::consonant_between_onset_and_nucleus_is_no_syllable ... ok
+test validation::syllable::tests::is_valid_cases ... ok
+test validation::syllable::tests::is_complete_syllable_cases ... ok
+test validation::syllable::tests::definitely_invalid_detects_dead_ends ... ok
+test validation::syllable::tests::validate_stroke_cases ... ok
+test validation::syllable::tests::stop_coda_only_allows_sac_or_nang ... ok
+test validation::syllable::tests::reopenable_accepts_a_stop_coda_awaiting_its_tone ... ok
+test validation::syllable::tests::validate_tone_cases ... ok
+test validation::syllable::tests::reopenable_accepts_a_rhyme_awaiting_its_vowel_shape ... ok
+test validation::syllable::tests::real_syllables_are_complete ... ok
+test validation::syllable::tests::every_rhyme_is_reopenable_before_its_diacritics_land ... ok
+test charset::detect::tests::a_prefix_is_enough_and_a_long_document_is_not_read_whole ... ok
+
+test result: ok. 285 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/charset.rs (target/debug/deps/charset-0ea3b5ccd0e5083a)
+
+running 29 tests
+test detect::toneless_text_does_not_separate_the_two_unicode_charsets ... ok
+test detect::text_written_in_a_charset_is_detected_as_that_charset ... ok
+test detect::a_detected_charset_reads_the_text_without_loss ... ok
+test properties::an_exact_combining_conversion_is_reversible ... ok
+test properties::a_legacy_charset_writes_only_bytes_or_reports_it ... ok
+test properties::a_character_no_byte_can_hold_was_already_counted ... ok
+test properties::combining_output_is_always_canonical ... ok
+test properties::an_exact_conversion_is_reversible ... ok
+test properties::tcvn3_conversion_preserves_the_character_count ... ok
+test round_trip::a_legacy_document_decodes_back_to_unicode ... ok
+test round_trip::a_spelling_it_does_not_write_is_normalized_not_lost ... ok
+test round_trip::a_unikey_document_decodes_back_to_unicode ... ok
+test round_trip::broken_utf8_and_conversion_damage_are_both_counted ... ok
+test round_trip::converting_a_charset_to_itself_is_an_identity ... ok
+test round_trip::converting_between_combining_and_a_legacy_charset_needs_no_code_of_its_own ... ok
+test round_trip::converting_between_two_legacy_charsets_needs_no_code_of_its_own ... ok
+test round_trip::loss_appears_only_at_the_end_that_cannot_spell_it ... ok
+test round_trip::reading_a_file_agrees_with_reading_the_clipboard ... ok
+test properties::decoding_never_invents_characters ... ok
+test round_trip::reading_a_unikey_file_converts_it ... ok
+test round_trip::unicode_encodes_to_the_bytes_a_legacy_document_holds ... ok
+test round_trip::unicode_encodes_to_the_code_points_a_unikey_document_holds ... ok
+test round_trip::what_a_charset_cannot_spell_is_reported_and_approximated ... ok
+test properties::no_character_is_ever_dropped ... ok
+test properties::no_charset_is_detected_from_pure_ascii ... ok
+test properties::detect_bytes_never_panics ... ok
+test properties::detect_never_panics ... ok
+test properties::conversion_never_panics ... ok
+test properties::the_two_conversion_paths_differ_only_where_the_read_was_counted ... ok
+
+test result: ok. 29 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.48s
+
+     Running tests/spellcheck_corpus.rs (target/debug/deps/spellcheck_corpus-c3d0b6a3c12aa44a)
+
+running 16 tests
+test extra_onsets_take_diacritics_in_vni ... ok
+test full_telex_keeps_its_leading_w_and_reaches_w_through_ww ... ok
+test final_k_does_not_overaccept_english ... ok
+test corpus_nonsyllables_rejected ... ok
+test extra_onsets_take_diacritics_in_telex ... ok
+test only_the_admitted_letters_open_a_syllable ... ok
+test loanword_place_names_accepted ... ok
+test spell_check_blocks_tone_on_misordered_consonant ... ok
+test spell_check_blocks_nonsyllable_via_gate ... ok
+test extra_onsets_follow_the_native_key_rules_in_telex ... ok
+test spell_check_judges_by_the_same_rules ... ok
+test corpus_real_syllables_accepted ... ok
+test tay_nguyen_out_of_scope_still_rejected ... ok
+test tay_nguyen_place_names_accepted ... ok
+test spell_check_keeps_real_words ... ok
+test extra_onsets_only_touch_words_they_open ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/telex.rs (target/debug/deps/telex-30d3f480ca8b1f54)
+
+running 49 tests
+test advanced::second_bracket_restores_the_literal_key ... ok
+test advanced::full_telex_shortcuts_compose ... ok
+test advanced::every_tone_and_removal_work_on_shortcuts ... ok
+test advanced::leading_w_covers_the_whole_onset ... ok
+test advanced::shortcut_vowel_takes_a_tone_typed_before_it ... ok
+test advanced::spell_check_falls_back_to_the_raw_shortcut ... ok
+test advanced::standard_methods_keep_shortcuts_literal ... ok
+test advanced::leading_w_treats_the_gi_glide_as_onset ... ok
+test advanced::tone_styles_and_existing_telex_converge ... ok
+test advanced::leading_w_skips_the_q_onset ... ok
+test advanced::leading_w_loses_the_onset_placed_non_uo_horn ... ok
+test basic::telex_free_position_circumflex_keeps_existing_regressions ... ok
+test basic::telex_reposition ... ok
+test basic::telex_free_position_marks ... ok
+test basic::telex_complex_syllables ... ok
+test basic::telex_revert ... ok
+test advanced::leading_w_still_reaches_the_uo_horn ... ok
+test basic::telex_shape_basics ... ok
+test basic::telex_shape_then_tone ... ok
+test basic::telex_stroke_and_tone_basics ... ok
+test basic::telex_multi_syllable_words ... ok
+test basic::telex_validation_and_pass_through ... ok
+test basic::telex_shape_switch ... ok
+test parity::telex_word_parity ... ok
+test basic::telex_free_position_circumflex ... ok
+test parity::telex_matches_vni_output ... ok
+test multi_intent_spec::tones_and_uppercase_converge ... ok
+test corpus::telex_corpus_composes_exactly ... ok
+test regression::telex_fixture_cases ... ok
+test regression::telex_fixture_word_cases ... ok
+test regression::telex_full_regression ... ok
+test stroke_collisions::delayed_stroke_behavior_is_locked ... ok
+test multi_intent_spec::all_bounded_multi_intent_orders_converge ... ok
+test stroke_collisions::invalid_or_repeated_pending_intents_stay_literal ... ok
+test tone_permutations::gi_plus_e_uses_tone_position_to_pick_the_rhyme ... ok
+test tone_permutations::glide_onsets_converge_in_modern_style_too ... ok
+test tone_permutations::glide_onsets_place_the_tone_on_the_nucleus ... ok
+test tone_permutations::lone_glide_vowel_keeps_the_tone ... ok
+test tone_permutations::plain_onsets_still_converge ... ok
+test w_collisions::snapshots_leading_w_and_latin_collisions ... ok
+test w_collisions::snapshots_repeated_pending_w_and_boundaries ... ok
+test w_permutations::snapshots_breve_and_single_horn_permutations ... ok
+test w_permutations::snapshots_all_tones_case_and_styles ... ok
+test w_permutations::snapshots_compound_permutations ... ok
+test properties::advanced_braces_are_literal ... ok
+test properties::never_panics_and_never_grows ... ok
+test properties::plain_consonants_pass_through ... ok
+test properties::advanced_never_panics_or_grows ... ok
+test properties::deterministic ... ok
+
+test result: ok. 49 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/textcase.rs (target/debug/deps/textcase-185ddc4d6872194d)
+
+running 9 tests
+test cases::the_design_doc_examples_hold ... ok
+test cases::transforms_stack ... ok
+test cases::the_combining_spelling_is_handled_without_being_normalized_away ... ok
+test properties::arbitrary_unicode_is_survivable ... ok
+test properties::the_case_transforms_change_only_case ... ok
+test properties::keeping_the_stroke_keeps_nothing_else ... ok
+test properties::bo_dau_leaves_only_ascii ... ok
+test properties::never_panics_and_never_grows ... ok
+test properties::every_transform_is_idempotent ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+     Running tests/vni.rs (target/debug/deps/vni-16f88f9f2e7600ba)
+
+running 22 tests
+test basic::vni_complex_syllable_step_kinds ... ok
+test basic::vni_reposition ... ok
+test basic::vni_longer_syllables ... ok
+test basic::vni_normal_append ... ok
+test basic::vni_complex_syllables ... ok
+test basic::vni_revert ... ok
+test basic::vni_multi_syllable_words ... ok
+test basic::vni_qu_gi_onset_tone_placement ... ok
+test basic::vni_shape_basic ... ok
+test basic::vni_shape_switch ... ok
+test basic::vni_stroke_d9 ... ok
+test basic::vni_stroke_uppercase_d9 ... ok
+test basic::vni_shape_targets_receiving_vowel ... ok
+test basic::vni_syllables_with_tone ... ok
+test basic::vni_tone_digit_before_the_nucleus_reaches_the_glide_onsets ... ok
+test basic::vni_shape_syllables ... ok
+test basic::vni_shaped_vowel_takes_tone ... ok
+test basic::vni_tone_single_vowel ... ok
+test basic::vni_validation ... ok
+test regression::vni_fixture_word_cases ... ok
+test regression::vni_fixture_cases ... ok
+test regression::vni_full_regression ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/funput_engine-7028fe36175a8298)
+
+running 157 tests
+test compose::boundary::tests::commit::boundary_character_inventory ... ok
+test compose::boundary::tests::restore::force_vietnamese_suppresses_restore ... ok
+test compose::boundary::tests::commit::uppercase_trigger_expands_to_uppercase_expansion ... ok
+test compose::boundary::tests::commit::mixed_case_trigger_without_clean_pattern_does_not_expand ... ok
+test compose::boundary::tests::restore::explicit_vietnamese_modifiers_remain_pinned ... ok
+test compose::boundary::tests::restore::boundary_restores_raw_keys_and_clears_session ... ok
+test compose::boundary::tests::commit::shortcut_wins_and_counts_the_displayed_buffer ... ok
+test compose::boundary::tests::commit::shortcuts_keep_punctuation ... ok
+test compose::boundary::tests::restore::restore_decision_uses_completed_structure ... ok
+test compose::boundary::tests::commit::boundary_always_clears_session ... ok
+test compose::boundary::tests::restore::unresolved_multi_intent_is_not_pinned_by_stroke ... ok
+test compose::boundary::tests::restore::valid_vietnamese_commits_without_restore ... ok
+test compose::diff::tests::common_prefix_is_char_aligned ... ok
+test compose::diff::tests::diff_reposition_suffix ... ok
+test compose::boundary::tests::restore::lone_shaped_vowel_is_pinned_in_every_method ... ok
+test compose::diff::tests::diff_revert_shape ... ok
+test compose::diff::tests::diff_single_vowel_tone ... ok
+test compose::diff::tests::diff_unchanged ... ok
+test compose::doubled::tests::a_literal_follows_only_once_started ... ok
+test compose::doubled::tests::a_single_line_and_an_empty_list ... ok
+test compose::doubled::tests::ignores_ascii_case_and_refuses_non_ascii ... ok
+test compose::doubled::tests::finds_every_line_and_nothing_between ... ok
+test compose::doubled::tests::finds_every_line_of_a_crlf_list ... ok
+test compose::doubled::tests::decides_at_the_decisive_prefix_and_not_before ... ok
+test compose::doubled::tests::a_word_without_a_revert_keeps_literal_empty ... ok
+test compose::doubled::tests::keys_seeded_from_the_screen_never_start_a_literal ... ok
+test compose::doubled::tests::clear_and_backspace_drop_literal ... ok
+test compose::doubled::tests::switched_off_it_never_starts ... ok
+test compose::doubled::tests::the_pipeline_shows_the_raw_keys_once_decided ... ok
+test compose::doubled::tests::the_first_revert_keeps_the_doubled_key_and_later_keys_follow ... ok
+test compose::doubled::tests::digits_glued_to_the_end_do_not_hide_a_listed_word ... ok
+test compose::doubled::tests::the_shipped_list_holds_the_shortened_words_and_not_the_habits ... ok
+test compose::flip::tests::flip_raw_display_to_vietnamese ... ok
+test compose::flip::tests::nothing_to_flip ... ok
+test compose::doubled::tests::restorable_only_for_a_listed_word_not_yet_shown ... ok
+test compose::doubled::tests::the_typed_keys_are_the_literal_once_a_revert_dropped_one ... ok
+test compose::pipeline::tests::ignored_appends_literal_vni ... ok
+test compose::flip::tests::flip_vietnamese_display_to_raw ... ok
+test compose::doubled::tests::vni_never_starts ... ok
+test compose::pipeline::tests::applied_tone_telex ... ok
+test compose::pipeline::tests::eager_restore_on_dead_end ... ok
+test compose::pipeline::tests::pending_appends_literal ... ok
+test correction::generate::edits::tests::no_deletion_leaves_a_single_key ... ok
+test correction::generate::edits::tests::a_doubled_key_loses_its_second_press ... ok
+test correction::generate::edits::tests::a_plain_deletion_skips_what_the_cheaper_deletions_cover ... ok
+test correction::generate::edits::tests::a_stray_modifier_goes_but_a_doubled_one_is_the_dup_edit_s_job ... ok
+test correction::generate::edits::tests::a_transposition_swaps_each_differing_pair_once ... ok
+test correction::generate::insert::tests::a_word_at_the_cap_gets_no_insertion ... ok
+test correction::generate::insert::tests::an_inserted_key_follows_the_case_of_the_position_it_takes ... ok
+test compose::doubled::tests::the_shipped_lists_are_sorted_lowercase_and_newline_terminated ... ok
+test correction::generate::insert::tests::every_letter_is_tried_in_every_gap ... ok
+test correction::generate::insert::tests::vni_also_tries_its_digit_modifiers ... ok
+test correction::generate::sink::tests::a_strongly_evidenced_swap_never_costs_less_than_nothing ... ok
+test correction::generate::sink::tests::a_variant_that_shows_the_same_word_or_no_syllable_is_dropped ... ok
+test correction::generate::sink::tests::the_budget_refuses_the_offer_that_would_overrun_it ... ok
+test correction::generate::tests::a_scope_starts_at_from_and_skips_the_masked_positions ... ok
+test correction::generate::sink::tests::the_same_word_offered_twice_keeps_its_lower_cost ... ok
+test correction::generate::tiers::tests::the_tiers_run_cheapest_first ... ok
+test correction::generate::variant::tests::a_deletion_shifts_the_tail_with_its_evidence ... ok
+test correction::generate::variant::tests::a_transposition_swaps_the_keys_and_their_evidence ... ok
+test correction::generate::variant::tests::a_variant_is_cut_at_the_key_cap ... ok
+test correction::generate::variant::tests::an_insertion_carries_no_evidence_and_moves_the_rest_along ... ok
+test correction::generate::variant::tests::the_typed_variant_gives_every_position_its_own_evidence ... ok
+test correction::layout::tests::a_capital_gets_capital_neighbours_at_the_flat_cost ... ok
+test correction::layout::tests::a_key_off_the_grid_has_no_neighbours ... ok
+test correction::layout::tests::a_digit_reaches_its_neighbours_and_the_letter_below ... ok
+test correction::layout::tests::a_home_row_key_reaches_its_row_and_the_rows_above_and_below ... ok
+test correction::layout::tests::a_top_row_key_reaches_the_digits_only_for_vni ... ok
+test correction::layout::tests::no_key_has_more_neighbours_than_the_array_holds ... ok
+test correction::score::set::tests::equal_costs_keep_the_order_they_arrived_in ... ok
+test correction::score::choose::tests::nothing_to_choose_when_every_candidate_is_refused ... ok
+test correction::score::choose::tests::the_prior_can_reorder_what_the_touches_ranked ... ok
+test correction::score::set::tests::the_same_word_reached_twice_keeps_its_lower_cost ... ok
+test correction::score::tests::a_candidate_reports_its_cost_with_the_sign_hosts_expect ... ok
+test correction::score::choose::tests::a_pair_inside_the_margin_is_ambiguous ... ok
+test correction::score::choose::tests::a_lone_candidate_still_has_to_beat_the_word_as_typed ... ok
+test correction::score::choose::tests::a_refused_candidate_never_becomes_second ... ok
+test correction::score::tests::an_alternate_no_nearer_than_the_typed_key_costs_at_least_the_edit ... ok
+test correction::score::set::tests::the_ranked_set_keeps_the_best_and_drops_the_weakest ... ok
+test correction::score::tests::a_nearer_alternate_costs_less_than_the_edit_alone ... ok
+test correction::score::tests::milli_nats_round_trip_within_a_thousandth ... ok
+test correction::score::tests::the_word_prior_floors_at_half_a_nat_for_an_unseen_word ... ok
+test correction::score::tests::two_edits_cost_more_than_one_at_equal_distance ... ok
+test correction::state::tests::a_restored_word_is_parked_as_the_keys_the_screen_now_shows ... ok
+test correction::state::tests::a_session_without_the_setting_answers_every_call_harmlessly ... ok
+test correction::state::tests::clearing_a_word_keeps_the_correction_parked_at_the_boundary ... ok
+test correction::state::tests::answering_when_nothing_is_pending_changes_nothing ... ok
+test correction::state::tests::flushing_an_unanswered_correction_drops_its_candidates_too ... ok
+test correction::state::tests::switching_the_setting_off_drops_the_state ... ok
+test correction::state::tests::the_scratch_session_never_carries_correction_state_of_its_own ... ok
+test correction::tests::evidence::a_key_without_a_report_is_read_off_the_layout ... ok
+test correction::tests::evidence::a_log_that_no_longer_matches_the_keys_is_ignored_whole ... ok
+test correction::tests::evidence::a_reported_touch_answers_with_the_host_s_alternates_priced_by_the_model ... ok
+test correction::tests::evidence::a_position_with_no_typed_key_behind_it_is_read_off_the_layout_too ... ok
+test correction::tests::evidence::with_no_evidence_at_all_the_layout_speaks_and_nothing_competes_as_typed ... ok
+test correction::tests::budget::a_bounced_key_is_settled_in_the_cheap_tiers ... ok
+test correction::tests::budget::a_neighbour_slip_is_settled_before_the_dear_tiers ... ok
+test correction::tests::gate::a_bare_shaped_vowel_is_left_alone ... ok
+test correction::tests::gate::a_flipped_word_is_left_alone ... ok
+test correction::tests::gate::a_valid_syllable_is_never_offered_a_correction ... ok
+test correction::tests::gate::a_word_containing_a_digit_is_skipped ... ok
+test correction::tests::gate::an_all_uppercase_word_is_skipped ... ok
+test correction::tests::gate::an_english_word_the_user_typed_on_purpose_still_reaches_the_platform ... ok
+test correction::tests::gate::every_finished_word_it_looks_at_is_counted_once ... ok
+test correction::tests::gate::one_key_without_touch_data_hands_that_key_to_the_layout ... ok
+test correction::tests::gate::the_feature_switched_off_offers_nothing ... ok
+test correction::tests::search::candidates_come_back_best_touch_score_first ... ok
+test correction::tests::search::dduwowfnh_reaches_duong_by_replacing_h_with_g ... ok
+test correction::tests::search::a_word_no_edit_can_rescue_is_left_alone ... ok
+test correction::tests::search::nhad_offers_nha_with_either_tone ... ok
+test correction::tests::search::the_search_ignores_a_word_past_the_key_cap ... ok
+test correction::tests::undo::a_keystroke_after_a_correction_disarms_the_one_tap_undo ... ok
+test correction::tests::budget::a_long_word_no_edit_rescues_spends_the_budget_and_stops ... ok
+test correction::tests::undo::backspace_right_after_a_correction_restores_the_typed_keys ... ok
+test correction::tests::undo::refusing_a_word_once_does_not_refuse_it_forever ... ok
+test correction::tests::search::vni_d9u7o7nh2_reaches_duong_through_the_digit_modifiers ... ok
+test correction::tests::undo::an_undone_word_is_not_corrected_a_second_time ... ok
+test correction::touch::tests::a_key_without_a_touch_is_logged_as_unreported ... ok
+test correction::touch::tests::a_touch_for_a_key_the_engine_did_not_record_is_refused ... ok
+test correction::touch::tests::a_touch_is_consumed_by_the_key_that_follows_it ... ok
+test correction::touch::tests::a_word_longer_than_the_key_cap_leaves_the_log_unusable ... ok
+test correction::touch::tests::an_uppercase_key_uppercases_the_alternates_offered_for_it ... ok
+test correction::tests::undo::the_undo_chip_shows_the_word_the_user_typed ... ok
+test correction::touch::tests::clearing_the_word_gives_the_log_a_fresh_start ... ok
+test correction::touch::tests::quantising_a_distance_round_trips_within_half_a_step ... ok
+test model::key_source::tests::numpad_digit_forces_literal ... ok
+test correction::touch::tests::rewriting_the_raw_keys_under_the_log_makes_it_unusable ... ok
+test correction::touch::tests::the_log_lines_up_with_the_raw_keys_it_was_fed ... ok
+test model::key_source::tests::default_source_is_standard ... ok
+test model::key_source::tests::numpad_non_digit_is_not_forced ... ok
+test model::number_glue::tests::a_boundary_frees_the_next_word ... ok
+test model::key_source::tests::standard_digit_is_never_forced ... ok
+test model::number_glue::tests::a_passed_through_digit_glues_the_next_word ... ok
+test model::number_glue::tests::keys_inside_a_word_leave_it_glued ... ok
+test model::result::tests::none_result_defaults ... ok
+test model::result::tests::send_carries_backspace_and_output ... ok
+test model::sentence::ring::tests::a_mismatch_drops_every_key ... ok
+test model::sentence::ring::tests::an_auto_capitalized_key_matches_its_capital ... ok
+test model::sentence::ring::tests::pops_the_newest_key_only ... ok
+test correction::tests::gate::a_word_with_no_touch_data_is_searched_through_the_layout ... ok
+test model::sentence::ring::tests::wrapping_keeps_the_newest_depth_keys_in_order ... ok
+test model::sentence::tests::a_different_character_does_not_rewind ... ok
+test model::sentence::tests::arming_drops_keys_typed_before_the_caret_arrived ... ok
+test model::sentence::tests::forgetting_keys_keeps_the_position ... ok
+test model::sentence::tests::past_the_ring_backspace_stops_instead_of_guessing ... ok
+test model::sentence::tests::rewinding_a_full_stop_leaves_the_next_space_unconfirmed ... ok
+test model::sentence::tests::rewinding_the_capitalized_opening_letter_reopens_the_sentence ... ok
+test model::sentence::tests::rewinding_the_confirming_space_unarms_the_sentence ... ok
+test model::session::tests::backspacing_inside_a_word_keeps_the_flip_choice ... ok
+test model::session::tests::clear_keeps_a_pending_digit_but_frees_the_glued_word ... ok
+test model::session::tests::clear_keeps_shortcuts ... ok
+test model::session::tests::clear_resets_buffer_and_keys ... ok
+test model::session::tests::emptying_the_buffer_drops_the_flip_choice ... ok
+test model::session::tests::new_defaults ... ok
+test compose::doubled::tests::every_decisive_prefix_starts_a_listed_word ... ok
+test correction::tests::budget::a_word_with_touches_never_overruns_the_budget ... ok
+test correction::tests::budget::a_word_without_touches_never_overruns_the_budget ... ok
+
+test result: ok. 157 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.80s
+
+     Running tests/adopt.rs (target/debug/deps/adopt-8423eb9aaaf4ac70)
+
+running 12 tests
+test adopting_replaces_composition_and_leaves_nothing_to_flip ... ok
+test adopt_follows_the_syllable_rules ... ok
+test adopts_a_capitalized_syllable ... ok
+test adopted_word_accepts_a_new_tone ... ok
+test adopts_a_syllable_still_missing_its_stop_coda_tone ... ok
+test adopted_word_matches_typing_it_from_scratch ... ok
+test adopts_a_toneless_syllable_and_adds_a_tone ... ok
+test refuses_text_that_is_not_a_syllable ... ok
+test boundary_after_editing_keeps_the_vietnamese_form ... ok
+test adopts_a_syllable_still_missing_its_vowel_shape ... ok
+test refuses_while_disabled ... ok
+test a_reopened_word_edits_exactly_like_a_live_one ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/alloc_budget.rs (target/debug/deps/alloc_budget-0292a765660d900f)
+
+running 1 test
+test keystroke_alloc_budget ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/alloc_budget_correction.rs (target/debug/deps/alloc_budget_correction-eb8277732b111167)
+
+running 9 tests
+test switching_the_setting_off_again_costs_exactly_what_plain_typing_does ... ok
+test a_host_that_reports_no_touches_pays_at_most_one_syllable_check_per_word ... ok
+test previewing_a_word_that_is_still_alive_allocates_nothing ... ok
+test a_word_the_search_refuses_costs_no_more_than_typing_it ... ok
+test reporting_touches_costs_at_most_one_syllable_check_per_word ... ok
+test recording_a_touch_point_never_allocates ... ok
+test a_bounced_key_is_repaired_before_the_search_reaches_the_dear_tiers ... ok
+test the_boundary_after_a_preview_does_not_search_again ... ok
+test a_corrected_word_stays_inside_the_search_budget ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/correction.rs (target/debug/deps/correction-f62a3b639c1a4fb9)
+
+running 54 tests
+test boundary::a_word_typed_while_composition_is_off_is_never_corrected ... ok
+test boundary::a_shortcut_still_wins_over_a_correction ... ok
+test boundary::re_opening_a_committed_word_puts_correction_aside ... ok
+test edits::a_finished_syllable_is_never_offered_a_structural_reading ... ok
+test edits::a_word_missing_one_touch_is_never_kept_as_typed ... ok
+test boundary::auto_capitalize_still_advances_across_a_parked_correction ... ok
+test edits::a_bounced_key_is_the_cheapest_reading_and_applies_on_its_own ... ok
+test edits::a_missing_key_is_the_dearest_reading_and_never_the_only_one ... ok
+test edits::a_word_two_insertions_short_is_out_of_reach ... ok
+test preview::a_word_that_could_still_become_a_syllable_is_not_previewed ... ok
+test edits::two_keys_out_of_order_are_swapped_back ... ok
+test preview::a_preview_offers_what_the_boundary_would ... ok
+test preview::a_word_typed_squarely_previews_as_kept ... ok
+test preview::an_undone_word_is_not_previewed_either ... ok
+test edits::a_stray_modifier_is_dropped_but_a_word_it_makes_is_kept ... ok
+test preview::asking_twice_answers_from_the_first_search ... ok
+test preview::clearing_the_engine_drops_the_preview ... ok
+test preview::ranking_a_preview_counts_nothing_but_choosing_at_the_boundary_does ... ok
+test preview::ranking_names_the_runner_up_when_the_two_are_too_close_to_call ... ok
+test preview::refusing_a_parked_correction_declines_it_and_remembers_the_word ... ok
+test preview::refusing_with_nothing_in_hand_changes_nothing ... ok
+test preview::the_boundary_searches_once_for_a_previewed_word ... ok
+test preview::the_next_letter_drops_the_preview ... ok
+test edits::without_touches_the_layout_adds_rivals_a_key_away ... ok
+test protocol::a_boundary_with_candidates_returns_none_and_parks_them ... ok
+test protocol::a_platform_that_never_answers_is_settled_by_the_next_boundary_too ... ok
+test protocol::a_platform_that_never_answers_loses_nothing ... ok
+test protocol::a_host_with_no_word_store_still_gets_a_ranking ... ok
+test protocol::an_answer_with_nothing_pending_is_a_no_op ... ok
+test preview::refusing_the_preview_keeps_the_word_and_remembers_it_once ... ok
+test protocol::an_index_that_names_no_candidate_declines_rather_than_guessing ... ok
+test protocol::applying_a_candidate_over_a_composed_word_deletes_only_what_is_shown ... ok
+test protocol::applying_a_candidate_over_a_restored_word_deletes_the_keys_it_shows ... ok
+test protocol::candidates_are_gone_once_the_correction_is_answered ... ok
+test protocol::declining_a_restored_word_changes_nothing_the_boundary_already_did ... ok
+test edits::two_substitutions_on_the_layout_reach_khong_in_the_last_tier ... ok
+test protocol::applying_a_candidate_replaces_the_word_and_keeps_the_boundary ... ok
+test protocol::declining_a_word_the_engine_would_have_left_alone_changes_nothing ... ok
+test protocol::refusing_a_trailing_candidate_leaves_the_leader_to_win ... ok
+test protocol::candidates_are_gone_once_the_host_clears_the_engine ... ok
+test table::a_correction_keeps_the_case_of_the_word_it_replaces ... ok
+test protocol::refusing_the_leading_candidate_calls_the_whole_correction_off ... ok
+test protocol::two_candidates_too_close_to_call_are_offered_rather_than_applied ... ok
+test protocol::moving_the_caret_drops_a_parked_correction ... ok
+test table::a_word_that_is_already_right_is_never_touched ... ok
+test table::nhad_leaning_slightly_is_still_too_close_to_call ... ok
+test table::a_digit_offered_for_the_first_key_is_not_a_word ... ok
+test table::nhad_typed_dead_centre_is_offered_rather_than_applied ... ok
+test table::nhad_follows_the_finger_to_the_tone_it_leaned_towards ... ok
+test table::a_word_typed_squarely_is_kept_even_with_a_syllable_one_key_away ... ok
+test table::the_measured_cases_correct_the_way_the_system_keyboards_do ... ok
+test table::a_slip_deep_into_the_wrong_key_is_still_repaired ... ok
+test edits::a_word_typed_with_no_touch_data_at_all_still_gets_candidates ... ok
+test preview::backspace_drops_the_preview_and_the_next_word_is_searched_afresh ... ok
+
+test result: ok. 54 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/correction_off.rs (target/debug/deps/correction_off-01b9a9ad31c400d9)
+
+running 6 tests
+test the_default_configuration_leaves_typo_correction_off ... ok
+test every_fixture_case_keeps_its_instruction_stream_with_the_setting_off ... ok
+test every_fixture_case_keeps_its_instruction_stream_when_no_touches_are_reported ... ok
+test every_buffer_case_composes_the_same_word_with_correction_on ... ok
+test every_fixture_case_keeps_its_text_when_the_platform_never_answers ... ok
+test every_fixture_case_keeps_its_text_when_every_correction_is_declined ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/correction_property.rs (target/debug/deps/correction_property-e4be479262941c6d)
+
+running 7 tests
+test no_candidate_ever_equals_the_word_on_screen ... ok
+test a_correction_followed_by_backspace_restores_the_document ... ok
+test an_unanswered_correction_never_outlives_the_next_key ... ok
+test declining_matches_the_engine_without_the_feature ... ok
+test candidates_always_come_back_in_descending_order ... ok
+test a_complete_syllable_is_never_offered_a_correction ... ok
+test a_preview_changes_nothing_the_boundary_does ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.93s
+
+     Running tests/diacritics.rs (target/debug/deps/diacritics-008f92f778fa9af1)
+
+running 13 tests
+test remove_tone::remove_tone_with_no_tone_is_literal ... ok
+test remove_tone::vni_zero_removes_tone ... ok
+test remove_tone::telex_z_removes_tone ... ok
+test remove_tone::vni_zero_keeps_shape ... ok
+test placement::traditional_tone_placement_and_ky_words ... ok
+test stroke::telex_dd_digraph_unaffected ... ok
+test stroke::vni_double_stroke_reverts_leading ... ok
+test stroke::stroke_in_abbreviation_targets_the_d ... ok
+test stroke::vni_stroke_reaches_back_to_leading_d ... ok
+test placement::traditional_keeps_oa_oe_uy_on_first_vowel ... ok
+test placement::modern_tone_style_oa_oe_uy ... ok
+test placement::glide_onsets_survive_a_tone_typed_before_the_nucleus ... ok
+test placement::uu_diphthong_horns_first_vowel ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/engine_api.rs (target/debug/deps/engine_api-8c9220e7d95dc0a0)
+
+running 57 tests
+test autocap_backspace_over_the_capital_reopens_the_sentence ... ok
+test autocap_arm_forgets_a_full_stop_typed_before_focus ... ok
+test autocap_backspace_in_english_leaves_vietnamese_keys_alone ... ok
+test autocap_closing_quote_is_transparent ... ok
+test autocap_clear_keeps_a_sentence_end ... ok
+test autocap_after_sentence_end_and_space ... ok
+test autocap_after_disarm_the_next_sentence_end_still_arms ... ok
+test autocap_comma_does_not_arm ... ok
+test autocap_disarm_forgets_a_sentence_end_typed_before_the_caret_moved ... ok
+test autocap_disarm_overrides_an_armed_start ... ok
+test autocap_ellipsis_ends_a_sentence ... ok
+test autocap_focus_capitalizes_first_word ... ok
+test autocap_injects_the_capital_instead_of_passing_the_key_through ... ok
+test autocap_first_letter_composes_vietnamese ... ok
+test autocap_backspace_out_of_step_stops_rewinding ... ok
+test autocap_non_ascii_closers_are_transparent ... ok
+test autocap_newline_arms ... ok
+test autocap_passes_an_uppercase_key_through ... ok
+test autocap_off_is_noop ... ok
+test autocap_reads_a_repeated_full_stop_as_an_abbreviation ... ok
+test autocap_requires_whitespace_after_period ... ok
+test autocap_rewind_ignores_a_character_that_is_not_the_last_key ... ok
+test autocap_rewinding_a_deleted_full_stop_does_not_capitalize ... ok
+test autocap_rewinding_the_confirming_space_unarms ... ok
+test autocap_single_dotted_word_still_ends_a_sentence ... ok
+test backspace_keeps_composition_context ... ok
+test clear_smoke ... ok
+test configure_applies_all_options ... ok
+test configure_method_change_clears_composition ... ok
+test digit_after_vowel_still_modifies_in_vni ... ok
+test disabled_does_not_touch_buffer_or_keys ... ok
+test engine_new_defaults ... ok
+test engine_struct_size ... ok
+test flip_choice_resets_after_the_word_commits ... ok
+test flip_choice_resets_when_backspace_empties_the_word ... ok
+test flip_eager_restored_word_to_vietnamese_and_back ... ok
+test flip_is_noop_after_backspace_takes_the_word_away ... ok
+test flip_is_noop_without_a_flippable_word ... ok
+test flip_kept_vietnamese_word_to_raw ... ok
+test flip_to_vietnamese_sticks_across_word_boundary ... ok
+test full_number_never_composes ... ok
+test process_char_pending_updates_buffer_and_keys ... ok
+test set_enabled_false ... ok
+test set_method_vni ... ok
+test spell_check_off_keeps_legacy_diacritic ... ok
+test spell_check_on_blocks_invalid_syllable ... ok
+test telex_keeps_abbreviation_with_d_stroke ... ok
+test vni_numpad_covers_all_digit_roles ... ok
+test vni_keeps_composed_word_instead_of_exposing_digits ... ok
+test vni_numpad_digit_is_literal_not_tone ... ok
+test vni_top_row_digit_still_applies_tone ... ok
+test vni_numpad_digit_commits_current_word ... ok
+test word_after_leading_digit_still_composes ... ok
+test word_boundary_does_not_append_keys ... ok
+test word_boundary_clears_after_word ... ok
+test word_start_digit_passes_through ... ok
+test word_boundary_on_empty_buffer ... ok
+
+test result: ok. 57 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/engine_fixtures.rs (target/debug/deps/engine_fixtures-2b118f11fed1fcc8)
+
+running 5 tests
+test step_fixture_cases ... ok
+test app_text_fixture_cases ... ok
+test telex_buffer_fixture_cases ... ok
+test vni_buffer_fixture_cases ... ok
+test engine_full_regression ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/methods.rs (target/debug/deps/methods-8114d03cf633e5e0)
+
+running 32 tests
+test telex::telex_dd_stroke ... ok
+test telex::telex_ngs_literal ... ok
+test telex_advanced::brackets_are_boundaries_only_outside_advanced_telex ... ok
+test telex::telex_as_step_by_step ... ok
+test telex::telex_free_position_circumflex_restores_non_vietnamese_runs ... ok
+test telex::telex_ass_revert_tone ... ok
+test telex::telex_truowng_complex ... ok
+test telex::telex_free_position_circumflex_sends_minimal_diff ... ok
+test telex::telex_free_position_circumflex_preserves_raw_keys_and_flips ... ok
+test telex_advanced::capitalization_backspace_and_method_switch_stay_synchronized ... ok
+test telex_advanced::layout_stays_compact ... ok
+test telex_advanced::direct_shortcuts_emit_minimal_diffs ... ok
+test telex_advanced::raw_keys_flip_and_sticky_latin_survive_boundary ... ok
+test telex_advanced::canonical_and_full_corpora_commit_the_same_text ... ok
+test telex_deferred_w::compound_resolution_preserves_raw_keys ... ok
+test telex_deferred_w::flip_is_the_sticky_latin_escape ... ok
+test telex_advanced::unresolvable_composition_restores_at_boundary ... ok
+test telex_advanced::full_telex_runs_end_to_end ... ok
+test telex_deferred_w::resolves_with_minimal_diff_and_preserves_raw_keys ... ok
+test telex_deferred_w::literal_and_boundary_cases_do_not_leak ... ok
+test telex_multi_intent_spec::backspace_syncs_each_displayed_pending_stage ... ok
+test telex_multi_intent_spec::incomplete_intent_restores_at_word_boundary ... ok
+test telex_multi_intent_spec::nested_resolution_sends_the_minimal_diff ... ok
+test telex_multi_intent_spec::latin_collisions_keep_current_engine_behavior ... ok
+test vni::vni_a11_revert ... ok
+test vni::vni_a1_tone ... ok
+test telex_multi_intent_spec::raw_keys_flip_and_sticky_latin_are_preserved ... ok
+test vni::vni_d9_stroke ... ok
+test vni::vni_ng1_literal_ignored ... ok
+test vni::vni_reposition_multi_char_output ... ok
+test telex_multi_intent_spec::pending_w_then_stroke_converges ... ok
+test telex_deferred_w::compound_permutations_converge_through_engine ... ok
+
+test result: ok. 32 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/restore.rs (target/debug/deps/restore-cdb1e77066948402)
+
+running 56 tests
+test doubled::cases::the_boundary_replaces_the_shortened_word_in_one_edit ... ok
+test doubled::cases::advanced_telex_restores_too ... ok
+test doubled::cases::eager_restore_off_gets_back_the_words_only_it_shortens ... ok
+test doubled::cases::the_raw_keys_come_back_in_the_case_they_were_typed ... ok
+test doubled::cases::an_english_word_gets_its_doubled_key_back ... ok
+test doubled::cases::vietnamese_is_untouched ... ok
+test doubled::cases::a_key_lost_away_from_its_twin_comes_back ... ok
+test doubled::cases::digits_glued_to_a_listed_word_keep_its_keys ... ok
+test doubled::flip::flip_brings_back_the_swallowed_key ... ok
+test doubled::cases::session_keeps_both_esses ... ok
+test doubled::flip::switched_off_the_flip_is_what_it_was ... ok
+test doubled::flip::flipping_twice_keeps_the_shortened_word ... ok
+test doubled::flip::flip_to_raw_keeps_every_key_with_eager_restore_off ... ok
+test doubled::flip::flip_reaches_a_word_the_table_does_not_list ... ok
+test doubled::cases::the_doubled_key_habit_still_gives_a_plain_letter ... ok
+test doubled::invariant::backspace_over_a_reverted_word_leaves_nothing_behind ... ok
+test doubled::midword::eager_restore_off_waits_for_the_boundary ... ok
+test doubled::invariant::a_revert_does_not_reach_the_next_word ... ok
+test doubled::midword::flip_after_the_switch_toggles_like_any_restored_word ... ok
+test doubled::midword::each_word_switches_where_the_generator_found_it_decided ... ok
+test doubled::midword::the_raw_keys_come_back_on_the_decisive_key ... ok
+test doubled::toggles::a_shortcut_on_the_shortened_keys_still_fires ... ok
+test doubled::midword::the_doubled_key_habit_never_switches_mid_word ... ok
+test doubled::toggles::a_shortcut_on_the_typed_keys_fires_with_eager_restore_on_or_off ... ok
+test doubled::toggles::a_flip_before_the_doubled_key_wins ... ok
+test doubled::toggles::eager_restore_off_still_restores_at_the_boundary ... ok
+test english::telex_eager_restore_step ... ok
+test english::revert_then_space_keeps_reverted_word ... ok
+test doubled::toggles::the_trigger_for_the_typed_keys_beats_the_one_for_the_shortened_keys ... ok
+test doubled::toggles::switched_off_it_types_as_before ... ok
+test english::telex_mas_space_no_restore ... ok
+test doubled::toggles::smart_restore_off_turns_it_off ... ok
+test english::telex_misordered_consonant_restores_eagerly ... ok
+test english::telex_pass_through_english_no_restore ... ok
+test english::telex_english_restore_on_punctuation ... ok
+test english::telex_english_restore_on_space ... ok
+test english::telex_valid_vn_keeps_composed_on_space ... ok
+test extra_onsets::eager_restore_judges_by_the_same_rules ... ok
+test extra_onsets::english_with_a_vietnamese_rhyme_composes_like_a_native_onset ... ok
+test extra_onsets::english_without_a_vietnamese_rhyme_still_restores ... ok
+test extra_onsets::words_survive_the_word_boundary ... ok
+test extra_onsets::full_telex_reads_a_restored_w_as_the_consonant ... ok
+test place_names::telex_types_colliding_names_through_the_double_key ... ok
+test place_names::cluster_onsets_and_final_k_type_in_both_methods ... ok
+test place_names::english_still_restores_in_telex ... ok
+test extra_onsets::off_by_default_nothing_changes ... ok
+test place_names::vni_mark_last_on_a_bare_name_comes_back_through_flip ... ok
+test toggle::defaults_restore_eagerly ... ok
+test place_names::m_drak_strikes_its_d_on_the_spot ... ok
+test toggle::eager_off_restores_only_at_boundary ... ok
+test toggle::smart_off_keeps_composed_word ... ok
+test toggle::toggles_do_not_disturb_valid_vietnamese ... ok
+test place_names::vni_digits_glued_to_words_still_restore ... ok
+test place_names::vni_keeps_the_finals_telex_cannot_afford ... ok
+test doubled::invariant::a_word_without_a_revert_types_exactly_as_before ... ok
+test doubled::midword::every_listed_word_ends_the_same_switched_mid_word_or_at_the_boundary ... ok
+
+test result: ok. 56 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.67s
+
+     Running tests/words.rs (target/debug/deps/words-990ae5455862e982)
+
+running 77 tests
+test boundary::type_words_leaves_buffer_empty_after_trailing_space ... ok
+test boundary::english_word_restored_on_boundary ... ok
+test boundary::valid_vietnamese_kept_on_boundary ... ok
+test boundary::mixed_english_and_vietnamese_words ... ok
+test boundary::telex_mas_then_space ... ok
+test boundary::telex_multi_word ... ok
+test boundary::punctuation_is_a_boundary_no_cross_syllable_bleed ... ok
+test boundary::vni_multi_word ... ok
+test shortcut::a_boundary_after_the_number_frees_the_trigger ... ok
+test shortcut::a_host_reset_after_the_digit_keeps_the_trigger_literal ... ok
+test shortcut::a_retyped_word_stays_glued_to_the_number ... ok
+test shortcut::a_smart_cased_trigger_after_a_number_stays_literal ... ok
+test boundary::standalone_shaped_vowel_kept_on_boundary ... ok
+test shortcut::a_trigger_after_numpad_digits_stays_literal ... ok
+test shortcut::a_trigger_after_a_number_stays_literal ... ok
+test shortcut::a_word_that_is_not_a_trigger_still_composes_with_the_switch_off ... ok
+test shortcut::an_empty_table_leaves_english_mode_completely_untouched ... ok
+test shortcut::deliberately_mixed_case_trigger_still_matches_exactly ... ok
+test shortcut::digits_inside_a_word_still_match_as_typed ... ok
+test shortcut::empty_trigger_is_ignored ... ok
+test shortcut::english_mode_does_not_auto_capitalize ... ok
+test shortcut::english_mode_composes_nothing ... ok
+test shortcut::english_mode_expands_after_a_correction ... ok
+test shortcut::english_mode_expands_on_punctuation_too ... ok
+test shortcut::english_mode_expansion_follows_smart_case ... ok
+test shortcut::english_mode_leaves_a_non_trigger_word_exactly_as_typed ... ok
+test shortcut::english_mode_still_expands_a_trigger ... ok
+test shortcut::expands_trigger_on_space_vni ... ok
+test shortcut::expands_trigger_on_space_telex ... ok
+test shortcut::mixed_case_trigger_without_clean_pattern_falls_back_to_exact_match ... ok
+test shortcut::expansion_wins_over_english_restore ... ok
+test shortcut::flipping_smart_case_back_on_restores_matching ... ok
+test shortcut::punctuation_boundary_is_kept ... ok
+test shortcut::re_adding_trigger_overwrites ... ok
+test shortcut::remove_and_clear_shortcuts ... ok
+test shortcut::shortcut_only_at_boundary_not_mid_word ... ok
+test shortcut::single_uppercase_letter_trigger_capitalizes_rather_than_shouts ... ok
+test shortcut::smart_case_off_expands_only_the_exact_trigger ... ok
+test shortcut::smart_case_off_keeps_the_expansion_verbatim ... ok
+test shortcut::smart_case_off_leaves_a_differently_cased_trigger_alone ... ok
+test shortcut::the_english_switch_off_keeps_english_mode_literal ... ok
+test shortcut::smart_case_off_still_leaves_ordinary_composition_alone ... ok
+test shortcut::the_shortcuts_switch_also_governs_english_mode ... ok
+test shortcut::the_switch_stops_expansion_without_touching_the_table ... ok
+test shortcut::the_table_survives_the_switch_so_flipping_back_costs_nothing ... ok
+test shortcut::title_case_capitalizes_every_word_in_a_multi_word_expansion ... ok
+test shortcut::title_case_trigger_expands_to_title_case ... ok
+test shortcut::undefined_trigger_leaves_normal_behavior_unchanged ... ok
+test shortcut::uppercase_trigger_expands_to_uppercase ... ok
+test shortcut_composed::a_corrected_vietnamese_trigger_still_expands ... ok
+test shortcut_composed::a_trigger_with_a_tone_mark_expands ... ok
+test shortcut_composed::a_vietnamese_trigger_expands_whatever_the_input_method ... ok
+test shortcut_composed::a_vietnamese_trigger_follows_smart_case ... ok
+test shortcut_composed::a_vietnamese_trigger_glued_to_a_number_stays_literal ... ok
+test shortcut_composed::a_word_that_only_starts_like_the_trigger_stays_itself ... ok
+test shortcut_composed::ascii_triggers_keep_working_beside_vietnamese_ones ... ok
+test shortcut_composed::punctuation_ends_a_vietnamese_trigger_too ... ok
+test shortcut_composed::english_mode_matches_a_literally_typed_vietnamese_trigger ... ok
+test shortcut_composed::the_keys_win_over_the_composed_word ... ok
+test shortcut_composed::smart_case_off_needs_the_exact_vietnamese_trigger ... ok
+test shortcut_undo::a_capital_trigger_comes_back_as_typed ... ok
+test shortcut_undo::a_composed_trigger_comes_back_as_shown_not_as_raw_keys ... ok
+test shortcut_undo::a_different_trigger_still_expands_right_after_one_is_refused ... ok
+test shortcut_undo::a_refused_trigger_still_gets_english_restore ... ok
+test shortcut_undo::an_empty_boundary_leaves_the_refusal_standing ... ok
+test shortcut_undo::backspace_itself_does_not_take_the_undo ... ok
+test shortcut_undo::clearing_the_engine_drops_the_undo_and_the_refusal ... ok
+test shortcut_undo::a_refused_trigger_is_not_typo_corrected ... ok
+test shortcut_undo::english_mode_undoes_the_same_way ... ok
+test shortcut_undo::clearing_the_table_keeps_the_undo_that_the_screen_still_needs ... ok
+test shortcut_undo::backspace_restores_the_shown_word_and_keeps_the_space ... ok
+test shortcut_undo::punctuation_stays_with_the_restored_word ... ok
+test shortcut_undo::the_next_key_spends_the_undo_without_refusing_the_trigger ... ok
+test shortcut_undo::the_refusal_is_spent_by_the_next_word_even_when_it_is_another ... ok
+test shortcut_undo::the_refusal_does_not_outlive_an_ordinary_sentence ... ok
+test shortcut_undo::turning_gõ_tắt_off_leaves_a_refusal_harmless ... ok
+test shortcut_undo::the_refused_trigger_is_kept_once_and_then_expands_again ... ok
+
+test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/funput_ffi-cd4d7505c1d3acd4)
+
+running 49 tests
+test app_language::handle::tests::free_is_null_safe ... ok
+test app_language::focus::tests::null_handle_is_safe ... ok
+test app_language::memory::tests::empty_id_is_ignored ... ok
+test app_language::focus::tests::toggle_with_empty_id_is_ignored ... ok
+test app_language::focus::tests::unseen_app_is_unknown ... ok
+test app_language::handle::tests::new_and_free_round_trip ... ok
+test charset::tests::an_index_past_the_end_converts_nothing_rather_than_guessing ... ok
+test charset::tests::every_index_names_a_charset_and_nothing_past_the_end_does ... ok
+test charset::tests::a_buffer_that_is_one_short_is_not_written_to ... ok
+test charset::tests::converting_to_vni_produces_more_characters_than_it_was_given ... ok
+test charset::tests::null_text_is_an_empty_conversion_rather_than_a_crash ... ok
+test app_language::focus::tests::seeded_app_resolves_to_its_remembered_state ... ok
+test app_language::focus::tests::toggle_overwrites_a_seeded_state ... ok
+test app_language::memory::tests::clear_wipes_everything ... ok
+test app_language::memory::tests::forget_removes_only_the_named_app ... ok
+test charset::tests::the_list_is_the_one_core_publishes ... ok
+test charset::tests::what_cannot_be_represented_is_counted_before_any_buffer_exists ... ok
+test charset::tests::ascii_is_declined_rather_than_guessed_at ... ok
+test charset::tests::text_survives_a_trip_out_to_every_charset_and_back ... ok
+test convert::tests::all_convert_handles_are_null_safe ... ok
+test convert::tests::the_transform_menu_is_complete_and_sizes_like_the_rest_of_the_door ... ok
+test convert::tests::an_empty_session_answers_every_question_about_the_axis ... ok
+test convert::tests::text_session_returns_full_result_and_exact_bytes ... ok
+test engine::config::tests::mask_decodes_letter_by_letter_and_ignores_unknown_bits ... ok
+test engine::correction::tests::a_count_of_zero_leaves_the_key_with_no_neighbours ... ok
+test convert::tests::a_switch_changes_what_the_door_hands_back ... ok
+test engine::correction::tests::a_count_past_the_cap_reads_only_what_fits ... ok
+test engine::correction::tests::a_typed_key_that_is_not_a_scalar_refuses_the_whole_touch ... ok
+test engine::correction::tests::an_alternate_that_is_not_a_scalar_is_dropped_on_its_own ... ok
+test engine::correction::tests::an_empty_candidate_encodes_as_nothing_rather_than_as_noise ... ok
+test charset::tests::what_detection_returns_can_be_fed_straight_back_in ... ok
+test engine::result::tests::from_ime_none_and_restore ... ok
+test engine::result::tests::none_is_empty ... ok
+test engine::result::tests::from_ime_send ... ok
+test engine::result::tests::output_longer_than_cap_truncates ... ok
+test engine::shortcut_undo::tests::a_null_handle_or_callback_is_a_no_op ... ok
+test engine::config::tests::letters_survive_configure_and_zero_turns_them_off ... ok
+test engine::shortcut_undo::tests::the_undo_names_the_word_then_takes_the_expansion_back_once ... ok
+test engine::shortcut_undo::tests::dismissing_drops_the_undo_and_the_refusal ... ok
+test engine::shortcuts::tests::english_switch_survives_configure_and_leaves_vietnamese_shortcuts_on ... ok
+test engine::tests::flip_composing_on_fresh_engine_is_noop ... ok
+test sentence::tests::a_null_pointer_is_the_start_of_the_document ... ok
+test sentence::tests::a_repeated_full_stop_reads_as_an_abbreviation ... ok
+test sentence::tests::words_begin_after_anything_that_is_not_a_letter_or_digit ... ok
+test sentence::tests::the_door_answers_with_cores_rules ... ok
+test convert::tests::transforms_apply_in_order_and_come_back_off_one_at_a_time ... ok
+test engine::shortcuts::text_tests::complete_output_and_null_inputs ... ok
+test convert::tests::scan_window_uses_global_rows_and_job_is_one_shot ... ok
+test engine::shortcut_undo::tests::a_word_longer_than_the_result_array_arrives_whole ... ok
+
+test result: ok. 49 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/advanced_telex.rs (target/debug/deps/advanced_telex-fb13394280392bf5)
+
+running 5 tests
+test ffi_layout_and_method_ids_are_stable ... ok
+test unknown_method_falls_back_to_standard_telex ... ok
+test advanced_raw_keys_flip_both_ways_through_c_abi ... ok
+test persisted_advanced_id_survives_native_relaunch ... ok
+test stable_method_ids_select_the_expected_grammar ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/app_language.rs (target/debug/deps/app_language-41c95bdb5d3ca021)
+
+running 4 tests
+test null_and_empty_inputs_are_safe ... ok
+test seed_restores_state_persisted_by_the_host ... ok
+test forget_and_clear_drop_remembered_state ... ok
+test remembers_and_replays_per_app_state_through_c_abi ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/correction.rs (target/debug/deps/correction-240ade53e6ef6f38)
+
+running 10 tests
+test every_call_is_null_safe ... ok
+test the_preview_calls_are_null_safe ... ok
+test a_touch_that_is_not_a_scalar_is_ignored_rather_than_trusted ... ok
+test the_word_store_breaks_a_tie_the_touches_cannot ... ok
+test a_host_that_never_switches_it_on_sees_nothing ... ok
+test the_ranking_names_both_words_when_the_touches_cannot_decide ... ok
+test refusing_the_preview_keeps_the_word_through_the_abi ... ok
+test a_preview_shows_the_repair_and_the_space_then_applies_it ... ok
+test backspace_after_a_correction_undoes_it_through_the_abi ... ok
+test the_whole_handshake_replaces_the_word_and_keeps_the_boundary ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/round_trip.rs (target/debug/deps/round_trip-b39ff36135d7f956)
+
+running 21 tests
+test buffer_null_safe ... ok
+test configure_does_not_clobber_the_smart_case_setting ... ok
+test clear_shortcuts_disables_expansion ... ok
+test invalid_codepoint_is_noop ... ok
+test null_handle_is_safe ... ok
+test buffer_reflects_marked_text ... ok
+test backspace_corrects_composition ... ok
+test numpad_digit_stays_literal_in_vni ... ok
+test result_fields_for_as ... ok
+test adopt_reopens_a_committed_word ... ok
+test configure_applies_config_by_value ... ok
+test shortcut_null_safe ... ok
+test shortcut_expands_through_ffi ... ok
+test english_restore_on_boundary ... ok
+test shortcuts_enabled_setter_is_null_safe ... ok
+test smart_case_setter_is_null_safe ... ok
+test smart_case_is_on_by_default_and_the_setter_turns_it_off ... ok
+test shortcuts_are_on_by_default_and_the_setter_turns_them_off ... ok
+test telex_round_trip ... ok
+test the_two_shortcut_setters_do_not_clobber_each_other ... ok
+test vni_round_trip ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/suggestions.rs (target/debug/deps/suggestions-d88ccd0461800f4f)
+
+running 13 tests
+test null_and_invalid_inputs_fail_silently ... ok
+test a_null_context_is_the_same_as_no_context ... ok
+test attach_is_null_safe ... ok
+test a_context_reorders_the_candidates_through_c_abi ... ok
+test learns_queries_and_resets_through_c_abi ... ok
+test weighing_a_word_is_null_safe ... ok
+test a_word_can_be_weighed_and_vetoed_across_the_abi ... ok
+test an_attached_lexicon_fills_the_empty_slots_through_c_abi ... ok
+test a_failed_attach_keeps_the_lexicon_already_attached ... ok
+test reading_the_syllable_bands_is_null_safe ... ok
+test the_shipped_syllable_bands_are_readable_across_the_abi ... ok
+test persistent_handle_round_trips_without_owned_results ... ok
+test reset_forgets_the_user_but_keeps_the_lexicon ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running unittests src/lib.rs (target/debug/deps/vxkey_runtime-d3263f8a48f23903)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/vxkey_backend.rs (target/debug/deps/vxkey_backend-1adaafad1560d6c2)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/policies.rs (target/debug/deps/policies-e6f9a310f676e716)
+
+running 34 tests
+test actual_loop_heartbeat ... ok
+test counter_precision ... ok
+test filter_before_payload ... ok
+test extra_modifier_cancels ... ok
+test config_is_deferred_until_boundary ... ok
+test hard_bypass_english_macros ... ok
+test history_unicode_quota_expiry_delete ... ok
+test actual_engine_parity ... ok
+test defaults ... ok
+test macro_case_collision ... ok
+test native_period_lock ... ok
+test modifier_orders ... ok
+test invalid_config ... ok
+test oversized_history ... ok
+test partial_injection_suspend ... ok
+test pause_baseline ... ok
+test pending_config_applies_after_cancel_and_backspace ... ok
+test converter_uses_real_core_and_order ... ok
+test corrupt_not_overwritten ... ok
+test period_stale_context ... ok
+test physical_sides ... ok
+test race_after_payload ... ok
+test shortcut_validation ... ok
+test shortcut_collision_ignores_modifier_order ... ok
+test secure_and_suspended ... ok
+test target_and_memory ... ok
+test io_failure_does_not_advance_config ... ok
+test third_key_cancels ... ok
+test service_native_failure_is_not_reported_success ... ok
+test two_spaces ... ok
+test unicode_byte_cap ... ok
+test service_persist_readback_and_surface_authority ... ok
+test atomic_config ... ok
+test validation_keeps_revision ... ok
+
+test result: ok. 34 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+   Doc-tests funput_config
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests funput_convert
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests funput_core
+
+running 7 tests
+test crates/funput-core/src/sentence/mod.rs - sentence::starts_sentence (line 73) ... ok
+test crates/funput-core/src/lib.rs - apply (line 96) ... ok
+test crates/funput-core/src/validation/rules/onsets.rs - validation::rules::onsets::ExtraOnsets (line 13) ... ok
+test crates/funput-core/src/charset/mod.rs - charset (line 23) ... ok
+test crates/funput-core/src/validation/rules/mod.rs - validation::rules::SyllableRules (line 23) ... ok
+test crates/funput-core/src/options/compose.rs - options::compose::ComposeOptions (line 14) ... ok
+test crates/funput-core/src/sentence/mod.rs - sentence::starts_word (line 98) ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+all doctests ran in 0.73s; merged doctests compilation took 0.31s
+   Doc-tests funput_engine
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests funput_ffi
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests vxkey_runtime
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

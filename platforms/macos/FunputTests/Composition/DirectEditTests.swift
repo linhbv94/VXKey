@@ -50,7 +50,7 @@ final class DirectEditTests: XCTestCase {
         XCTAssertNil(DirectEdit.wordRange(length: 1, selection: NSRange(location: NSNotFound, length: 0)))
     }
 
-    func testARewriteCoversTheTailAndAnySelectedSuggestion() {
+    func testARewriteNeverIncludesTheSelectedSuffix() {
         let tail = DirectEdit.Edit(text: "êng", replacedTail: 3)
         XCTAssertEqual(
             DirectEdit.rewriteRange(tail, selection: NSRange(location: 15, length: 0)),
@@ -58,7 +58,7 @@ final class DirectEditTests: XCTestCase {
         )
         XCTAssertEqual(
             DirectEdit.rewriteRange(tail, selection: NSRange(location: 15, length: 4)),
-            NSRange(location: 12, length: 7)
+            NSRange(location: 12, length: 3)
         )
     }
 }

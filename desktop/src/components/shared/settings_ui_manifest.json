@@ -1,0 +1,9 @@
+{
+  "version": "1.0.0",
+  "source": "VXMedia SettingsModal frozen 2026-10-29",
+  "files": {
+    "settings_ui.tsx": "d6371166b6d5a2086f903ef68a2762e85b7a7b57efea0d47df0e740569757c14",
+    "settings_ui.css": "c6eb59110d54b9c5e7e21d51ce58262390b93f1c7f569913d25da36f35ee419f",
+    "settings_copy.ts": "f12756f8760bdb7293bfc3a90311294392643246a26ab13e0ce1ebaf836c7b34"
+  }
+}

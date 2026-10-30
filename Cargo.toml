@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+    "crates/vxkey-runtime",
     "crates/funput-core",
     "crates/funput-config",
     "crates/funput-convert",
@@ -18,6 +19,7 @@ members = [
 # NOTE: excluded packages do NOT inherit the [profile.release] below — each keeps
 # an equivalent profile in its own manifest.
 exclude = [
+    "desktop/src-tauri",
     # Windows shell: pulls in slint + the `windows` crate (Windows target only).
     "platforms/windows",
     # GTK4 Settings app: links system gtk4/libadwaita (Linux only).

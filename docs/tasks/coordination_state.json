@@ -1,0 +1,38 @@
+{
+  "task": "vxkey_ui_engine_initial",
+  "model": "gemini-3.8-flash-medium",
+  "effort": "medium",
+  "pid": 25395,
+  "review_rounds_used": 1,
+  "review_rounds_remaining": 2,
+  "consultation_calls_used": 0,
+  "temporary_global_grants": [],
+  "status": "ui_stopped_by_user_engine_only",
+  "exit_code": 0,
+  "conversation_id": "6639a222-14f3-4897-9784-c3c97e3bb71e",
+  "denied_action": "ls -la desktop; do not retry directory listing",
+  "initial_and_fix_attempts": 2,
+  "permission_recovery": {
+    "temporary_global_grants": [],
+    "session_only_settings": true,
+    "restored": true
+  },
+  "awaiting_user_ui_direction": false,
+  "additional_attempts_authorized": 1,
+  "additional_attempts_started": 0,
+  "ui_handoff_requested": true,
+  "user_instruction": "Stop Anti; Codex engine and detailed handoff",
+  "engine_handoff": "docs/handoff/ui_handoff.md",
+  "engine_status": "foundation_verified_native_candidate_built",
+  "handoff_status": "written_and_links_verified",
+  "native_runtime_qa": false,
+  "test_summary": {
+    "cargo_passed": 1181,
+    "cargo_failed": 0,
+    "vxkey_runtime_passed": 34,
+    "backend_smoke": "pass",
+    "swift_fixture": "pass",
+    "tauri_library_check": "pass",
+    "clippy": "not_installed"
+  }
+}

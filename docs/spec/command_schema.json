@@ -1,0 +1,926 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VXKey command request union",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "request": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "get_snapshot"
+            }
+          },
+          "required": [
+            "command"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "patch_config"
+            },
+            "expected_revision": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19})$",
+              "description": "Decimal uint64; semantic range check <=18446744073709551615."
+            },
+            "changes": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ui": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "locale": {
+                      "type": "string",
+                      "enum": [
+                        "vi",
+                        "en"
+                      ]
+                    },
+                    "theme": {
+                      "type": "string",
+                      "enum": [
+                        "system",
+                        "dark",
+                        "light",
+                        "pure_black"
+                      ]
+                    },
+                    "tray_icon_style": {
+                      "type": "string",
+                      "enum": [
+                        "serious",
+                        "playful"
+                      ],
+                      "default": "serious"
+                    }
+                  },
+                  "required": [],
+                  "minProperties": 1
+                },
+                "typing": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "input_method": {
+                      "type": "string",
+                      "enum": [
+                        "telex",
+                        "telex_advanced",
+                        "vni"
+                      ]
+                    },
+                    "tone_style": {
+                      "type": "string",
+                      "enum": [
+                        "modern",
+                        "traditional"
+                      ]
+                    },
+                    "language_mode": {
+                      "type": "string",
+                      "enum": [
+                        "vi",
+                        "en"
+                      ]
+                    },
+                    "composition_mode": {
+                      "type": "string",
+                      "enum": [
+                        "preedit",
+                        "direct_verified"
+                      ]
+                    },
+                    "smart_restore": {
+                      "type": "boolean"
+                    },
+                    "retone": {
+                      "type": "boolean"
+                    },
+                    "auto_capitalize": {
+                      "type": "boolean"
+                    },
+                    "eager_restore": {
+                      "type": "boolean"
+                    },
+                    "spell_check": {
+                      "type": "boolean"
+                    },
+                    "extra_onsets": {
+                      "type": "array",
+                      "maxItems": 4,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "z",
+                          "f",
+                          "w",
+                          "j"
+                        ]
+                      }
+                    },
+                    "double_space_period": {
+                      "type": "boolean",
+                      "description": "Fresh config default macOS=false, Windows=true; see platform_defaults.json. Never override stored user choice.",
+                      "x-platform-defaults": {
+                        "macos": false,
+                        "windows": true
+                      }
+                    }
+                  },
+                  "required": [],
+                  "minProperties": 1
+                },
+                "apps": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "remember_per_app": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [],
+                  "minProperties": 1
+                },
+                "clipboard": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "max_entries": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 200
+                    },
+                    "ttl_days": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 7
+                    }
+                  },
+                  "required": [],
+                  "minProperties": 1
+                },
+                "system": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "minProperties": 1,
+                  "properties": {
+                    "show_tray_icon": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              },
+              "required": [],
+              "minProperties": 1
+            }
+          },
+          "required": [
+            "command",
+            "expected_revision",
+            "changes"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "set_language"
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "vi",
+                "en"
+              ]
+            },
+            "target": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "app_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255,
+                  "pattern": "^[A-Za-z0-9_]+(?:[.][A-Za-z0-9_-]+)+$"
+                },
+                "pid": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 2147483647
+                },
+                "ime_session_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "focus_generation": {
+                  "type": "string",
+                  "pattern": "^(0|[1-9][0-9]{0,19})$",
+                  "description": "Decimal uint64; semantic range check <=18446744073709551615."
+                }
+              },
+              "required": [
+                "app_id",
+                "pid",
+                "ime_session_id",
+                "focus_generation"
+              ]
+            }
+          },
+          "required": [
+            "command",
+            "mode",
+            "target"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "set_app_policy"
+            },
+            "expected_revision": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19})$",
+              "description": "Decimal uint64; semantic range check <=18446744073709551615."
+            },
+            "app_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255,
+              "pattern": "^[A-Za-z0-9_]+(?:[.][A-Za-z0-9_-]+)+$"
+            },
+            "input_bypass": {
+              "type": "boolean"
+            },
+            "clipboard_blocked": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "command",
+            "expected_revision",
+            "app_id",
+            "input_bypass",
+            "clipboard_blocked"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "forget_app_language"
+            },
+            "expected_revision": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19})$",
+              "description": "Decimal uint64; semantic range check <=18446744073709551615."
+            },
+            "app_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 255,
+              "pattern": "^[A-Za-z0-9_]+(?:[.][A-Za-z0-9_-]+)+$"
+            }
+          },
+          "required": [
+            "command",
+            "expected_revision",
+            "app_id"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "list_apps"
+            },
+            "query": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "offset": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          "required": [
+            "command",
+            "query",
+            "offset",
+            "limit"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "list_macros"
+            },
+            "expected_revision": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19})$",
+              "description": "Decimal uint64; semantic range check <=18446744073709551615."
+            },
+            "offset": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "required": [
+            "command",
+            "expected_revision",
+            "offset",
+            "limit"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "replace_macros"
+            },
+            "expected_revision": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19})$",
+              "description": "Decimal uint64; semantic range check <=18446744073709551615."
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "in_en": {
+              "type": "boolean"
+            },
+            "entries": {
+              "type": "array",
+              "maxItems": 1000,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "trigger": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 32,
+                    "pattern": "^[^\\s\\u0000-\\u001f\\u007f]+$"
+                  },
+                  "replacement": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 8192,
+                    "description": "Additional semantic cap8192 UTF-8 bytes."
+                  }
+                },
+                "required": [
+                  "id",
+                  "trigger",
+                  "replacement"
+                ]
+              }
+            },
+            "smart_case": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "command",
+            "expected_revision",
+            "enabled",
+            "in_en",
+            "entries",
+            "smart_case"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "list_history"
+            },
+            "query": {
+              "type": "string",
+              "maxLength": 256
+            },
+            "offset": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 200
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "required": [
+            "command",
+            "query",
+            "offset",
+            "limit"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "get_history_entry"
+            },
+            "entry_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "expected_store_revision": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19})$",
+              "description": "Decimal uint64; semantic range check <=18446744073709551615."
+            }
+          },
+          "required": [
+            "command",
+            "entry_id",
+            "expected_store_revision"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "copy_history_entry"
+            },
+            "entry_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "expected_store_revision": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19})$",
+              "description": "Decimal uint64; semantic range check <=18446744073709551615."
+            }
+          },
+          "required": [
+            "command",
+            "entry_id",
+            "expected_store_revision"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "delete_history_entry"
+            },
+            "entry_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "expected_store_revision": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19})$",
+              "description": "Decimal uint64; semantic range check <=18446744073709551615."
+            }
+          },
+          "required": [
+            "command",
+            "entry_id",
+            "expected_store_revision"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "clear_history"
+            },
+            "expected_store_revision": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19})$",
+              "description": "Decimal uint64; semantic range check <=18446744073709551615."
+            },
+            "confirmation_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "command",
+            "expected_store_revision",
+            "confirmation_id"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "set_capture_state"
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "enable",
+                "disable",
+                "pause",
+                "resume",
+                "retry"
+              ]
+            },
+            "consent_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "command",
+            "action",
+            "consent_id"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "prepare_import"
+            }
+          },
+          "required": [
+            "command"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "commit_import"
+            },
+            "import_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "expected_revision": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19})$",
+              "description": "Decimal uint64; semantic range check <=18446744073709551615."
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "replace_preferences",
+                "merge_data"
+              ]
+            }
+          },
+          "required": [
+            "command",
+            "import_id",
+            "expected_revision",
+            "mode"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "export_config"
+            }
+          },
+          "required": [
+            "command"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "register_hotkey"
+            },
+            "expected_revision": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19})$",
+              "description": "Decimal uint64; semantic range check <=18446744073709551615."
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "toggle",
+                "flip",
+                "history"
+              ]
+            },
+            "shortcut": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {
+                      "const": "modifier_chord"
+                    },
+                    "modifiers": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "minItems": 2,
+                      "maxItems": 4,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "control",
+                          "alt",
+                          "shift",
+                          "meta"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "modifiers"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {
+                      "const": "key_chord"
+                    },
+                    "modifiers": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "minItems": 1,
+                      "maxItems": 4,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "control",
+                          "alt",
+                          "shift",
+                          "meta"
+                        ]
+                      }
+                    },
+                    "key_code": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z][A-Za-z0-9]{0,31}$"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "modifiers",
+                    "key_code"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "command",
+            "expected_revision",
+            "action",
+            "shortcut"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "set_launch_at_login"
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "expected_revision": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19})$",
+              "description": "Decimal uint64; semantic range check <=18446744073709551615."
+            }
+          },
+          "required": [
+            "command",
+            "enabled",
+            "expected_revision"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "set_history_mode"
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "session",
+                "encrypted"
+              ]
+            },
+            "transition": {
+              "type": "string",
+              "enum": [
+                "keep_session",
+                "clear_all"
+              ]
+            },
+            "confirmation_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "command",
+            "mode",
+            "transition",
+            "confirmation_id"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "reset_preferences"
+            },
+            "expected_revision": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19})$",
+              "description": "Decimal uint64; semantic range check <=18446744073709551615."
+            },
+            "confirmation_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "command",
+            "expected_revision",
+            "confirmation_id"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "update_action"
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "check",
+                "install",
+                "restart"
+              ]
+            },
+            "expected_job_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "command",
+            "action",
+            "expected_job_id"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "set_current_app_bypass"
+            },
+            "target_token": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "expected_revision": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19})$",
+              "description": "Decimal uint64; semantic range check <=18446744073709551615."
+            },
+            "input_bypass": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "command",
+            "target_token",
+            "expected_revision",
+            "input_bypass"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "set_input_suspended"
+            },
+            "target_session_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uuid"
+            },
+            "suspended": {
+              "type": "boolean"
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "user",
+                "fault_recovery"
+              ]
+            }
+          },
+          "required": [
+            "command",
+            "target_session_id",
+            "suspended",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "set_windows_history_provider"
+            },
+            "expected_revision": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,19})$",
+              "description": "Decimal uint64; semantic range check <=18446744073709551615."
+            },
+            "provider": {
+              "type": "string",
+              "enum": [
+                "native",
+                "vxkey"
+              ]
+            }
+          },
+          "required": [
+            "command",
+            "expected_revision",
+            "provider"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "request"
+  ]
+}

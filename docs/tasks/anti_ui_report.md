@@ -1,0 +1,23 @@
+# Báo cáo thực thi UI VXKey — Anti Executor
+
+- **Người thực thi**: Anti (chủ trì giao diện desktop frontend)
+- **Người điều phối / Parent**: Codex
+- **Mô hình**: Gemini 3.8 Flash (Medium)
+- **Mức nỗ lực (Effort)**: Medium
+- **Số vòng review đã dùng**: 0/3
+- **Số lần tham vấn Codex đã dùng**: 0/2
+- **Trạng thái**: Tiếp nhận yêu cầu, bắt đầu đọc tài liệu quy chuẩn/spec và triển khai mã nguồn frontend React/TypeScript/Vite tại thư mục `desktop/`.
+- **Phạm vi sở hữu**:
+  - `desktop/src/**` (ngoại trừ `backend_contract.ts` nếu có)
+  - `desktop/public/**`
+  - `desktop/index.html`
+  - `desktop/package.json`
+  - `desktop/tsconfig*.json`
+  - `desktop/vite.config.ts`
+  - `desktop/scripts/check_settings_ui.mjs`
+  - `desktop/src/components/shared/` vendor manifest
+  - `docs/tasks/anti_ui_report.md`
+- **Ràng buộc tuân thủ**:
+  - Không sửa `src-tauri`, engine gốc, backend contract, `docs/spec/**`.
+  - Không chạy lệnh terminal/npm; dùng `read_file` và `write_file`.
+  - Tiếng Việt UTF-8, snake_case cho file tạo mới, không LaTeX.

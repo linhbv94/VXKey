@@ -36,14 +36,14 @@ final class DirectPresenterTests: XCTestCase {
         XCTAssertEqual(surface.document, "a tiê")
     }
 
-    func testARewriteReplacesTheInlineSuggestionAfterTheWord() {
+    func testASelectedSuffixIsNeverAuthorizedByDirectComposition() {
         let surface = FakeCompositionSurface()
         var presenter = typed(["t", "ti", "tie", "tien", "tieng"], into: surface)
         surface.replaceDocument("tieng Anh")
         surface.caret = 5
         surface.selectionLength = 4
-        XCTAssertEqual(presenter.show("tiêng", on: surface), .rewritten)
-        XCTAssertEqual(surface.document, "tiêng")
+        XCTAssertEqual(presenter.show("tiêng", on: surface), .dropped)
+        XCTAssertEqual(surface.document, "tieng Anh")
     }
 
     func testABlindClientNeverHasTheWordRewritten() {

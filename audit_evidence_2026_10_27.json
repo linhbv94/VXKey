@@ -1,0 +1,99 @@
+{
+  "date": "2026-10-27",
+  "upstream_head": "2940d6aa04a9d90ffe24327732d843784be1adaf",
+  "scope": "Audit only. Compiled actual Rust core/engine and Swift presenter/protocol source with synthetic surface; no real keyboard injection, install, input-source switch or user-document modification. Not full Cargo/XCTest/native GUI coverage.",
+  "results": {
+    "rust_core_engine_smoke": {
+      "toolchain": "installed stable 1.99.0; upstream pin 1.98.1 not installed",
+      "result": "9 core/engine smoke assertions passed",
+      "cargo_workspace_tests": false
+    },
+    "macos_direct_presenter_false_selection": {
+      "control": {
+        "document_after": "gơKEEP_THIS_SUFFIX",
+        "reported_selection_is_false": false,
+        "result": "rewritten",
+        "suffix_preserved": true
+      },
+      "false_selection": {
+        "document_after": "gơ",
+        "reported_selection_is_false": true,
+        "result": "rewritten",
+        "suffix_preserved": false
+      }
+    }
+  },
+  "source_sha256": {
+    "LICENSE": "0425b41f296cbba6711018266709f34f81476da2244264b6beb4626e443f7f7a",
+    "Cargo.toml": "591c86cdc528f59c2c18a2ef7c9c04b61568e7195b8f5b21311616ce6afd28bf",
+    "Cargo.lock": "18093f911cf407a7ff4acbc2fd05881f13962a0bcd9e0be336cc1c2251d717a1",
+    "rust-toolchain.toml": "26179b5f529844795e894a2a4bdc27e702e33f25df3df69c2609d3ce9afec989",
+    "deny.toml": "474cbb2dc536f9fbb44a65d1bb75d0562ee38a8e7c7fc0147007efe1a9946709",
+    "platforms/macos/Funput/Info.plist": "f92fb8bc10aee1e3acc288170f6b8ed491ae28afc992de09204b8942472e4cb8",
+    "platforms/macos/Funput/IME/Composition/DirectPresenter.swift": "f8526af78f230a3dbaf3381edf80cc986c458fcddec927021c4e1cacacdbb13d",
+    "platforms/macos/Funput/IME/Composition/ClientTrust.swift": "e5036c7f27dacac4d7f50c7abf12f53d03db18dcc5edca73cdcf680a153e447e",
+    "platforms/windows/src/background/inject/events.rs": "b37b7f8e1be38c718d7546162708420b90335ee70468e09716a4943af2a519e9",
+    "platforms/windows/src/background/hook/keyboard/keydown.rs": "7035c0caa34e7054e473d07ff8807a55d19d9ed2bd52e7deacf2789194bad34d",
+    "platforms/windows/src/shared/update/mod.rs": "116a7cf23ec7d15542b18e65c7904ed0d6fb9cdd7b64d5c395d2592e18bdffe6",
+    "crates/funput-suggestions/data/lexicon/NOTICE.md": "91a6058f9aeb77bb06c9fa3339c772157e562f208f87788074c24383417046d0",
+    "platforms/macos/Funput.xcodeproj/project.pbxproj": "94c8c6d3e7622b20fa195f9a53b0f3d4f11e772e9225b13b4c16b51ceb7740bb",
+    "platforms/macos/Funput/IME/Composition/CompositionSurface.swift": "015ecb2aebcf578438f9a805505dca33ec866f71c59093b16c8c9fc2d4023675",
+    "platforms/macos/Funput/IME/Composition/CompositionPresenter.swift": "a912970563298b810ae1134f4a9e7413d0e851c07eed1b3de7520364d78541f4",
+    "platforms/macos/Funput/Model/AppSettingsKeys.swift": "a404018f46ce04d1314dee3d7f1c454cb2fc0acea39172f27d6d7de4fde417eb",
+    "platforms/macos/Funput/LauncherInstaller.swift": "0ebad05694d194ae322f51ec02e31a9c53434dd240828ad8a8da29837e753807",
+    "platforms/macos/Funput/Updates/UpdaterManager.swift": "f0b49d36fd55091b47f143cd44de4d035facfb367d4d0dd7d1c17c22e7eca502",
+    "platforms/macos/scripts/install.sh": "01bc561e6f50328249d36166ecd9d28a0b7a455d6f37c94c49c3fee082ed031d",
+    "platforms/macos/scripts/uninstall.sh": "6170eeade150402d901c2280d61842135bfeb5bfa9a0feacd35f851ae0ebf913",
+    ".github/workflows/ci.yml": "b30746fcfce323357cc20a5bf2e41b5c2a35a36daaa01c939e8ed417a870045e",
+    ".github/workflows/build-macos.yml": "afa29c17e28b1c39b0653545fc06688e7fd2b3d8a63701f7d27c20b72b137f0f"
+  },
+  "provenance": {
+    "origin": "https://github.com/Funput/Funput.git",
+    "head": "2940d6aa04a9d90ffe24327732d843784be1adaf",
+    "branch": "main",
+    "commit_count": 1779,
+    "tracked_files": 3491,
+    "source_status_after_checks": "clean",
+    "target_vxkey_still_empty": true
+  },
+  "user_scope": {
+    "v1": "macos",
+    "windows": "backlog",
+    "clone_or_implementation_requested_this_turn": false
+  },
+  "environment": {
+    "os": "macOS 26.7",
+    "architecture": "arm64",
+    "active_developer_directory": "/Library/Developer/CommandLineTools",
+    "sdk": "27.0",
+    "full_xcode_present": false,
+    "installed_rust_stable": "1.99.0",
+    "upstream_rust_pin": "1.98.1",
+    "upstream_pin_installed": false
+  },
+  "additional_checks": {
+    "cargo_offline": {
+      "exit_code": 101,
+      "tests_executed": false,
+      "error": "no matching package named criterion found in crates.io cache",
+      "packages": [
+        "funput-core",
+        "funput-engine",
+        "funput-config",
+        "funput-convert",
+        "funput-desktop",
+        "funput-ffi",
+        "funput-suggestions"
+      ]
+    },
+    "xctest": "not_run",
+    "native_gui_ime_install_or_keyboard_injection": "not_run",
+    "windows_runtime": "not_run_backlog",
+    "probe_first_attempt": "Harness assumed Traditional default; source is Modern. Harness explicitly configured Traditional then passed; no source fix."
+  },
+  "reproducible_probe": {
+    "path": "audit_probe.py",
+    "sha256": "177ec196e7b8425eaa90a6c87e0b47543f823588cf5fd3e83cee736970a862ca",
+    "rerun_output": "audit_evidence_probe.json"
+  }
+}

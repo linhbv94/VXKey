@@ -1,0 +1,40 @@
+// Derived from Funput at e63ac551; MIT notice retained in third_party_notices.md.
+import AppKit
+import InputMethodKit
+
+extension FunputInputController {
+    func syncSettings(client: IMKTextInput? = nil) {
+        let settings = AppSettings.shared
+        let configuration = ComposerConfiguration(settings: settings)
+        let tableChanged = lastSyncedShortcutsRevision != settings.shortcutsRevision
+        if configuration != lastConfiguration || tableChanged {
+            if let client { commit(into: client) } else { composer.clear() }
+            composer.apply(configuration)
+            lastConfiguration = configuration
+        }
+
+        guard lastSyncedShortcutsRevision != settings.shortcutsRevision else { return }
+        composer.clearShortcuts()
+        let complete = settings.shortcuts.filter(\.isComplete)
+        hasSyncedShortcuts = !complete.isEmpty
+        for shortcut in complete {
+            composer.addShortcut(trigger: shortcut.trigger, expansion: shortcut.expansion)
+        }
+        lastSyncedShortcutsRevision = settings.shortcutsRevision
+    }
+
+    func isNonTextKey(_ event: NSEvent, _ scalar: Unicode.Scalar) -> Bool {
+        if event.modifierFlags.contains(.function) { return true }
+        let value = scalar.value
+        if (0xF700...0xF8FF).contains(value) { return true }
+        return value < 0x20 && scalar != "\t" && scalar != "\n" && scalar != "\r"
+    }
+
+    /// A digit typed on the numeric keypad. In VNI these must stay literal numbers
+    /// rather than act as tone/shape modifiers, so they are committed like a word
+    /// boundary (see `commitBoundary(_:into:source:)`). Keypad arrows / Enter also set
+    /// `.numericPad` but carry non-digit scalars already filtered by `isNonTextKey`.
+    func isNumpadDigit(_ event: NSEvent, _ scalar: Unicode.Scalar) -> Bool {
+        event.modifierFlags.contains(.numericPad) && (0x30...0x39).contains(scalar.value)
+    }
+}

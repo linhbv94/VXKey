@@ -1,0 +1,15 @@
+[package]
+name = "vxkey-desktop-backend"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+publish = false
+
+[lib]
+name = "vxkey_desktop_backend"
+path = "src/lib.rs"
+
+[dependencies]
+vxkey-runtime = { path = "../../crates/vxkey-runtime" }
+serde_json = "1"
+tauri = { version = "2", default-features = false, features = ["wry"] }

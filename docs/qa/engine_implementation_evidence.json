@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-30",
+  "cargo": {
+    "passed": 1181,
+    "failed": 0,
+    "ignored": 0
+  },
+  "rust": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "native_candidate": {
+    "relative_path": "build/native_candidate/VXKeyInput.app",
+    "sha256": "080b4d4c009b7806a0e9e9df15a85246deeef954bb974e76a427da5243a8e6a0",
+    "bundle_id": "com.vxkey.inputmethod",
+    "file": "build/native_candidate/VXKeyInput.app/Contents/MacOS/VXKeyInput: Mach-O 64-bit executable arm64",
+    "dependencies": [
+      "\t/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit (compatibility version 45.0.0, current version 2775.10.103)",
+      "\t/System/Library/Frameworks/InputMethodKit.framework/Versions/A/InputMethodKit (compatibility version 1.0.0, current version 506.0.0)",
+      "\t/System/Library/Frameworks/Carbon.framework/Versions/A/Carbon (compatibility version 2.0.0, current version 170.0.0)",
+      "\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1359.0.0)",
+      "\t/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics (compatibility version 64.0.0, current version 2050.0.0)",
+      "\t/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation (compatibility version 300.0.0, current version 5027.0.69)",
+      "\t/usr/lib/libobjc.A.dylib (compatibility version 1.0.0, current version 228.0.0)",
+      "\t/usr/lib/swift/libswiftCore.dylib (compatibility version 0.0.0, current version 0.0.0)",
+      "\t/usr/lib/swift/libswiftCoreFoundation.dylib (compatibility version 1.0.0, current version 120.100.0, weak)",
+      "\t/usr/lib/swift/libswiftCoreImage.dylib (compatibility version 1.0.0, current version 3.0.0, weak)",
+      "\t/usr/lib/swift/libswiftDispatch.dylib (compatibility version 1.0.0, current version 1605.0.2)",
+      "\t/usr/lib/swift/libswiftIOKit.dylib (compatibility version 1.0.0, current version 1.0.0, weak)",
+      "\t/usr/lib/swift/libswiftMetal.dylib (compatibility version 1.0.0, current version 382.5.3, weak)",
+      "\t/usr/lib/swift/libswiftOSLog.dylib (compatibility version 1.0.0, current version 10.0.0, weak)",
+      "\t/usr/lib/swift/libswiftObjectiveC.dylib (compatibility version 1.0.0, current version 973.1.0)",
+      "\t/usr/lib/swift/libswiftQuartzCore.dylib (compatibility version 1.0.0, current version 5.0.0, weak)",
+      "\t/usr/lib/swift/libswiftSpatial.dylib (compatibility version 1.0.0, current version 1.0.0, weak)",
+      "\t/usr/lib/swift/libswiftUniformTypeIdentifiers.dylib (compatibility version 1.0.0, current version 917.0.1, weak)",
+      "\t/usr/lib/swift/libswiftXPC.dylib (compatibility version 1.0.0, current version 167.0.2, weak)",
+      "\t/usr/lib/swift/libswift_Builtin_float.dylib (compatibility version 0.0.0, current version 0.0.0, weak)",
+      "\t/usr/lib/swift/libswiftos.dylib (compatibility version 1.0.0, current version 1090.0.0, weak)",
+      "\t/usr/lib/swift/libswiftsimd.dylib (compatibility version 1.0.0, current version 25.0.0, weak)"
+    ],
+    "sdk": {
+      "baseline_sdk": "27.0",
+      "checks": [
+        {
+          "binary": "/Users/vic/_Work/VXUtilities/vxkey/build/native_candidate/VXKeyInput.app/Contents/MacOS/VXKeyInput",
+          "sdk_slices": [
+            "27.0"
+          ],
+          "pass": true
+        }
+      ]
+    },
+    "installed": false,
+    "activated": false,
+    "runtime_qa": false
+  },
+  "tauri_backend_check": "pass; library only",
+  "clippy": "unavailable; component not installed",
+  "source_fixture_tests": "pass; not native OS acceptance"
+}

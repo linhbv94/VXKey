@@ -70,6 +70,9 @@ struct DirectPresenter: CompositionPresenter {
     /// including a caret too close to the start to hold the text, is `moved`.
     static func locate(_ text: String, on surface: CompositionSurface) -> Location {
         guard let selection = surface.selection() else { return .unknown }
+        // VXKey: a client can report a numerically valid but false selected suffix.
+        // Never authorize replacement of a non-collapsed selection from that claim.
+        guard selection.length == 0 else { return .moved }
         guard let range = DirectEdit.wordRange(length: text.utf16.count, selection: selection),
             surface.text(in: range) == text
         else { return .moved }
@@ -112,13 +115,12 @@ enum DirectEdit {
         return NSRange(location: selection.location - length, length: length)
     }
 
-    /// The document range a rewrite replaces: the word's changed tail, plus any inline
-    /// suggestion selected after it (Excel, URL bars, Spotlight). Typing would replace that
-    /// suggestion, so the rewrite does too and the app suggests afresh.
+    /// VXKey replaces only its owned changed tail. Selection is never permission
+    /// to delete a suffix; locate rejects noncollapsed selections before this call.
     static func rewriteRange(_ edit: Edit, selection: NSRange) -> NSRange {
         NSRange(
             location: selection.location - edit.replacedTail,
-            length: edit.replacedTail + selection.length
+            length: edit.replacedTail
         )
     }
 }

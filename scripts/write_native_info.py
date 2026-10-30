@@ -1,0 +1,5 @@
+import plistlib,sys
+info={"CFBundleName":"VXKey Input","CFBundleDisplayName":"VXKey","CFBundleIdentifier":"com.vxkey.inputmethod","CFBundleExecutable":"VXKeyInput","CFBundlePackageType":"APPL","CFBundleVersion":"1","CFBundleShortVersionString":"0.1.0","CFBundleIconFile":"icon.icns","LSUIElement":True,"LSMinimumSystemVersion":"26.0","InputMethodConnectionName":"VXKey_1_Connection","InputMethodServerControllerClass":"FunputInputController","InputMethodServerDelegateClass":"FunputInputController","TISInputSourceID":"com.vxkey.inputmethod","TISIntendedLanguage":"vi","tsInputMethodCharacterRepertoireKey":["Latn"],"TISIconIsTemplate":True}
+mode="com.vxkey.inputmethod.vietnamese"
+info["ComponentInputModeDict"]={"tsInputModeListKey":{mode:{"TISInputSourceID":mode,"TISIntendedLanguage":"vi","TISIconLabels":{"Primary":"V"},"tsInputModeIsVisibleKey":True,"tsInputModeDefaultStateKey":True,"tsInputModeScriptKey":"smUnicodeScript","tsInputModeCharacterRepertoireKey":["Latn"]}},"tsVisibleInputModeOrderedArrayKey":[mode]}
+with open(sys.argv[1],'wb') as f:plistlib.dump(info,f)

@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-27",
+  "head": "2940d6aa04a9d90ffe24327732d843784be1adaf",
+  "scope": "Source audit and isolated Rust source module tests only. No live app/exclusion GUI/pasteboard read/write/keyboard injection/permissions/install. Clipboard scope remains design.",
+  "toolchain": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "results": {
+    "actual_app_language_module_tests": {
+      "result": "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "coverage": "Actual app_language source module and exact safe guard function; isolated rustc harness, not full Cargo/Swift integration."
+    },
+    "english_mode_is_not_hard_bypass": {
+      "result": "English mode with macro enabled: Việt Nam ; macro disabled: vn ; both controls passed",
+      "runtime_keyboard_injection": false
+    }
+  },
+  "source_sha256": {
+    "platforms/macos/Funput/Model/AppLanguageMemory.swift": "56aaaf52a622ed86c6fb4bb9cf56f7d0cb9d7544f7ff03308ed0c845dd1d4fed",
+    "platforms/macos/Funput/Model/AppSettings+VietnameseOverride.swift": "46dabade2458325221802f0f69ea20fa8bc3867532ae4400c0104d1841a0eb32",
+    "platforms/macos/Funput/IME/FunputInputController.swift": "d940f0f384a9189e5f1fdaae64fcaa522d45bdac59b299c860f0bab9a27fd3d6",
+    "platforms/macos/Funput/IME/FunputInputController+Composition.swift": "30a102b2856bf0f5293538a8ddc0ded04dc4408ba4630eeae700f08ca22f6721",
+    "platforms/macos/Funput/IME/FunputInputController+English.swift": "c37365ff4a23e7a80ffd7f668314358dfe5384ed22c0a4820c5fdc01be80c587",
+    "platforms/macos/Funput/Model/AppSettingsKeys.swift": "a404018f46ce04d1314dee3d7f1c454cb2fc0acea39172f27d6d7de4fde417eb",
+    "platforms/macos/Funput/Convert/Platform/ConvertPlatform.swift": "b92c6b508d5aba624d294c0f0bdbf9f0582d28b7e7ca26ed1170a90001d7ac36",
+    "crates/funput-ffi/src/app_language/mod.rs": "efa7df9e208481a99d9f5d8a981cf26bffa11d84d0a4e89db244a2e49e959c52",
+    "crates/funput-ffi/src/app_language/focus.rs": "3f118982abf7c369b4e0ce7dc0aa86417ff57edc2bd1d387a7bacfd1d12f55eb",
+    "crates/funput-ffi/src/app_language/memory.rs": "c3f2263b2f43f03ba07fef29e5ae9a55842bfdf7371a3c3e20b9cf1cb3581325",
+    "crates/funput-engine/src/model/config.rs": "8911c4e44cc4170207a92472f00f32ab3b968d55aa65b3e7a0d831160b9d14db",
+    "crates/funput-ffi/src/abi/guard.rs": "4df3034d943ccfe6acf1c9c0defc2223e5121419f9e43ca00cc087279de383b3",
+    "crates/funput-ffi/src/app_language/handle.rs": "38b8e7111f93f9415bc811196ea40e9db64aba4215abfe57eda6863971255394",
+    "crates/funput-ffi/src/app_language/types.rs": "c843cf013dde06ebd4d284b72612a94ce95d93d4deacf3ec68ca56f46193dfa7",
+    "platforms/macos/Funput/IME/ComposerConfiguration.swift": "211a83fdebfa823da5471eab29748f1f466dc6655d752341ff81db1e13552501",
+    "platforms/macos/FunputTests/AppLanguageMemoryTests.swift": "9a3ae8101f3d11a96c975090235d5637350853b85cd6ea436bb5e10cc7cc7d74",
+    "platforms/macos/FunputTests/EnglishShortcutsTests.swift": "19e12c6223deafd254e2c41c6eba630069d35699a1c8a26ed98c0ea3ccdb16ad"
+  },
+  "source_state_after": "clean",
+  "source_review": {
+    "scope": "macOS source; Windows backlog",
+    "hard_exclusion_list_current_macos": false,
+    "per_app_language_memory": true,
+    "english_macros_can_remain_enabled": true,
+    "clipboard_history_current_macos": false,
+    "vxclipboard_folder": "icons_only",
+    "clipboard_scope": "proposal_not_implemented"
+  },
+  "runtime_not_performed": [
+    "Read or write general clipboard",
+    "permission/TCC request",
+    "global hotkey registration",
+    "live app input-source switching",
+    "native GUI/XCTest",
+    "clipboard monitor/storage/auto paste"
+  ],
+  "primary_references": [
+    "https://developer.apple.com/documentation/appkit/nspasteboard/accessbehavior-9k4t4",
+    "https://nspasteboard.org/",
+    "https://developer.apple.com/documentation/appkit/nspasteboard/contentsoptions/currenthostonly?language=objc",
+    "https://support.apple.com/en-ie/guide/mac-help/mchl40d5b86b/26/mac/26"
+  ],
+  "sdk_reference": {
+    "sdk": "27.0",
+    "header": "AppKit.framework/Headers/NSPasteboard.h",
+    "header_sha256": "8cad206027ff2bb2b3175d7fe60d0ff93a488ce95428b845be11ea8d578d95c9",
+    "read_only_accessBehavior_api_available_since": "macos 15.4",
+    "runtime_enforcement_tested": false
+  },
+  "reproducible_probe": {
+    "path": "app_exclusion_probe.py",
+    "sha256": "c0ceae9cafa30e2bfdc653219e1b0cf0a7395bb6ec2bd2f98727f55db13ece6b"
+  }
+}
