@@ -5,7 +5,9 @@ use crate::composition::intent::{ModifierIntent, resolve};
 use crate::composition::revert::{
     try_revert_own_circumflex, try_revert_shape, try_revert_stroke, try_revert_tone,
 };
-use crate::composition::uo_horn::{ends_with_open_uo_horn, normalize_horned_uo_open};
+use crate::composition::uo_horn::{
+    complete_toned_open_uo_horn, ends_with_open_uo_horn, normalize_horned_uo_open,
+};
 use crate::input_method::KeyAction;
 use crate::validation::syllable::{validate_shape, validate_stroke, validate_tone};
 use crate::{ComposeOptions, TransformKind, TransformResult};
@@ -78,6 +80,14 @@ fn shape(
     shape: crate::unicode::shapes::VowelShape,
     options: ComposeOptions,
 ) -> TransformResult {
+    if matches!(
+        options.method,
+        crate::InputMethod::Telex | crate::InputMethod::TelexAdvanced
+    ) && shape == crate::unicode::shapes::VowelShape::Horn
+        && let Some(text) = complete_toned_open_uo_horn(buffer)
+    {
+        return gates::spell_check(buffer, key, options, applied(text));
+    }
     if shape == crate::unicode::shapes::VowelShape::Horn
         && ends_with_open_uo_horn(buffer)
         && let Some(text) = try_revert_shape(buffer, shape)

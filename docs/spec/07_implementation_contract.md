@@ -1,14 +1,16 @@
 # 07. Hợp đồng triển khai và các gate bàn giao — VXKey
 
-> **Skill:** `_spec0_system`  
-> **Version:** 0.5.1 — **Ngày cập nhật:** 2026-10-30  
-> **Trạng thái:** Đã soạn để review; chưa được user xác nhận specs ready.  
-> **Đối tượng:** Dev, UI/UX, QA và AI Execution Agents.  
+> **Quyết định thay thế 2026-11-02 (v0.8):** [Bộ gõ chạy nền](09_background_driver.md) là hợp đồng kiến trúc hiện hành. VXKey giữ nguồn nhập hiện tại; không cài/chọn Input Source. Các đoạn InputMethodKit/TIS/IME activation dưới đây là lịch sử và không được dùng để triển khai driver mới. Các invariant bảo toàn text, config, policy, UI và clipboard vẫn áp dụng.
+
+> **Skill:** `_spec0_system`
+> **Version:** 0.7.0 — **Ngày cập nhật:** 2026-10-30
+> **Trạng thái:** Đã soạn để review; chưa được user xác nhận specs ready.
+> **Đối tượng:** Dev, UI/UX, QA và AI Execution Agents.
 > **Nguồn scope:** [Tổng quan](00_system_overview.md); quyết định UI Tauri chung Mac/Windows của user.
 
 ## 1. Hướng đã chọn và nguồn
 
-User chọn Tauri UI chung Mac/Windows trong lượt30/10. Giữ Rust core/FFI + Swift InputMethodKit backend Mac, thay SwiftUI UI bằng Tauri companion. Mac trước, Windows sau. Đọc [index](../index.md) và [core](00_system_overview.md) trước mọi task.
+User chọn Tauri UI chung Mac/Windows trong lượt30/10. Giữ Rust core/FFI + Swift background keyboard driver Mac, thay SwiftUI UI bằng Tauri companion. Mac trước, Windows sau. Đọc [index](../index.md) và [core](00_system_overview.md) trước mọi task.
 
 Audit cũ baseline `2940d6aa04a9d90ffe24327732d843784be1adaf`; HEAD đọc lượt này `e63ac551967dcf17425c5f856591aace2fb8ace5`. Phải review delta, chọn commit và baseline tests, không suy finding cũ còn nguyên/đã sửa. [Work cũ](../../work_to_do.md) là lịch sử đề xuất; quyết định Tauri mới ở bộ spec này ưu tiên các đoạn khuyến nghị giữ SwiftUI cũ.
 
@@ -55,28 +57,22 @@ Tất cả file đã được soạn và cross-link, mọi requirement có QA ma
 
 ### 5.1. Gate và layout
 
-Spec không cho phép install/release trong lượt viết tài liệu. M1 tạo artifact isolated; build Mac pin SDK27.0 theo suite, toolchain Rust/Xcode pin trong manifest và CI, không đổi global xcode-select. Minimum OS đề xuất26+ arm64 dogfood, Intel/Windows sau evidence riêng. Review upstream delta trước pin fork, giữ history/provenance/MIT/notices và không sửa xfunput.
-
-Companion Tauri là app launcher người dùng mở; IME native là bundle riêng dưới per-user Library/Input Methods. Companion proposal path per-user Applications/VXKey.app, chưa tự thay /Applications; helper/IME nested payload versioned trong distribution manifest. Installer không dựa tên file để xác nhận ownership: verify bundle ID/signer/manifest/path canonical, reject symlink traversal/unknown existing bundle. Không dùng script Funput killall/delete prefs.
+SDK27.0 theo suite; isolated development bundle `build/desktop_candidate/VXKey.app` chứa `Contents/Resources/VXKeyEngine.app`. Companion com.vxkey.desktop và engine com.vxkey.engine. Không cài bundle vào Input Methods, không InputMethodKit/TIS registration. Helper tự mở bởi companion, single-instance lock theo data root. Mac arm64 trước; Intel/Windows cần bằng chứng riêng. Production signer/installer vẫn gate mở.
 
 ### 5.2. First install và rollback
 
-Validate artifact OS/arch/identity/hash/signature → stage cùng volume đích → verify payload/versions → capture current VXKey paths/receipts/source status → backup bản VXKey cũ → coordinated swap → register/discover IME bằng API hỗ trợ → hướng dẫn user Add Input Source. Không tự thay source. Fail ở stage giữ nguyên bản cũ; fail giữa hai component dùng journal phục hồi cả pair cùng version. Receipt chỉ success khi companion mở đúng version và IME handshake tương thích; nếu cần logout/relogin thì báo pending_activation, không success runtime.
-
-ABC/Funput giữ nguyên; hướng dẫn shortcut OS chuyển ABC trước disable/uninstall. Uninstall yêu cầu user bỏ nguồn VXKey đang active; verify không active rồi stop đúng owned processes, remove owned bundles/receipts. Preferences/history mặc định giữ, xóa opt-in riêng. Không killall theo display name, reset cfprefsd toàn máy hoặc TCC. Interrupt lúc uninstall có journal và retry idempotent.
+Verify OS/arch/signature/identity/protocol và embedded payload → stage atomic app → backup đúng bundle VXKey cũ → swap → launch companion/helper và readback version/config/status. Không đổi source/layout, không kill bộ gõ khác. Rollback khôi phục cả app/helper cùng version và config compatible. Uninstall stop đúng owned helper và remove đúng owned app; preferences/history giữ mặc định. Legacy IME thử phải retire theo receipt, không broad cleanup Input Methods.
 
 ### 5.3. Permission matrix
 
-| Capability | Owner | Khi hỏi / từ chối |
+| Chức năng | Quyền / owner | Hành vi thiếu quyền |
 |---|---|---|
-| Đăng ký/chọn IME | macOS input-source flow | Hướng dẫn OS; chưa active vẫn dùng Settings/history |
-| Clipboard read | Companion adapter | Chỉ sau opt-in; denied pause + hướng dẫn; kiểm grant/revoke runtime |
-| Hotkey registration | Companion / native IME action rõ | Chưa gán mặc định; conflict không lưu giả; không xin quyền event tap mặc định |
-| Launch at login | Companion | OS registration status/ack thật; denied hiện lỗi |
-| Secure store | Companion, M4b | Key không có thì pause, không lưu plaintext |
-| Auto-paste/Accessibility | Ngoài scope | Không hiện control/xin quyền |
+| Typing keyboard driver | AX Accessibility/post access của VXKey Engine; listen access kiểm riêng theo API macOS | Suspended/raw pass-through; user action mở permission request; không tự cấp TCC |
+| Clipboard text copy-back | Companion NSPasteboard explicit write | Không cần keyboard hook; không auto-paste |
+| Clipboard history | Consent riêng và native provider | Không tự bật cùng typing |
+| Autostart | OFF mặc định | Không đăng ký login item để QA |
+| System Settings grant | User thao tác OS | Agent không tự click Allow hoặc sửa database |
 
-Nguồn nhập do OS quản lý, không được giả thành checkbox quyền đã cấp. Manifest signer/DR/capability lưu trước build cài được. Bản local/CI/release identity tương thích; ad-hoc không chứng minh permission retention. Không tự mua chứng chỉ, đổi trust/keychain/TCC hoặc upload secrets.
 
 ### 5.4. Updater production
 
@@ -84,9 +80,9 @@ Owner companion Rust; UI notice và Updates dùng cùng job. Dev/internal unsign
 
 States idle/checking/current/available/downloading/verifying/quiescing/installing/handed_off/restarting/restart_required/error. Startup check một lần sau ready, offline im lặng; manual error có thông báo. Check timeout15s, download300s; quiesce5s, helper wait PID30s, pair swap60s, relaunch readback30s; timeout install query receipt trước retry. Payload limits publish theo manifest, reject over declared size và disk insufficient trước mutation.
 
-Available: notice trực tiếp “Cập nhật & khởi động lại”, không redirect browser/Settings. Dismiss theo version trong phiên; không download/install trước click. Không ép focus/Space khi panel ẩn; mở lại hiển thị trạng thái. Active composition → quiesce, hướng dẫn user hoàn tất/chuyển ABC khi cần; không kill IMK đang dùng hoặc auto commit client không xác minh. Quiesce timeout giữ bản cũ, không arm install ngầm.
+Available: notice trực tiếp “Cập nhật & khởi động lại”, không redirect browser/Settings. Dismiss theo version trong phiên; không download/install trước click. Không ép focus/Space khi panel ẩn; mở lại hiển thị trạng thái. Active composition → quiesce, đợi boundary hoặc disable tap an toàn; không commit text chưa xác minh hoặc auto commit client không xác minh. Quiesce timeout giữ bản cũ, không arm install ngầm.
 
-Stage verify cả pair → helper authenticated ack + job receipt trước quit companion → đợi owned PIDs an toàn theo IME lifecycle → journal swap → relaunch/readback pair/version/config → complete. Không thể replace IME an toàn trong session hiện tại → restart_required/logout_required ghi rõ trước mutation, không claim seamless restart. Failure restore old pair và cache/config compatible; schema migration có backup + rollback plan, không downgrade config mới phá dữ liệu. Không xóa app cũ trước verify/stage.
+Stage verify cả pair → helper authenticated ack + job receipt trước quit companion → đợi owned PIDs an toàn theo IME lifecycle → journal swap → relaunch/readback pair/version/config → complete. Helper cũ phải ngừng trước swap, không yêu cầu logout để đăng ký nguồn nhập. Failure restore old pair và cache/config compatible; schema migration có backup + rollback plan, không downgrade config mới phá dữ liệu. Không xóa app cũ trước verify/stage.
 
 ### 5.5. Mapping chuẩn suite
 
@@ -129,10 +125,25 @@ User chốt toggle Mac Control+Option, Windows Control+Win, cho custom; KHÔNG f
 
 Autostart default false trong giai đoạn chưa an toàn, cả Mac/Win. Không tự đổi sang true khi QA pass, nâng version, import hoặc khôi phục sau fault; đổi default sau này cần user chốt riêng. Checkbox này chỉ companion OS registration, không hứa ngăn OS nạp input method đã được user chọn.
 
-M2/M5 bắt buộc fault-injection matrix trong08, mouse/native recovery và OS alternate-source readback. Windows worker phải isolate khỏi Tauri/clipboard process nếu hooks có thể nuốt phím; companion supervisor có thể dừng owned worker bằng chuột khi không ack, không broad killall. Mac ưu tiên OS input-source escape; không tự restart IME loop. Không cài default autostart để thử khi các gate chưa đạt.
+M2/M5 bắt buộc fault-injection matrix trong08, mouse/native recovery và raw keyboard pass-through readback. Windows worker phải isolate khỏi Tauri/clipboard process nếu hooks có thể nuốt phím; companion supervisor có thể dừng owned worker bằng chuột khi không ack, không broad killall. Mac disable/detach tap và owned-child recovery; không tự restart hook loop. Không cài default autostart để thử khi các gate chưa đạt.
 
 UI assets: user cung cấp menubar_serious_vi.svg(V), menubar_serious_en.svg(E), menubar_playful_vi.svg(Ư), menubar_playful_en.svg(W); default serious, Settings tab System. Chưa có asset thì fallback glyph đúng style và ghi visual gate chưa đạt, không vẽ placeholder rồi coi final.
 
 ## 9. History shortcut build note
 
 Mac mặc định Control+Command+V, cho custom. Windows giữ Win+V, radio chọn native Windows/VXKey, default native. Ctrl+Win+V vẫn sound output; không chiếm. Native provider-routing spike/rollback/recovery bắt buộc theo04 mục16 và Q40/Q42 trước expose selector như hoạt động thật; generic RegisterHotKey chưa đủ bằng chứng.
+
+
+## Trạng thái sau tích hợp UI — 2026-10-30
+
+[Integration report](../qa/integration_review.md) và [artifact/check evidence](../qa/integration_evidence.json) là checkpoint mới. Đã có companion bundle local + IME candidate SDK27 riêng, chưa paired installer/release. Native companion tests không đóng gate M2/M4 hoặc ID01. Handoff UI cũ đã được thực thi; không giao agent dựng scaffold lại từ đầu. Mọi việc tiếp theo lấy từ work log và danh sách gate còn mở trong report.
+
+
+## Chốt sửa UI sau feedback user — 2026-10-30
+
+Settings phải là toàn bộ content của một native window, không modal Settings nằm trong window. Tray không có khung chữ nhật ngoài surface bo góc. Settings/About dùng SVG tượng trưng, native About dùng artwork/credits thật. [Spec UI0.6](03_ui_wireframe.md) và [báo cáo sửa visual](../qa/ui_window_review.md) ưu tiên mọi mô tả modal/header56 trong handoff UI cũ. Native visual subset đã kiểm trên candidate mới theo [evidence](../qa/ui_window_evidence.json); direct tray-icon/click-outside, full locale/theme matrix và About light vẫn mở. Kết quả integration tests trước không thay nghiệm thu visual này.
+
+
+## 10. Background migration v0.8 — 2026-11-02
+
+[Spec09](09_background_driver.md) thay IMK activation; [review background](../qa/background_driver_review.md) là trạng thái hiện hành. Build `sh scripts/build_bridge_candidate.sh` tạo một app chứa helper và development pins. Không cài Input Source, không mở hai app thủ công. Các report native_bridge trước đó chỉ chứng minh subset transport/engine lịch sử. Specs ready và native typing/fault/TCC retention/production signing/Windows vẫn cần nghiệm thu riêng.

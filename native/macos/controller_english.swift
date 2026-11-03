@@ -37,6 +37,7 @@ extension FunputInputController {
     /// English never rewrites letters as they are typed, so a word the session drops (only
     /// possible on Backspace) is fine to hand back: the app performs the key itself.
     private func applyEnglish(_ edit: EnglishComposition.Edit, client: IMKTextInput) -> Bool {
+        guard !vxkey_native_engine_faulted() else { return false }
         let surface = IMKCompositionSurface(client: client)
         if edit.marked {
             guard session.show(edit.text, on: surface) else {

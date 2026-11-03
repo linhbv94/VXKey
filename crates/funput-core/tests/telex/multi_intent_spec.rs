@@ -40,9 +40,14 @@ fn insert_pair(base: &str, d_at: usize, w_at: usize, w_first: bool) -> String {
 
 fn variants(base: &str) -> Vec<String> {
     let count = base.chars().count();
+    let w_start = if base.to_ascii_lowercase().starts_with("du") {
+        1
+    } else {
+        2
+    };
     let mut result = Vec::new();
     for d_at in 1..=count {
-        for w_at in 1..=count {
+        for w_at in w_start..=count {
             result.push(insert_pair(base, d_at, w_at, false));
             if d_at == w_at {
                 result.push(insert_pair(base, d_at, w_at, true));

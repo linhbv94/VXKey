@@ -9,3 +9,7 @@ pub mod recovery;
 pub mod service;
 pub mod shortcut;
 pub mod storage;
+
+pub mod paths;
+
+pub mod bridge;

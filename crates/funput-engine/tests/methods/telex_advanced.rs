@@ -101,13 +101,12 @@ fn unresolvable_composition_restores_at_boundary() {
         crate::support::app_text(InputMethod::TelexAdvanced, "hwd "),
         "hwd "
     );
-    // `dwd` does resolve here: `w` is the `ư` key and `d` is the stroke, so Full
-    // Telex commits `đư` where plain Telex restores the pending `w` as `dwd`.
+    // `dwd` resolves in both Telex and Full Telex: `w` is the `ư` key and `d` is the stroke.
     assert_eq!(
         crate::support::app_text(InputMethod::TelexAdvanced, "dwd "),
         "đư "
     );
-    assert_eq!(crate::support::app_text(InputMethod::Telex, "dwd "), "dwd ");
+    assert_eq!(crate::support::app_text(InputMethod::Telex, "dwd "), "đư ");
 }
 
 #[test]

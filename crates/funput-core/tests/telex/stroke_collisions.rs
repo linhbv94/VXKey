@@ -19,8 +19,9 @@ fn delayed_stroke_behavior_is_locked() {
 
 #[test]
 fn invalid_or_repeated_pending_intents_stay_literal() {
-    for literal in ["dwdead", "dwswift", "dwwd", "lwwa"] {
-        assert_eq!(type_keys(literal), literal);
-    }
-    assert_eq!(type_keys("dwdd"), "dwd");
+    assert_eq!(type_keys("dwwdead"), "dwdead");
+    assert_eq!(type_keys("dwwswift"), "dwswift");
+    assert_eq!(type_keys("dwwd"), "dwd");
+    assert_eq!(type_keys("lwwa"), "lwa");
+    assert_eq!(type_keys("dwdd"), "dưd");
 }

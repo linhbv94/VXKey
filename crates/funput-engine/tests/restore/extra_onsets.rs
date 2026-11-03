@@ -25,14 +25,14 @@ fn admitted(method: InputMethod, keys: &str) -> String {
 #[test]
 fn words_survive_the_word_boundary() {
     assert_eq!(
-        admitted(InputMethod::Telex, "zoo jowf fair was Juts "),
+        admitted(InputMethod::Telex, "zoo jowf fair wwas Juts "),
         "zô jờ fải wá Jút "
     );
     assert_eq!(
         admitted(InputMethod::Vni, "zo6 jo72 fa3i wa1 Ju1t "),
         "zô jờ fải wá Jút "
     );
-    // Full Telex keeps `w` → `ư`; doubling it reaches the consonant.
+    // Both Telex and Full Telex keep `w` → `ư`; doubling it reaches the consonant.
     assert_eq!(
         admitted(InputMethod::TelexAdvanced, "wa wwas zoo "),
         "ưa wá zô "
@@ -91,10 +91,11 @@ fn english_with_a_vietnamese_rhyme_composes_like_a_native_onset() {
 #[test]
 fn off_by_default_nothing_changes() {
     for (method, keys) in [
-        (InputMethod::Telex, "zoo jowf fair was just fast "),
+        (InputMethod::Telex, "zoo jowf fair just fast "),
         (InputMethod::Vni, "zo6 jo72 fa3i wa1 Ju1t win10 "),
     ] {
         assert_eq!(app_text(method, keys), keys);
     }
+    assert_eq!(app_text(InputMethod::Telex, "wa wwas "), "ưa was ");
     assert_eq!(app_text(InputMethod::TelexAdvanced, "wa wwas "), "ưa was ");
 }

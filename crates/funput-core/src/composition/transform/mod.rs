@@ -13,7 +13,12 @@ pub(crate) use action::apply_action;
 /// Classify `key` with the method's grammar, then resolve what it asks for.
 pub(crate) fn apply(buffer: &str, key: char, options: ComposeOptions) -> TransformResult {
     let action = match options.method {
-        InputMethod::Telex => telex::classify_key(buffer, key),
+        InputMethod::Telex => match telex::classify_telex_key(buffer, key) {
+            AdvancedAction::Standard(action) => action,
+            AdvancedAction::Shortcut(shortcut) => {
+                return full_telex::apply(buffer, key, shortcut, options);
+            }
+        },
         InputMethod::Vni => vni::classify_key(buffer, key),
         InputMethod::TelexAdvanced => match telex::classify_advanced_key(buffer, key) {
             AdvancedAction::Standard(action) => action,

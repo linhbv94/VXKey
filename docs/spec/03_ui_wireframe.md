@@ -1,26 +1,32 @@
 # 03. UI wireframe và component specifications — VXKey
 
-> **Skill:** `_spec3_ui_wireframe`  
-> **Version:** 0.5.1 — **Ngày cập nhật:** 2026-10-30  
-> **Trạng thái:** Đã soạn để review; chưa được user xác nhận specs ready.  
-> **Đối tượng:** Dev, UI/UX, QA và AI Execution Agents.  
+> **Quyết định thay thế 2026-11-02 (v0.8):** [Bộ gõ chạy nền](09_background_driver.md) là hợp đồng kiến trúc hiện hành. VXKey giữ nguồn nhập hiện tại; không cài/chọn Input Source. Các đoạn InputMethodKit/TIS/IME activation dưới đây là lịch sử và không được dùng để triển khai driver mới. Các invariant bảo toàn text, config, policy, UI và clipboard vẫn áp dụng.
+
+> **Skill:** `_spec3_ui_wireframe`
+> **Version:** 0.7.0 — **Ngày cập nhật:** 2026-10-30
+> **Trạng thái:** Đã soạn để review; chưa được user xác nhận specs ready.
+> **Đối tượng:** Dev, UI/UX, QA và AI Execution Agents.
 > **Nguồn scope:** [Tổng quan](00_system_overview.md); quyết định UI Tauri chung Mac/Windows của user.
+
+## Đính chính icon và concurrency — 2026-11-02
+
+Menubar/system tray luôn lấy đúng bốn SVG user cung cấp: serious V/E, playful Ư/W. Live lấy mode native; suspended/bypass/disconnected giữ mode native gần nhất hoặc preference đã chọn, giảm alpha45% và tooltip nêu trạng thái. Không dùng chữ `VX` hardcode hoặc app icon thay glyph. Glyph mờ không phải typing ready. Render native chỉ trên main thread, snapshot lấy bằng try_lock, thả runtime/cache mutex trước mọi API tray; render lỗi không được cache là thành công. Các mô tả neutral VX/BY phía dưới được thay bằng quy tắc này.
 
 ## 1. Surface và bố cục
 
-Một React codebase, native adapter riêng Mac/Win. Không tái sử dụng SwiftUI Settings khi chuyển UI. macOS giữ Swift/AppKit cho IMK và system integration; native About/menu/dialog vẫn dùng OS API qua host. Windows không sao chép traffic lights. Chưa phát hành Windows UI/backend placeholder.
+Một React codebase, native adapter riêng Mac/Win. Không tái sử dụng SwiftUI Settings khi chuyển UI. macOS giữ Swift/AppKit/CoreGraphics cho keyboard driver và system integration; native About/menu/dialog vẫn dùng OS API qua host. Windows không sao chép traffic lights. Chưa phát hành Windows UI/backend placeholder.
 
 | ID | Surface | Layout / hành vi |
 |---|---|---|
-| S01 | Tray panel | Custom 320 pt wide, cao theo nội dung tối đa work area trừ32; radius12, transparent native window; anchor tray, clamp màn hình; không titlebar |
-| S02 | Settings | Shell672×560, sidebar192, header/footer56, body24; min theo nội dung chuẩn và co trong work area trừ32, body scroll; title “VXKey Settings” |
+| S01 | Tray panel | Một panel320pt bo góc12; native window + WebView + html/body/root trong suốt ở ngoài panel; native shadow/frame chữ nhật tắt; cao khớp nội dung, anchor/clamp work area; không titlebar hoặc khung bọc ngoài |
+| S02 | Settings | Một native window672×560, content Settings sát mép: sidebar192 + body24 + footer56; không header/backdrop/border/radius/modal nội bộ. Titlebar/traffic lights/close do OS vẽ; min640×520, body scroll; title native “VXKey Settings” |
 | S03 | Onboarding | Window560×520, body scroll; Back/Next/Để sau rõ; OS-native corner |
 | S04 | App picker | Sheet gắn Settings; search tên, path và ID; Cancel không đổi config |
 | S05 | History | Custom panel600×460, min480×320 nếu work area cho phép; search trên, list trái240, preview phải flex, footer status; màn nhỏ clamp và một cột list/preview chuyển qua lại |
 | S06 | About native | Panel native riêng theo mẫu VXSearch, icon bundle/metadata/version thật/credits; không QR |
 | S07 | Update notice | Góc dưới phải surface đang mở, right/bottom20, max384, radius12; owner không phụ thuộc panel |
 
-Titlebar cửa sổ có header áp contract suite standard32 và geometry gate; menu popup không bị ép traffic/titlebar. OS-native menu/corner giữ OS vẽ. Không gắn vùng drag lên input/button; About/Settings menu⌘, dùng một router/single window. React vendor Settings canonical và catalog có manifest/hash, adapter giữ business state.
+Titlebar native áp contract suite và geometry gate; S02 không thêm header HTML56 hoặc nút X thứ hai. Với surface cần custom titlebar mới áp thông số32; menu popup không bị ép traffic/titlebar. OS-native menu/corner giữ OS vẽ. Không gắn vùng drag lên input/button; About/Settings menu⌘, dùng một router/single window. React vendor Settings canonical và catalog có manifest/hash, adapter giữ business state.
 
 ```text
 Tray panel
@@ -34,7 +40,7 @@ Tray panel
   Thoát tiện ích VXKey
 ```
 
-Bypass có action nhanh theo app ngay trong S01 theo mục9; Quản lý ứng dụng mở danh sách đầy đủ. Chọn VI không tự gỡ rule. Source ABC: label inactive, chọn VI/EN không tự đổi source; hướng dẫn chọn VXKey.
+Bypass có action nhanh theo app ngay trong S01 theo mục9; Quản lý ứng dụng mở danh sách đầy đủ. Chọn VI không tự gỡ rule. Nguồn nhập ABC không phải trạng thái inactive của VXKey. Hiển thị connected, quyền Trợ năng, tap active và suspended riêng; thiếu quyền có nút thiết lập quyền, không hướng dẫn chọn VXKey Input Source.
 
 ## 2. Settings mapping
 
@@ -98,10 +104,19 @@ VXKeyCompanion
 └── SharedUpdateNotice (S07)
 ```
 
-### S02 — Settings wireframe
+### S02 — Settings là toàn bộ native window (user chốt 2026-10-30)
+
+Tái sử dụng General/Updates/About/Support và styles/copy chuẩn không có nghĩa bọc nguyên modal Settings vào một native window. Native window là frame duy nhất; content bắt đầu ngay bằng sidebar và vùng tab, kết thúc bằng footer chung. Không có backdrop dim/blur, gutter16, panel bo góc/border/shadow riêng hoặc header “VXKey Settings”/nút X trong WebView. OS giữ titlebar và close button. Adapter VXKey không sửa canonical vendor; modal profile của app khác giữ nguyên.
+
+Settings/About dùng SVG bàn phím tượng trưng trong ô gradient chuẩn, không dùng icon app PNG trong suốt. About từ app menu/tray dùng standard AppKit About panel riêng với artwork app RGBA512, version một lần, credits tác giả/mô tả/GitHub và copyright chuẩn. Hai icon phục vụ hai bề mặt khác nhau.
+
+Spacing: body24, section gap24, nhãn/controls12px line-height18, toolbar actions không ngắt chữ; form app ID một hàng riêng, checkbox và action theo hàng cân đối; URL/helper wrap trong vùng nội dung. Sidebar phải thấy đủ10tab ở kích thước mặc định, không cần cuộn chỉ để tìm About/Support.
+
+### S02 — Wireframe native
 
 ```text
-┌────────────────── VXKey Settings ────────────────────────────────┐
+┌─ ● ● ● ────────── VXKey Settings (native titlebar) ───────────────┐
+├───────────────────┬───────────────────────────────────────────────┤
 │ Chung             │ GIAO DIỆN & MÀU SẮC                          │
 │ Bộ gõ             │ [ System       ] [ Dark          ]           │
 │ Ứng dụng          │ [ Light        ] [ Pure Black    ]           │
@@ -179,11 +194,11 @@ Bốn SVG do user chuẩn bị, chưa được tạo/duyệt trong task viết s
 | vi | V (serious) hoặc Ư (playful) | VXKey — Tiếng Việt / VXKey — Vietnamese |
 | en | E (serious) hoặc W (playful) | VXKey — English |
 | bypass | Native text BY, cùng khung | VXKey — Không xử lý phím / VXKey — Input bypassed |
-| inactive | Native text VX | VXKey — Nguồn nhập khác / VXKey — Another input source |
+| inactive | Native text VX | VXKey — Bộ gõ chưa chạy / VXKey — Driver inactive |
 | suspended | Native text VX, status tạm ngừng | VXKey — Đã tạm ngừng / VXKey — Input processing suspended |
 | unavailable | Native text VX + tooltip lỗi | VXKey — Bộ gõ chưa sẵn sàng / VXKey — Input engine unavailable |
 
-BY/VX là native label fallback, không cần thêm SVG ngoài4asset user chuẩn bị. Nếu platform tray không hỗ trợ text label, adapter render label thành raster cùng logical frame; visual QA bắt buộc. Bypass không giả EN. Khi snapshot stale hoặc source ABC không hiển thị VI đang live. Text fallback V/E hoặc Ư/W theo style lúc thiếu asset vẫn phải đúng state và báo asset issue trong QA.
+BY/VX là native label fallback, không cần thêm SVG ngoài4asset user chuẩn bị. Nếu platform tray không hỗ trợ text label, adapter render label thành raster cùng logical frame; visual QA bắt buộc. Bypass không giả EN. Khi snapshot stale hoặc driver chưa attach không hiển thị VI đang live. Text fallback V/E hoặc Ư/W theo style lúc thiếu asset vẫn phải đúng state và báo asset issue trong QA.
 
 Click mở panel, không toggle mode ngầm; VI/EN là action trong panel/hotkey riêng, target validation theo feature flow. Right-click context menu có Settings/About/Quit tiện ích. Một icon dù IME/companion restart; một primary instance. Giữ show_tray_icon như upstream; khi ẩn icon, launcher vẫn mở Settings để bật lại, không nhân process.
 
@@ -213,7 +228,7 @@ Create a compact 320-unit-wide VXKey tray panel anchored below a monochrome VI s
 
 ## 8. Shortcut UI states
 
-Recorder phân biệt “Đổi VI/EN trong nguồn nhập VXKey” với “Mở history toàn hệ thống”. History báo OS registration conflict thật; toggle báo validation/IME apply pending, không nhãn “global active” khi chỉ IME-local. Không hai listener cùng xử lý tổ hợp. Shortcut trùng giữa hai action bị reject. UI không hứa phát hiện mọi shortcut của app khác; Cancel recorder không thay registration/config.
+Recorder phân biệt “Đổi VI/EN của VXKey” với “Mở history toàn hệ thống”. History báo OS registration conflict thật; toggle báo validation/IME apply pending, không nhãn “global active” khi chỉ IME-local. Không hai listener cùng xử lý tổ hợp. Shortcut trùng giữa hai action bị reject. UI không hứa phát hiện mọi shortcut của app khác; Cancel recorder không thay registration/config.
 
 ## 9. Quick action — Loại trừ app đang dùng
 
@@ -272,3 +287,19 @@ Windows Settings→Clipboard→“Mở lịch sử bằng Win+V”: radio “Cli
 States: native / preparing_vxkey / vxkey_active / restoring_native / unavailable/error. Chỉ báo active khi native routing adapter ack thật. Nếu unsupported/conflict, giữ native hiệu lực và hiển thị lý do; không checkbox giả. Native mode mà native history OS chưa enabled thì giữ popup/hướng dẫn OS như vốn có, không tự bật OS setting. VXKey mode nhưng capture chưa consent thì mở S05 off/consent, không tự bắt đầu ghi history.
 
 Đổi provider không xóa history bên nào, không import OS history hoặc tắt storage/sync của Windows. Helper nói rõ “Lựa chọn này chỉ đổi bảng mở bằng Win+V”; có action mở Clipboard settings OS nếu user muốn tự quản lý. Quit/crash/suspend/recovery phải release routing về native; reopen mặc định không giành lại khi safe-start marker đang bật.
+
+
+## Kiểm tra visual bổ sung — user feedback 2026-10-30
+
+- S02 ở size mặc định: content chạm bốn cạnh client area; một titlebar native, không double header/X, không nền đen bọc panel;10tab đều tới được, footer không đè body.
+- Từng tab vi/en và dark/light/Pure Black: không control/text tràn ngang, không nút Lưu/Hủy bị bẻ dòng; body scroll thật khi nội dung dài.
+- Settings/About có SVG tượng trưng; About native có artwork thật, tác giả, summary, repo và footer, không chỉ name/version.
+- S01 native: không hình chữ nhật bên ngoài radius12, không khoảng trống do cửa sổ cao hơn content; click-outside/Escape đóng, About mở panel native riêng.
+- Chỉ ghi visual PASS theo ảnh native bản build mới; hash/cargo/npm PASS không nghiệm thu các mục trên.
+
+
+## 17. Native bridge/recovery UI v0.7
+
+S01 thêm action Tạm ngừng xử lý phím / Khôi phục xử lý phím; Resume disabled khi chưa có current engine_session_id. Request chỉ được success từ ACK/verified fallback, lỗi hiển thị và refresh, không optimistic mode/suspension. Status bypass khác modeEN. V/E/Ư/W native tray dùng live non-suspended/non-bypassed mode; disconnected/sourceinactive giữ VX.
+
+System tab thêm card metadata vi/en: Connection, VXKey input source, Input processing, Applied / saved configuration. Card nằm trong content scroll, không đổi General hoặc canonical Settings shell. Connection Ready không có nghĩa source đã được chọn; hai trạng thái hiển thị độc lập. Native app menu có Pause/Resume và NSAlert result ngoài WebView, không cần JavaScript còn sống. Autostart vẫnOFF/disabled. [Native images/limitations](../qa/native_bridge_review.md).

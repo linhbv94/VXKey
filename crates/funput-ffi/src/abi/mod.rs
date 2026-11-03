@@ -17,3 +17,6 @@ pub(crate) use codec::write_bytes;
 pub(crate) use codec::write_text;
 pub(crate) use codec::{copy_codepoints, string_from_utf32};
 pub(crate) use guard::{safe, with_engine_mut, with_engine_ref};
+
+#[cfg(feature = "vxkey-native")]
+pub(crate) use guard::native_faulted;

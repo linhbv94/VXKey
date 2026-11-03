@@ -5,20 +5,29 @@ use crate::unicode::marks::is_vowel;
 
 use super::classify_key;
 
-/// Full Telex classifier. Ordinary Telex keeps its unchanged fast path.
-pub(super) fn classify(buffer: &str, key: char) -> AdvancedAction {
-    if has_pending(buffer) {
+/// Classify Telex shortcut keys.
+///
+/// Both `Telex` and `TelexAdvanced` treat `w`/`W` as `ư`/`Ư` whenever the
+/// syllable has no vowel nucleus yet (`w` → `ư`, `W` → `Ư`, `thw` → `thư`,
+/// `vwng` → `vưng`, `thwr` → `thử`, `nhwng` → `nhưng`, `chwx` → `chữ`,
+/// `vwaf` → `vừa`, `giwx` → `giữ`), while `[` → `ơ` and `]` → `ư` are active
+/// only in `TelexAdvanced`.
+pub(super) fn classify(buffer: &str, key: char, brackets: bool) -> AdvancedAction {
+    if buffer.starts_with(['q', 'Q']) && has_pending(buffer) {
         return AdvancedAction::Standard(KeyAction::DeferredW);
     }
     match key {
         // UniKey's engine (x-unikey `TelexMethodMapping`) and OpenKey put `ư` on
         // `]` and `ơ` on `[`. The UniKey manual prints the pair the other way
         // round; the engine is what users' hands learned.
-        ']' => AdvancedAction::Shortcut(TelexShortcut::HornU),
-        '[' => AdvancedAction::Shortcut(TelexShortcut::HornO),
+        ']' if brackets => AdvancedAction::Shortcut(TelexShortcut::HornU),
+        '[' if brackets => AdvancedAction::Shortcut(TelexShortcut::HornO),
         'w' | 'W' if leading_w(buffer) => AdvancedAction::Shortcut(TelexShortcut::LeadingW),
         'w' | 'W' if ends_with_w_after_vowel(buffer) => {
             AdvancedAction::Shortcut(TelexShortcut::RepeatedW)
+        }
+        _ if buffer.contains(['w', 'W']) && !buffer.starts_with(['w', 'W']) => {
+            AdvancedAction::Standard(KeyAction::Normal)
         }
         _ => AdvancedAction::Standard(classify_key(buffer, key)),
     }
@@ -60,7 +69,8 @@ fn horn_u_after_onset(buffer: &str) -> bool {
 /// tone typed before the nucleus leaves behind qualifies too. `qu` never does —
 /// no syllable reads `quư`.
 fn lacks_nucleus(onset: &str) -> bool {
-    !onset.chars().any(is_vowel) || glide::in_onset(onset) == Some(Glide::Gi)
+    !onset.contains(['w', 'W'])
+        && (!onset.chars().any(is_vowel) || glide::in_onset(onset) == Some(Glide::Gi))
 }
 
 #[cfg(test)]
@@ -70,23 +80,31 @@ mod tests {
     #[test]
     fn recognizes_only_full_telex_extensions() {
         assert_eq!(
-            classify("", 'w'),
+            classify("", 'w', true),
             AdvancedAction::Shortcut(TelexShortcut::LeadingW)
         );
         assert_eq!(
-            classify("t", ']'),
+            classify("", 'w', false),
+            AdvancedAction::Shortcut(TelexShortcut::LeadingW)
+        );
+        assert_eq!(
+            classify("t", ']', true),
             AdvancedAction::Shortcut(TelexShortcut::HornU)
         );
         assert_eq!(
-            classify("m", '['),
+            classify("t", ']', false),
+            AdvancedAction::Standard(classify_key("t", ']'))
+        );
+        assert_eq!(
+            classify("m", '[', true),
             AdvancedAction::Shortcut(TelexShortcut::HornO)
         );
         assert_eq!(
-            classify("lw", '['),
+            classify("qw", '[', true),
             AdvancedAction::Standard(KeyAction::DeferredW)
         );
         assert_eq!(
-            classify("a", 's'),
+            classify("a", 's', true),
             AdvancedAction::Standard(classify_key("a", 's'))
         );
     }
@@ -95,12 +113,12 @@ mod tests {
     fn gi_glide_is_part_of_the_onset() {
         let leading = AdvancedAction::Shortcut(TelexShortcut::LeadingW);
         for buffer in ["gi", "Gi", "GI", "gĩ", "giư", "GIƯ"] {
-            assert_eq!(classify(buffer, 'w'), leading, "{buffer}");
+            assert_eq!(classify(buffer, 'w', false), leading, "{buffer}");
         }
         // `i` is the nucleus once a coda follows, and `qu` + `ư` is no syllable.
         for buffer in ["gin", "qu", "q"] {
             assert_eq!(
-                classify(buffer, 'w'),
+                classify(buffer, 'w', false),
                 AdvancedAction::Standard(classify_key(buffer, 'w')),
                 "{buffer}"
             );

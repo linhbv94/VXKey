@@ -135,10 +135,10 @@ final class FunputComposer {
     }
 
     /// Capture the complete expansion before the FFI's borrowed UTF-8 output expires.
-    func processText(_ scalar: Unicode.Scalar) -> (result: FunputResult, output: String) {
+    func processText(_ scalar: Unicode.Scalar, source: KeySource = .standard) -> (result: FunputResult, output: String) {
         var output = ""
         let result = withUnsafeMutablePointer(to: &output) { pointer in
-            funput_process_key_text(handle, scalar.value, 0, { context, bytes, count in
+            funput_process_key_text(handle, scalar.value, source.rawValue, { context, bytes, count in
                 guard let context, let bytes else { return }
                 context.assumingMemoryBound(to: String.self).pointee = String(
                     decoding: UnsafeBufferPointer(start: bytes, count: Int(count)), as: UTF8.self)

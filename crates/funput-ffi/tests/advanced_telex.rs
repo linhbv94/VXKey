@@ -49,14 +49,14 @@ fn apply_result(displayed: &mut String, result: FunputResult) {
 
 #[test]
 fn stable_method_ids_select_the_expected_grammar() {
-    assert_eq!(typed(METHOD_TELEX, "w "), "w ");
+    assert_eq!(typed(METHOD_TELEX, "w t] "), "ư t] ");
     assert_eq!(typed(METHOD_VNI, "a1 "), "á ");
     assert_eq!(typed(METHOD_TELEX_ADVANCED, "tr][ngf "), "trường ");
 }
 
 #[test]
 fn unknown_method_falls_back_to_standard_telex() {
-    assert_eq!(typed(u8::MAX, "w t] "), "w t] ");
+    assert_eq!(typed(u8::MAX, "w t] "), "ư t] ");
 }
 
 #[test]
@@ -94,5 +94,14 @@ fn advanced_raw_keys_flip_both_ways_through_c_abi() {
         apply_result(&mut displayed, funput_flip_composing(engine));
         assert_eq!(displayed, "trường");
         funput_engine_free(engine);
+    }
+}
+
+#[test]
+fn shortcut_horn_and_tone_orders_stay_consistent_across_words() {
+    for method in [METHOD_TELEX, METHOD_TELEX_ADVANCED] {
+        let keys = "ddwojwc ddwowjc ddwowcj mwojwt mwowjt casi casch cachs ".repeat(40);
+        let expected = "được được được mượt mượt cái cách cách ".repeat(40);
+        assert_eq!(typed(method, &keys), expected);
     }
 }

@@ -17,6 +17,7 @@ extension FunputInputController {
     /// word (the text before the caret is no longer Funput's), the engine forgets it too
     /// and the result is false: the key was not handled.
     func showComposition(_ client: IMKTextInput) -> Bool {
+        guard !vxkey_native_engine_faulted() else { return false }
         guard session.show(composer.buffer(), on: IMKCompositionSurface(client: client)) else {
             composer.clear()
             return false
@@ -33,7 +34,9 @@ extension FunputInputController {
     }
 
     func commit(into client: IMKTextInput) {
+        guard !vxkey_native_engine_faulted() else { return }
         let text = composer.finishComposition()
+        guard !vxkey_native_engine_faulted() else { return }
         session.commit(text, boundary: "", on: IMKCompositionSurface(client: client))
     }
 
@@ -49,6 +52,7 @@ extension FunputInputController {
         }
 
         let result = composer.process(scalar, source: source)
+        guard !vxkey_native_engine_faulted() else { return false }
         let word = result.action == ACTION_SEND
             ? String(FunputComposer.output(of: result).dropLast())
             : pre

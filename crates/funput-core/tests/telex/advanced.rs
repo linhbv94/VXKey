@@ -207,13 +207,13 @@ fn leading_w_loses_the_onset_placed_non_uo_horn() {
     ] {
         assert_eq!(typed(keys), output, "{keys}");
     }
-    // Plain Telex keeps the deferred `w` in every position.
+    // Both Telex and TelexAdvanced share the leading `w` → `ư` rule.
     for (keys, output) in [
-        ("cwon", "cơn"),
-        ("lwams", "lắm"),
-        ("nwux", "nữ"),
-        ("giwof", "giờ"),
-        ("giwatj", "giặt"),
+        ("cwon", "cươn"),
+        ("lwams", "lứam"),
+        ("nwux", "nữu"),
+        ("giwof", "giuờ"),
+        ("giwatj", "giựat"),
     ] {
         assert_eq!(
             crate::support::type_keys(InputMethod::Telex, keys),
@@ -225,7 +225,14 @@ fn leading_w_loses_the_onset_placed_non_uo_horn() {
 
 #[test]
 fn standard_methods_keep_shortcuts_literal() {
-    assert_eq!(crate::support::type_keys(InputMethod::Telex, "w"), "w");
+    assert_eq!(crate::support::type_keys(InputMethod::Telex, "w"), "ư");
+    assert_eq!(crate::support::type_keys(InputMethod::Telex, "W"), "Ư");
+    assert_eq!(crate::support::type_keys(InputMethod::Telex, "thw"), "thư");
+    assert_eq!(crate::support::type_keys(InputMethod::Telex, "vwng"), "vưng");
+    assert_eq!(crate::support::type_keys(InputMethod::Telex, "thwr"), "thử");
+    assert_eq!(crate::support::type_keys(InputMethod::Telex, "nhwng"), "nhưng");
+    assert_eq!(crate::support::type_keys(InputMethod::Telex, "chwx"), "chữ");
+    assert_eq!(crate::support::type_keys(InputMethod::Telex, "vwaf"), "vừa");
     assert_eq!(crate::support::type_keys(InputMethod::Telex, "t]"), "t]");
     assert_eq!(crate::support::type_keys(InputMethod::Vni, "m["), "m[");
     assert_eq!(typed("{"), "{");

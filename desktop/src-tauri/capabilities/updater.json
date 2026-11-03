@@ -1,0 +1,10 @@
+{
+  "identifier": "updater",
+  "windows": [
+    "settings"
+  ],
+  "permissions": [
+    "updater:default",
+    "process:allow-restart"
+  ]
+}

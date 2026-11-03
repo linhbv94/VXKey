@@ -1,278 +1,51 @@
-name: Release
-
-# One tag → all platforms. Pushing a tag like v1.2026.1 builds the macOS .pkg, the
-# Windows portable .exe, and the Linux .debs — all stamped with the **tag version** (single
-# source of truth) — and publishes them to one public GitHub Release.
-# Microsoft Store builds are submitted separately through deploy-windows-store.yml.
-# Public Store listing: https://apps.microsoft.com/store/detail/9NR3WL5PD4ZS
-#
-# workflow_dispatch is for testing the *full* pipeline (incl. EdDSA signing + the
-# update feeds) without disturbing users:
-#   - version empty            → compile-only smoke test (no signing/feed/publish).
-#   - version set, publish off → build + sign + emit feeds; artifacts only, no Release.
-#   - version set, publish on  → same, plus a **prerelease** (never becomes the
-#                                `latest` the auto-updater serves).
-#
-# The per-platform build steps live in reusable workflows (build-*.yml) and are
-# called below; artifacts they upload are gathered by `publish` in the same run.
+name: VXKey macOS release (free public runner)
 on:
   push:
-    tags: ["v*"]
+    tags: ['v[0-9]*']
   workflow_dispatch:
-    inputs:
-      version:
-        description: "Build version, e.g. 1.2026.2-rc1. Empty = compile-only smoke test (no signing/feed)."
-        required: false
-        type: string
-        default: ""
-      publish:
-        description: "Publish a GitHub prerelease with the built artifacts (never becomes `latest`)."
-        required: false
-        type: boolean
-        default: false
-
 permissions:
-  contents: write
-
+  contents: read
 concurrency:
-  group: release-${{ github.ref }}
+  group: vxkey_release_${{ github.ref }}
   cancel-in-progress: false
-
 jobs:
-  # ---- Single source of truth for the version -------------------------------
-  version:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    outputs:
-      version: ${{ steps.v.outputs.version }}
-      publish: ${{ steps.v.outputs.publish }}
-      prerelease: ${{ steps.v.outputs.prerelease }}
+  release:
+    if: github.event.repository.private == false
+    runs-on: macos-15
+    timeout-minutes: 60
+    permissions:
+      contents: write
     steps:
-      - id: v
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: SDK27
+        run: node scripts/macos_sdk_gate.mjs --select-ci
+      - uses: dtolnay/rust-toolchain@stable
+      - run: npm ci --prefix desktop
+      - name: Import VXKey signer (hosted runner only)
         env:
-          DISPATCH_VERSION: ${{ inputs.version }}
-          DISPATCH_PUBLISH: ${{ inputs.publish }}
+          VXKEY_MACOS_CERTIFICATE: ${{ secrets.VXKEY_MACOS_CERTIFICATE }}
+          VXKEY_MACOS_CERTIFICATE_PASSWORD: ${{ secrets.VXKEY_MACOS_CERTIFICATE_PASSWORD }}
+        run: python3 scripts/ci_macos_signer.py install
+      - name: Build signed production app and helper
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
+        run: python3 scripts/build_release.py
+      - name: Verify packages
         run: |
-          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
-            # Tag push → full public release.
-            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
-            echo "publish=true" >> "$GITHUB_OUTPUT"
-            echo "prerelease=false" >> "$GITHUB_OUTPUT"
-          else
-            # Manual dispatch → use the provided version (may be empty for a
-            # compile-only smoke test). Any publish here is always a prerelease, so
-            # it never becomes the `latest` the auto-updater serves.
-            echo "version=${DISPATCH_VERSION}" >> "$GITHUB_OUTPUT"
-            if [[ "${DISPATCH_PUBLISH}" == "true" && -n "${DISPATCH_VERSION}" ]]; then
-              echo "publish=true" >> "$GITHUB_OUTPUT"
-            else
-              echo "publish=false" >> "$GITHUB_OUTPUT"
-            fi
-            echo "prerelease=true" >> "$GITHUB_OUTPUT"
-          fi
-
-  # ---- Per-platform builds (reusable workflows) -----------------------------
-  # `secrets: inherit` forwards the signing/notarization secrets each build needs.
-  macos:
-    needs: version
-    uses: ./.github/workflows/build-macos.yml
-    with:
-      version: ${{ needs.version.outputs.version }}
-    secrets: inherit
-
-  windows:
-    needs: version
-    uses: ./.github/workflows/build-windows.yml
-    with:
-      version: ${{ needs.version.outputs.version }}
-    secrets: inherit
-
-  linux:
-    needs: version
-    uses: ./.github/workflows/build-linux.yml
-    with:
-      version: ${{ needs.version.outputs.version }}
-    secrets: inherit
-
-  # ---- Publish one release with all artifacts -------------------------------
-  publish:
-    needs: [version, macos, windows, linux]
-    if: needs.version.outputs.publish == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/download-artifact@v8
-        with:
-          path: artifacts
-
-      - name: Assemble release notes
-        run: |
-          mkdir -p out
-          cp artifacts/macos/* out/ 2>/dev/null || true
-          cp artifacts/windows/* out/ 2>/dev/null || true
-          cp artifacts/windows-cli/* out/ 2>/dev/null || true
-          cp artifacts/windows-feed/* out/ 2>/dev/null || true
-          cp artifacts/linux-*/* out/ 2>/dev/null || true
-          ls -l out
-          {
-            echo "## Funput v${{ needs.version.outputs.version }}"
-            echo
-            echo "📖 **Hướng dẫn cài đặt & kích hoạt cho từng nền tảng:** https://docs.funput.app/docs/install/"
-            echo
-            echo "### Cài đặt"
-            echo
-            echo "| Nền tảng | Cài đặt |"
-            echo "|---|---|"
-            echo "| **iOS** | [App Store](https://apps.apple.com/vn/app/id6788829996) · [TestFlight](https://testflight.apple.com/join/E8YRd3sy) |"
-            echo "| **Android** | [Google Play](https://play.google.com/store/apps/details?id=app.funput.funput) |"
-            echo "| **macOS** | \`Funput-*.pkg\` (cần quyền quản trị) hoặc \`Funput-*.app.zip\` |"
-            echo "| **Windows** | [Microsoft Store](https://apps.microsoft.com/store/detail/9NR3WL5PD4ZS) (khuyến nghị) hoặc \`Funput-*.exe\` portable |"
-            echo "| **Linux** | \`.deb\` / \`.rpm\` — [hướng dẫn](https://docs.funput.app/docs/install/linux) |"
-            echo
-            echo "Windows: bản Microsoft Store cài đặt và cập nhật qua Store; các tệp \`.exe\` đính kèm là bản portable. Xem [hướng dẫn Windows](https://docs.funput.app/docs/install/windows/)."
-            echo
-            echo "Linux: khuyến nghị **Fcitx5** (\`funput-*\`); bản **IBus** (\`funput-ibus-*\`) nếu đang dùng IBus. Chọn đúng kiến trúc CPU. \`funput-settings-*\` cài kèm tự động."
-          } > notes.md
-
-      # Create the release as a DRAFT with all assets attached. This repo has
-      # "immutable releases" enabled: a published release rejects asset uploads, so
-      # we must attach everything while it is still a mutable draft, then publish.
-      # `out/*.tar.gz` are the portable Linux trees behind `install.sh --user`.
-      # They were built but never attached, so the no-sudo path could not resolve
-      # one and always died on "no matching asset".
-      - uses: softprops/action-gh-release@v3
-        with:
-          files: |
-            out/*.pkg
-            out/*.app.zip
-            out/*.exe
-            out/*.zip
-            out/*.deb
-            out/*.rpm
-            out/*.tar.gz
-            out/appcast.xml
-            out/*.json
-          body_path: notes.md
-          generate_release_notes: true
-          draft: true
-          # Dispatch runs have no pushed tag, so name it explicitly (the action
-          # creates the tag); tag pushes reuse the pushed ref. Dispatch publishes
-          # are always prereleases.
-          prerelease: ${{ needs.version.outputs.prerelease }}
-          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}', needs.version.outputs.version) }}
-
-      # Flip the draft to published. This bakes the already-attached assets into the
-      # now-immutable release.
-      #
-      # github.token, deliberately: it is the one token guaranteed to see this draft.
-      # `gh release edit` resolves a tag through an endpoint that never returns
-      # drafts, then falls back to listing releases — and a token without write
-      # access here does not see drafts in that list either, so it fails with a bare
-      # "release not found" and takes the whole release down with it. Publishing the
-      # package repo needs a PAT, but that is the `repo` job's problem, not this
-      # step's.
-      - name: Publish the draft release
+          python3 scripts/finalize_release.py
+          node scripts/check_release_signature.mjs
+      - name: Draft only
         env:
           GH_TOKEN: ${{ github.token }}
-          # The publish job has no checkout, so tell gh which repo to act on instead
-          # of letting it look for a local .git.
-          GH_REPO: ${{ github.repository }}
-          TAG: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}', needs.version.outputs.version) }}
-          PRERELEASE: ${{ needs.version.outputs.prerelease }}
         run: |
-          set -euo pipefail
-          if [[ "$PRERELEASE" == "true" ]]; then
-            # Prerelease must NOT become the `latest` the auto-updater serves.
-            gh release edit "$TAG" --draft=false --prerelease --latest=false
-          else
-            gh release edit "$TAG" --draft=false --latest
-          fi
-
-  # ---- Trigger the apt/dnf/pacman package repository rebuild ----------------
-  # Fires only for a real public release. `publish-repo.yml` rebuilds the signed
-  # repositories from this release's .deb/.rpm assets. This dispatch is the only way
-  # a release reaches it: GitHub starts no run for an event the default GITHUB_TOKEN
-  # creates, and a `release`-triggered run would sit at a tag ref, which the
-  # `github-pages` environment refuses to deploy from. Requires a
-  # `RELEASE_TOKEN` secret (a PAT with `contents: write` on this repo); skipped
-  # automatically if absent. A job of its own, like the two dispatches below: a bad
-  # token then costs the package repository alone, not the release.
-  repo:
-    needs: [version, publish]
-    if: needs.version.outputs.prerelease == 'false'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Dispatch the package repo publish
-        env:
-          TOKEN: ${{ secrets.RELEASE_TOKEN }}
-          REPO: ${{ github.repository }}
-          TAG: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}', needs.version.outputs.version) }}
-        run: |
-          set -euo pipefail
-          if [[ -z "${TOKEN:-}" ]]; then
-            echo "RELEASE_TOKEN not set — skipping the package repo publish." >&2
-            exit 0
-          fi
-          # --fail-with-body, not -f: a token that cannot write to this repo gets a
-          # 404 here, and the body is the only thing that says so.
-          curl -sS --fail-with-body -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${TOKEN}" \
-            "https://api.github.com/repos/${REPO}/dispatches" \
-            -d "{\"event_type\":\"publish-repo\",\"client_payload\":{\"tag\":\"${TAG}\"}}"
-
-  # ---- Trigger the Homebrew tap to build + publish bottles ------------------
-  # Fires only for a real public release (not prereleases/smoke tests). The tap's
-  # `bottle.yml` builds `funput` for macOS arm64/x86_64 + x86_64_linux and commits
-  # the updated `bottle do` block. Requires a `HOMEBREW_TAP_TOKEN` secret (a PAT with
-  # `contents: write` on Funput/homebrew-tap); skipped automatically if absent.
-  homebrew:
-    needs: [version, publish]
-    if: needs.version.outputs.prerelease == 'false'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Dispatch bottle build to Funput/homebrew-tap
-        env:
-          TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
-          VERSION: ${{ needs.version.outputs.version }}
-        run: |
-          set -euo pipefail
-          if [[ -z "${TOKEN:-}" ]]; then
-            echo "HOMEBREW_TAP_TOKEN not set — skipping tap update." >&2
-            exit 0
-          fi
-          curl -fsS -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${TOKEN}" \
-            https://api.github.com/repos/Funput/homebrew-tap/dispatches \
-            -d "{\"event_type\":\"release\",\"client_payload\":{\"version\":\"${VERSION}\"}}"
-
-  # ---- Trigger the Scoop bucket to bump its manifest ------------------------
-  # Windows analogue of `homebrew`. Fires only for a real public release. The
-  # bucket's `bump.yml` points funput.json at the new release zip + sha256 and
-  # commits it — instant, no community review (unlike winget public). Requires a
-  # `SCOOP_BUCKET_TOKEN` secret (a PAT with `contents: write` on
-  # Funput/scoop-funput); skipped automatically if absent.
-  scoop:
-    needs: [version, publish]
-    if: needs.version.outputs.prerelease == 'false'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Dispatch manifest bump to Funput/scoop-funput
-        env:
-          TOKEN: ${{ secrets.SCOOP_BUCKET_TOKEN }}
-          VERSION: ${{ needs.version.outputs.version }}
-        run: |
-          set -euo pipefail
-          if [[ -z "${TOKEN:-}" ]]; then
-            echo "SCOOP_BUCKET_TOKEN not set — skipping bucket update." >&2
-            exit 0
-          fi
-          curl -fsS -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${TOKEN}" \
-            https://api.github.com/repos/Funput/scoop-funput/dispatches \
-            -d "{\"event_type\":\"release\",\"client_payload\":{\"version\":\"${VERSION}\"}}"
+          gh release create "$GITHUB_REF_NAME" --verify-tag --draft --title "VXKey ${GITHUB_REF_NAME#v}" --notes-file "docs/release_notes/${GITHUB_REF_NAME#v}.md" build/release_assets/*
+      - name: Cleanup signer
+        if: always()
+        run: python3 scripts/ci_macos_signer.py cleanup

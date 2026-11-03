@@ -1,0 +1,16 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Local UI event subscription only; all mutations and window actions pass native label guards",
+  "windows": [
+    "settings",
+    "tray",
+    "history",
+    "onboarding",
+    "conversion"
+  ],
+  "permissions": [
+    "core:event:allow-listen",
+    "core:event:allow-unlisten"
+  ]
+}

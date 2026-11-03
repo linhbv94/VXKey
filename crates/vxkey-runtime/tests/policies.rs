@@ -74,6 +74,7 @@ fn unicode_byte_cap() {
 fn actual_engine_parity() {
     for (method, keys, want) in [
         ("telex", "vuwng", "vưng"),
+        ("telex", "vwng", "vưng"),
         ("telex_advanced", "vwng", "vưng"),
         ("vni", "vu7ng", "vưng"),
     ] {
@@ -336,9 +337,14 @@ fn atomic_config() {
     new.ui.tray_icon_style = "playful".into();
     s.replace(new, "1").unwrap();
     assert_eq!(s.config.revision, "2");
+    assert!(s.replace(s.config.clone(), "1").is_err());
+    assert_eq!(
+        ConfigStore::open(&path, Platform::Macos).unwrap_err(),
+        "config_in_use"
+    );
+    drop(s);
     let read = ConfigStore::open(&path, Platform::Macos).unwrap();
     assert_eq!(read.config.ui.tray_icon_style, "playful");
-    assert!(s.replace(s.config.clone(), "1").is_err());
 }
 #[test]
 fn corrupt_not_overwritten() {
@@ -404,6 +410,7 @@ fn io_failure_does_not_advance_config() {
     let d = tempfile::tempdir().unwrap();
     let parent = d.path().join("parent");
     let mut s = ConfigStore::open(parent.join("config.json"), Platform::Macos).unwrap();
+    std::fs::rename(&parent, d.path().join("moved_parent")).unwrap();
     std::fs::write(&parent, b"file blocks parent directory").unwrap();
     let mut next = s.config.clone();
     next.ui.theme = "dark".into();
@@ -499,4 +506,127 @@ fn pending_config_applies_after_cancel_and_backspace() {
         session.process('1', &next);
         assert_eq!(session.buffer(), "á");
     }
+}
+
+#[test]
+fn native_period_interlock_preserves_saved_preference() {
+    let d = tempfile::tempdir().unwrap();
+    let store = ConfigStore::open(d.path().join("config.json"), Platform::Macos).unwrap();
+    let mut service = vxkey_runtime::service::Service::new(store);
+    service.native_period = NativePeriod::Disabled;
+    let result=service.dispatch(serde_json::json!({"command":"patch_config","expected_revision":"1","changes":{"typing":{"double_space_period":true}}}));
+    assert_eq!(result["ok"], true);
+    service.native_period = NativePeriod::Enabled;
+    let snapshot = service.dispatch(serde_json::json!({"command":"get_snapshot"}));
+    assert_eq!(
+        snapshot["data"]["config"]["typing"]["double_space_period"],
+        true
+    );
+    assert_eq!(
+        snapshot["data"]["runtime"]["period_substitution"]["control_enabled"],
+        false
+    );
+    assert_eq!(
+        snapshot["data"]["runtime"]["period_substitution"]["effective_enabled"],
+        false
+    );
+    assert_eq!(
+        snapshot["data"]["runtime"]["period_substitution"]["native_state"],
+        "enabled"
+    );
+}
+
+#[test]
+fn settings_cannot_read_history_bodies() {
+    let d = tempfile::tempdir().unwrap();
+    let store = ConfigStore::open(d.path().join("config.json"), Platform::Macos).unwrap();
+    let mut service = vxkey_runtime::service::Service::new(store);
+    for command in [
+        "list_history",
+        "get_history_entry",
+        "copy_history_entry",
+        "delete_history_entry",
+        "convert_text",
+    ] {
+        let result = service.dispatch_from(
+            vxkey_runtime::service::Surface::Settings,
+            serde_json::json!({"command":command}),
+        );
+        assert_eq!(result["error"]["code"], "permission_denied");
+    }
+}
+
+#[test]
+fn reset_requires_fresh_confirmation_and_preserves_non_typing_data() {
+    use vxkey_runtime::service::{Service, Surface};
+    let d = tempfile::tempdir().unwrap();
+    let mut store = ConfigStore::open(d.path().join("config.json"), Platform::Macos).unwrap();
+    let mut c = store.config.clone();
+    c.ui.theme = "light".into();
+    c.ui.locale = "en".into();
+    c.ui.tray_icon_style = "playful".into();
+    c.typing.input_method = "vni".into();
+    c.macros.entries.push(MacroEntry {
+        id: "00000000-0000-4000-8000-000000000001".into(),
+        trigger: "keep".into(),
+        replacement: "Preserve this macro".into(),
+    });
+    c.apps
+        .language_memory
+        .insert("fixture.app".into(), "en".into());
+    store.replace(c, "1").unwrap();
+    let before = store.config.clone();
+    let mut service = Service::new(store);
+    let invalid=service.dispatch_from(Surface::Settings,serde_json::json!({"command":"reset_preferences","expected_revision":"2","confirmation_id":"invalid"}));
+    assert_eq!(invalid["error"]["code"], "permission_denied");
+    assert_eq!(service.store.config, before);
+    let token = service.prepare_reset("2").unwrap();
+    let request = serde_json::json!({"command":"reset_preferences","expected_revision":"2","confirmation_id":token});
+    let result = service.dispatch_from(Surface::Settings, request.clone());
+    assert_eq!(result["ok"], true);
+    let after = &service.store.config;
+    assert_eq!(after.ui.theme, "system");
+    assert_eq!(after.typing.input_method, "telex");
+    assert_eq!(after.ui.locale, before.ui.locale);
+    assert_eq!(after.ui.tray_icon_style, before.ui.tray_icon_style);
+    assert_eq!(after.macros, before.macros);
+    assert_eq!(after.apps, before.apps);
+    assert_eq!(after.shortcuts, before.shortcuts);
+    assert_eq!(after.clipboard, before.clipboard);
+    assert_eq!(after.system, before.system);
+    let replay = service.dispatch_from(Surface::Settings, request);
+    assert_eq!(replay["error"]["code"], "permission_denied");
+}
+#[test]
+fn removing_policy_keeps_independent_language_memory() {
+    use vxkey_runtime::service::{Service, Surface};
+    let d = tempfile::tempdir().unwrap();
+    let mut store = ConfigStore::open(d.path().join("config.json"), Platform::Macos).unwrap();
+    store
+        .config
+        .apps
+        .language_memory
+        .insert("fixture.app".into(), "en".into());
+    store.config.apps.policies.insert(
+        "fixture.app".into(),
+        AppPolicy {
+            input_bypass: true,
+            clipboard_blocked: true,
+        },
+    );
+    let mut service = Service::new(store);
+    let result=service.dispatch_from(Surface::Settings,serde_json::json!({"command":"set_app_policy","expected_revision":"1","app_id":"fixture.app","input_bypass":false,"clipboard_blocked":false}));
+    assert_eq!(result["ok"], true);
+    assert!(
+        !service
+            .store
+            .config
+            .apps
+            .policies
+            .contains_key("fixture.app")
+    );
+    assert_eq!(
+        service.store.config.apps.language_memory["fixture.app"],
+        "en"
+    );
 }
