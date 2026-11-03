@@ -3,6 +3,11 @@ on:
   push:
     tags: ['v[0-9]*']
   workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing immutable release tag
+        required: true
+        type: string
 permissions:
   contents: read
 concurrency:
@@ -11,14 +16,17 @@ concurrency:
 jobs:
   release:
     if: github.event.repository.private == false
-    runs-on: macos-15
+    runs-on: xcode-27
     timeout-minutes: 60
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v5
         with:
           persist-credentials: false
+          ref: refs/tags/${{ inputs.tag || github.ref_name }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -36,7 +44,7 @@ jobs:
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
-        run: python3 scripts/build_release.py
+        run: GITHUB_REF_NAME="$RELEASE_TAG" python3 scripts/build_release.py
       - name: Verify packages
         run: |
           python3 scripts/finalize_release.py
@@ -45,7 +53,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" --verify-tag --draft --title "VXKey ${GITHUB_REF_NAME#v}" --notes-file "docs/release_notes/${GITHUB_REF_NAME#v}.md" build/release_assets/*
+          gh release create "$RELEASE_TAG" --verify-tag --draft --title "VXKey ${RELEASE_TAG#v}" --notes-file "docs/release_notes/${RELEASE_TAG#v}.md" build/release_assets/*
       - name: Cleanup signer
         if: always()
         run: python3 scripts/ci_macos_signer.py cleanup
