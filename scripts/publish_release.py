@@ -8,7 +8,7 @@ sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
 # Tooling recovery may change workflow only; runtime/package inputs must match.
 if run['head_sha']!=sha:
  compare=gh('api',f'repos/{repo}/compare/{sha}...{run["head_sha"]}')
- assert compare.get('files') and all(f['filename'].startswith('.github/workflows/') for f in compare['files'])
+ assert compare.get('files') and len(compare['files']) < 300 and all(f['filename'].startswith('.github/workflows/') for f in compare['files'])
 release=gh('release','view',tag,'--repo',repo,'--json','tagName,isDraft,isPrerelease,assets');assert release['tagName']==tag and release['isDraft'] and not release['isPrerelease']
 version=tag[1:];expected={'latest.json',f'vxkey_{version}_macos_silicon.dmg',f'vxkey_{version}_macos_silicon.app.tar.gz'};assert {a['name'] for a in release['assets']}==expected
 out=Path('build/release_assets');out.mkdir(parents=True,exist_ok=True)
