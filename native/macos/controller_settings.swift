@@ -4,10 +4,13 @@ import InputMethodKit
 
 extension FunputInputController {
     func syncSettings(client: IMKTextInput? = nil) {
+        guard Thread.isMainThread, !vxkey_native_engine_faulted() else { return }
         let settings = AppSettings.shared
         let configuration = ComposerConfiguration(settings: settings)
         let tableChanged = lastSyncedShortcutsRevision != settings.shortcutsRevision
         if configuration != lastConfiguration || tableChanged {
+            // Keep the current word on its original engine settings. Apply at the next boundary.
+            if !composer.buffer().isEmpty { return }
             if let client { commit(into: client) } else { composer.clear() }
             composer.apply(configuration)
             lastConfiguration = configuration

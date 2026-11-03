@@ -572,7 +572,9 @@ dependencies = [
  "funput-core",
  "funput-engine",
  "funput-suggestions",
+ "serde_json",
  "tempfile",
+ "vxkey-runtime",
 ]
 
 [[package]]
@@ -1527,6 +1529,8 @@ dependencies = [
  "funput-convert",
  "funput-core",
  "funput-engine",
+ "getrandom 0.4.3",
+ "libc",
  "serde",
  "serde_json",
  "tempfile",

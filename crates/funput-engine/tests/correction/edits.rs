@@ -90,9 +90,9 @@ fn two_keys_out_of_order_are_swapped_back() {
 
 #[test]
 fn a_missing_key_is_the_dearest_reading_and_never_the_only_one() {
-    // `chwi`: the `o` never registered. Dropping the stray `w` instead gives `chi`,
+    // `chiw`: the `o` never registered. Dropping the stray `w` instead gives `chi`,
     // which is cheaper and a word; the insertion is offered beside it, not over it.
-    let engine = typed_square(InputMethod::Telex, "chwi");
+    let engine = typed_square(InputMethod::Telex, "chiw");
     let texts = candidate_texts(&engine);
     assert_eq!(texts[0], "chi");
     assert!(texts.contains(&"chơi"), "{texts:?}");
@@ -113,7 +113,7 @@ fn a_word_two_insertions_short_is_out_of_reach() {
 
 #[test]
 fn a_finished_syllable_is_never_offered_a_structural_reading() {
-    for keys in ["nhaf", "chowi", "chwoi"] {
+    for keys in ["nhaf", "chowi", "chwi"] {
         let engine = typed_square(InputMethod::Telex, keys);
         assert!(!engine.has_pending_correction(), "{keys}");
     }

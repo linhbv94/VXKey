@@ -1,0 +1,111 @@
+{
+  "$schema": "https://raw.githubusercontent.com/tauri-apps/tauri/dev/crates/tauri-cli/schema.json",
+  "productName": "VXKey",
+  "version": "1.0.0",
+  "identifier": "com.vxkey.desktop",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; img-src 'self' asset: blob: data:; connect-src 'self' ipc: http://ipc.localhost; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'; frame-src 'none'"
+    },
+    "windows": [
+      {
+        "label": "settings",
+        "title": "VXKey Settings",
+        "width": 672,
+        "height": 560,
+        "minWidth": 640,
+        "minHeight": 520,
+        "resizable": true,
+        "fullscreen": false,
+        "decorations": true,
+        "transparent": false,
+        "visible": true,
+        "url": "index.html?surface=settings"
+      },
+      {
+        "label": "tray",
+        "title": "VXKey",
+        "width": 320,
+        "height": 380,
+        "resizable": false,
+        "decorations": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "visible": false,
+        "url": "index.html?surface=tray",
+        "skipTaskbar": true,
+        "backgroundColor": "#00000000",
+        "shadow": false
+      },
+      {
+        "label": "history",
+        "title": "VXKey History",
+        "width": 600,
+        "height": 460,
+        "minWidth": 480,
+        "minHeight": 320,
+        "resizable": true,
+        "decorations": true,
+        "transparent": true,
+        "visible": false,
+        "url": "index.html?surface=history"
+      },
+      {
+        "label": "conversion",
+        "title": "VXKey Text Converter",
+        "width": 920,
+        "height": 620,
+        "minWidth": 760,
+        "minHeight": 520,
+        "resizable": true,
+        "decorations": true,
+        "transparent": true,
+        "visible": false,
+        "url": "index.html?surface=conversion"
+      },
+      {
+        "label": "onboarding",
+        "title": "Welcome to VXKey",
+        "width": 560,
+        "height": 520,
+        "resizable": false,
+        "decorations": true,
+        "transparent": true,
+        "visible": false,
+        "url": "index.html?surface=onboarding"
+      }
+    ]
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "app",
+      "dmg"
+    ],
+    "icon": [
+      "../public/app_icon.png"
+    ],
+    "createUpdaterArtifacts": true,
+    "macOS": {
+      "minimumSystemVersion": "26.0",
+      "signingIdentity": "8BC168B5456DE7AC899F77ED81FA4AE98D5CE15D"
+    },
+    "resources": {
+      "../../build/release_helper/VXKeyEngine.app": "VXKeyEngine.app"
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEVCMUE0MzJDQzlFNTRBMUIKUldRYlN1WEpMRU1hNnpWK3NXOVNVTi96VVdxV2x0a3Q4VGIvQnJMU0QwQUREOG1qUTErSmk3WlkK",
+      "endpoints": [
+        "https://github.com/linhbv94/VXKey/releases/latest/download/latest.json"
+      ]
+    }
+  }
+}

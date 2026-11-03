@@ -1,5 +1,7 @@
 # 06. Demo presentation và prototype clickthrough — VXKey
 
+> **Quyết định thay thế 2026-11-02 (v0.8):** [Bộ gõ chạy nền](09_background_driver.md) là hợp đồng kiến trúc hiện hành. VXKey giữ nguồn nhập hiện tại; không cài/chọn Input Source. Các đoạn InputMethodKit/TIS/IME activation dưới đây là lịch sử và không được dùng để triển khai driver mới. Các invariant bảo toàn text, config, policy, UI và clipboard vẫn áp dụng.
+
 > **Skill:** `_spec6_demo_presentation`  
 > **Version:** 0.4.0 — **Ngày cập nhật:** 2026-10-30  
 > **Trạng thái:** Đã soạn để review; chưa được user xác nhận specs ready.  
@@ -23,7 +25,7 @@ Dòng 2 🙂`, và sentinel `goKEEP_THIS_SUFFIX`. Macro fixture `vn` → `Việt
 | 02:10–02:50 | UI English → Tiếng Việt, theme, đóng/mở | Locale/theme persist, chế độ gõ không đổi; Q12 |
 | 02:50–04:10 | Consent history session, copy multiline mới, search/preview/Enter | Exact copy-back, user tự Cmd+V; Q13/14 |
 | 04:10–04:40 | Pause, copy fixture mới, Resume | Không backfill; Q13 |
-| 04:40–05:20 | Chuyển ABC, mở history; đóng companion trong fixture | History dùng dưới ABC; IME độc lập khi companion dừng; Q08 |
+| 04:40–05:20 | Giữ nguồn nhập hiện tại, mở history; đóng companion trong fixture | History tách typing; owned Engine dừng cùng companion; Q08 |
 | 05:20–06:00 | Mở lại, trình bày rollback và known limits | Không hứa Win/Intel/auto-paste/persistence chưa đạt |
 
 Không demo encrypted persistence nếu chỉ M4a; nếu M4b đã đạt thì thêm restart/lock/key-error fixture và không lộ key. Update demo riêng cần hai signed artifacts version khác thật, không fake progress.
@@ -34,14 +36,14 @@ Launcher → onboarding → source status → Settings General → Typing → Ap
 
 ## 4. Contingency và cleanup
 
-Typing lỗi/mất chữ → dừng case, chuyển ABC bằng OS, giữ evidence fixture, không thử trên tài liệu user. IME chưa active → demo UI với nhãn giới hạn, không giả native pass. Permission denied → demo denied/recovery state, không reset TCC. Key lỗi → pause/error, không plaintext fallback. Copy race → giữ panel/retry do user, không overwrite tự động. Xong demo tắt capture, clear fixture history theo mode, trả app policy/macro fixture về trạng thái trước và ghi cleanup; không xóa dữ liệu user hoặc tự uninstall.
+Typing lỗi/mất chữ → dừng case, Pause/quit VXKey, giữ evidence fixture, không thử trên tài liệu user. Driver chưa có quyền/attach → demo UI với nhãn giới hạn, không giả native pass. Permission denied → demo denied/recovery state, không reset TCC. Key lỗi → pause/error, không plaintext fallback. Copy race → giữ panel/retry do user, không overwrite tự động. Xong demo tắt capture, clear fixture history theo mode, trả app policy/macro fixture về trạng thái trước và ghi cleanup; không xóa dữ liệu user hoặc tự uninstall.
 
 FAQ: Tauri dùng chung UI, engine adapter khác; VI/EN không đổi UI locale; history copy-back chưa auto-paste; session history mất khi thoát; filtering không nhận diện mọi secret; clipboard OS/Spotlight/Handoff ngoài kiểm soát VXKey.
 
 
 ## 5. Audience, thông điệp và talk track
 
-Đối tượng: user duyệt sản phẩm và dev/QA nhận bàn giao. Thông điệp: UI thống nhất, bộ gõ vẫn độc lập UI, history có consent và copy-back rõ. Điểm thể hiện chính là mở cùng Settings cho cả platform adapters và IME vẫn hoạt động khi companion dừng trong fixture; không trình diễn Windows runtime khi chưa có.
+Đối tượng: user duyệt sản phẩm và dev/QA nhận bàn giao. Thông điệp: UI thống nhất, bộ gõ vẫn độc lập UI, history có consent và copy-back rõ. Điểm thể hiện chính là mở cùng Settings cho cả platform adapters và Engine ngừng xử lý khi companion dừng trong fixture; không trình diễn Windows runtime khi chưa có.
 
 | Hồi | Screen/flow | Lời thoại gợi ý | Proof cần thấy |
 |---|---|---|---|
@@ -69,7 +71,7 @@ Prototype sử dụng local fixture adapter với badge “Prototype”; mỗi h
 
 | Slide | Nội dung | Visual / tài liệu |
 |---|---|---|
-|1 | Gõ ổn định, UI thống nhất | Native IME + Tauri architecture từ00 |
+|1 | Gõ ổn định, UI thống nhất | Native background driver + Tauri architecture từ00 |
 |2 | Hành trình setup → gõ → app policy | Swimlane01 rút gọn, highlight user lane |
 |3 | Settings và history | Wireframes03 light/dark, không giả ảnh runtime |
 |4 | Điều kiện chất lượng | QA gates05 và support matrix thực có |

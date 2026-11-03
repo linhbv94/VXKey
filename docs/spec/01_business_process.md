@@ -1,5 +1,7 @@
 # 01. Quy trình nghiệp vụ — VXKey
 
+> **Quyết định thay thế 2026-11-02 (v0.8):** [Bộ gõ chạy nền](09_background_driver.md) là hợp đồng kiến trúc hiện hành. VXKey giữ nguồn nhập hiện tại; không cài/chọn Input Source. Các đoạn InputMethodKit/TIS/IME activation dưới đây là lịch sử và không được dùng để triển khai driver mới. Các invariant bảo toàn text, config, policy, UI và clipboard vẫn áp dụng.
+
 > **Skill:** `_spec1_business_process`  
 > **Version:** 0.4.0 — **Ngày cập nhật:** 2026-10-30  
 > **Trạng thái:** Đã soạn để review; chưa được user xác nhận specs ready.  
@@ -13,7 +15,7 @@ Mục tiêu là giữ nhịp nhập liệu của user, cho phép đổi chế đ
 | Lane / actor | Đầu vào | Trách nhiệm | Không sở hữu |
 |---|---|---|---|
 | User | Lựa chọn UI, phím gõ, copy event | Chọn source/consent/mode/entry/action | Không phải tự sửa IPC/config file |
-| Hệ điều hành / app đích | Focus, input source, secure state | Giao input cho IME, clipboard/permissions | Không bảo đảm app đích trả selection đúng |
+| Hệ điều hành / app đích | Focus, keyboard events, secure state | Giao event cho native keyboard driver, clipboard/permissions | Không bảo đảm app đích trả selection đúng |
 | Native IME | Key event, client và config cache | Composition, mode/policy resolve, status | Không host React/history DB/updater |
 | Tauri companion | User actions, typed status | Một tray/UI, config authority, worker coordination | Không nhận raw keystrokes/text quanh caret |
 | Clipboard worker/store | Clipboard snapshot đủ policy | Filter/read/store/search/copy-back | Không tham gia gõ hoặc auto-paste |
@@ -81,7 +83,7 @@ History hoạt động khi dùng ABC nếu companion có consent/access; nhánh 
 
 | Supplier | Input | Process | Output | Customer |
 |---|---|---|---|---|
-| User + OS input source | Key/client/focus | Resolve policy → composition an toàn | Văn bản trong đúng app | User đang gõ |
+| User + native keyboard events | Key/client/focus | Resolve policy → composition an toàn | Văn bản trong đúng app | User đang gõ |
 | User + app metadata | Exact ID và rule | Validate → persist → apply tại boundary | Memory/bypass/block riêng biệt | IME và clipboard worker |
 | Clipboard producer | Types/count/source hints | Filter trước payload → bounded capture | Entry đủ điều kiện hoặc skip | User mở history |
 | User trong history | ID/revision/action copy | Recheck state/count → write snapshot | Clipboard hiện tại hoặc lỗi | User tự paste |
@@ -131,7 +133,7 @@ failure_domains:
 | Điểm gián đoạn | Tác động | Fallback / người chịu trách nhiệm |
 |---|---|---|
 | App trả selection sai | Nguy cơ sửa ngoài vùng user | IME không direct write; QA Q01 trước dogfood |
-| Companion mất kết nối | Không cập nhật UI/config live | IME dùng cache, tray báo unavailable khi có UI |
+| Companion mất kết nối | Driver không còn lease live | Disable tap, raw pass-through, durable latch |
 | Clipboard provider treo | Worker không phản hồi | Worker isolation/recovery; không chặn IME |
 | Signing/IPC identity chưa thiết lập | Không chứng minh peer trust | Chỉ fixture transport, chặn native distributable |
 | Installer đổi được một component | Pair không tương thích | Helper journal restore cả pair trước success |

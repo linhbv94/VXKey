@@ -10,7 +10,10 @@ pub struct Service {
     pub store: ConfigStore,
     pub history: History,
     pub suspended: bool,
-    sequence: u64,
+    pub native: Option<crate::bridge::Observation>,
+    native_target_token: Option<(String, crate::bridge::Target)>,
+    pub native_period: crate::period::NativePeriod,
+    reset_confirmation: Option<(String, String, std::time::Instant)>,
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Surface {
@@ -22,11 +25,151 @@ pub enum Surface {
     Developer,
 }
 impl Service {
+    pub fn accept_native(&mut self, mut status: crate::bridge::NativeStatus, session: String) {
+        if status.validate().is_err() || !crate::config::valid_uuid(&session) {
+            return;
+        }
+        if status.fault.is_some() {
+            status.suspended = true;
+        }
+        // No content enters logs/events. Persist only explicit mode deltas, with a
+        // matching base revision and exact active external target.
+        if let Some(delta) = &status.memory {
+            if status.active
+                && !status.suspended
+                && self.store.config.apps.remember_per_app
+                && delta.base_revision == self.store.config.revision
+                && status
+                    .target
+                    .as_ref()
+                    .is_some_and(|t| t.app_id == delta.app_id)
+            {
+                let mut config = self.store.config.clone();
+                if config.apps.language_memory.get(&delta.app_id) != Some(&delta.mode) {
+                    config
+                        .apps
+                        .language_memory
+                        .insert(delta.app_id.clone(), delta.mode.clone());
+                    let revision = self.store.config.revision.clone();
+                    let _ = self.store.replace(config, &revision);
+                }
+            }
+        }
+        let target = status.target.as_ref().filter(|_| status.active);
+        let same_session = self.native.as_ref().is_some_and(|n| n.session == session);
+        if !same_session || self.native_target_token.as_ref().map(|(_, t)| t) != target {
+            self.native_target_token =
+                target.and_then(|t| crate::bridge::fresh_id().ok().map(|id| (id, t.clone())));
+        }
+        self.suspended = status.suspended;
+        self.native = Some(crate::bridge::Observation {
+            status,
+            seen: std::time::Instant::now(),
+            session,
+        });
+    }
+    pub fn native_snapshot(&self, value: &mut Value) {
+        let Some(observation) = self.native.as_ref().filter(|n| n.fresh()) else {
+            return;
+        };
+        let status = &observation.status;
+        value["capabilities"]["native_engine"] = json!(true);
+        value["runtime"]["connection_status"] = json!("connected");
+        value["runtime"]["driver_fault"] = json!(status.fault);
+        value["runtime"]["driver_status"] = json!(if status.driver.attached {
+            "active"
+        } else {
+            "inactive"
+        });
+        value["runtime"]["driver"] = json!(status.driver);
+        #[cfg(debug_assertions)]
+        {
+            value["runtime"]["driver_diagnostics"] = json!(status.diagnostics);
+        }
+        value["runtime"]["engine_status"] = json!(if status.suspended {
+            "suspended"
+        } else if !status.driver.attached {
+            "unavailable"
+        } else {
+            "ready"
+        });
+        value["runtime"]["health_state"] = json!(if status.suspended {
+            "suspended"
+        } else if !status.driver.attached {
+            "degraded"
+        } else {
+            "healthy"
+        });
+        value["runtime"]["effective_mode"] = json!(if status.suspended {
+            "suspended"
+        } else if !status.active || !status.driver.attached {
+            "unavailable"
+        } else if status.target.as_ref().is_some_and(|t| self
+            .store
+            .config
+            .apps
+            .policies
+            .get(&t.app_id)
+            .is_some_and(|p| p.input_bypass))
+        {
+            "bypass"
+        } else {
+            &status.mode
+        });
+        value["runtime"]["applied_revision"] = json!(status.applied_revision);
+        value["runtime"]["engine_session_id"] = json!(status.engine_session_id);
+        value["runtime"]["runtime_sequence"] = json!(status.loop_sequence);
+        // No OS-frontmost inference. The target originates from the native foreground-app cache.
+        value["runtime"]["current_app"] = if status.active {
+            status
+                .target
+                .as_ref()
+                .map(|target| {
+                    let mut value = serde_json::to_value(target).unwrap_or(Value::Null);
+                    value["display_name"] = json!(target.app_id);
+                    value["input_bypass"] = json!(
+                        self.store
+                            .config
+                            .apps
+                            .policies
+                            .get(&target.app_id)
+                            .is_some_and(|p| p.input_bypass)
+                    );
+                    value["target_token"] = self
+                        .native_target_token
+                        .as_ref()
+                        .map(|(id, _)| json!(id))
+                        .unwrap_or(Value::Null);
+                    value
+                })
+                .unwrap_or(Value::Null)
+        } else {
+            Value::Null
+        };
+    }
     pub fn dispatch_from(&mut self, surface: Surface, request: Value) -> Value {
         let command = request.get("command").and_then(Value::as_str).unwrap_or("");
         let allowed = match surface {
             Surface::Developer => true,
-            Surface::Settings => !matches!(command, "convert_text"),
+            Surface::Settings => [
+                "get_snapshot",
+                "patch_config",
+                "set_app_policy",
+                "forget_app_language",
+                "list_macros",
+                "replace_macros",
+                "register_hotkey",
+                "set_launch_at_login",
+                "set_capture_state",
+                "set_history_mode",
+                "set_windows_history_provider",
+                "prepare_import",
+                "commit_import",
+                "export_config",
+                "reset_preferences",
+                "update_action",
+            ]
+            .contains(&command),
             Surface::Tray => [
                 "get_snapshot",
                 "set_language",
@@ -52,17 +195,39 @@ impl Service {
         self.dispatch(request)
     }
 
+    /// Only a trusted Settings host can mint a short-lived, revision-bound token.
+    pub fn prepare_reset(&mut self, expected: &str) -> Result<String, String> {
+        if expected != self.store.config.revision {
+            return Err("revision_conflict".into());
+        }
+        let id = fresh_id()?;
+        self.reset_confirmation = Some((
+            id.clone(),
+            expected.into(),
+            std::time::Instant::now()
+                .checked_add(std::time::Duration::from_secs(30))
+                .ok_or("unavailable")?,
+        ));
+        Ok(id)
+    }
     pub fn new(store: ConfigStore) -> Self {
         Self {
             store,
             history: History::default(),
             suspended: true,
-            sequence: 0,
+            native: None,
+            native_target_token: None,
+            native_period: crate::period::NativePeriod::Unknown,
+            reset_confirmation: None,
         }
     }
     pub fn dispatch(&mut self, request: Value) -> Value {
-        self.sequence += 1;
-        let id = format!("00000000-0000-4000-8000-{:012x}", self.sequence);
+        let id = match fresh_id() {
+            Ok(id) => id,
+            Err(_) => {
+                return json!({"ok":false,"request_id":null,"data":null,"error":{"code":"unavailable","message_key":"errors.unavailable","retryable":true}});
+            }
+        };
         let result = self.execute(&request);
         match result {
             Ok(data) => json!({"ok":true,"request_id":id,"data":data,"error":null}),
@@ -87,11 +252,21 @@ impl Service {
                 } else {
                     "linux"
                 };
+                let (native_state, control_enabled, period_reason) = match self.native_period {
+                    crate::period::NativePeriod::Enabled => ("enabled", false, "native_enabled"),
+                    crate::period::NativePeriod::Disabled => {
+                        ("disabled", true, "engine_unavailable")
+                    }
+                    crate::period::NativePeriod::NotApplicable => {
+                        ("not_applicable", true, "engine_unavailable")
+                    }
+                    crate::period::NativePeriod::Unknown => ("unknown", false, "checking"),
+                };
                 let mut redacted = serde_json::to_value(config).map_err(|_| "invalid_config")?;
                 redacted["macros"]["entries"] = json!([]);
-                Ok(
-                    json!({"config":redacted,"revision":config.revision,"version":"0.1.0","platform":platform,"capabilities":{"settings":true,"session_history":true,"native_capture":false,"encrypted_history":false,"native_engine":false,"native_shortcuts":false,"autostart":false,"windows_history_provider":false,"conversion_text":true,"conversion_files":false,"updater":false},"runtime":{"engine_status":"unavailable","source_status":"unknown","effective_mode":if self.suspended{"suspended"}else{"unavailable"},"connection_status":"disconnected","health_state":"suspended","applied_revision":"0","period_substitution":{"native_state":"unknown","preference":config.typing.double_space_period,"effective_enabled":false,"control_enabled":false,"reason":"checking"},"current_app":null,"capture_state":if self.history.paused{"paused"}else{"off"}}}),
-                )
+                let mut snapshot = json!({"config":redacted,"revision":config.revision,"version":"0.1.0","platform":platform,"capabilities":{"settings":true,"session_history":true,"native_capture":false,"encrypted_history":false,"native_engine":false,"native_shortcuts":false,"autostart":false,"windows_history_provider":false,"conversion_text":true,"conversion_files":false,"updater":false},"runtime":{"engine_status":"unavailable","driver_status":"unknown","effective_mode":if self.suspended{"suspended"}else{"unavailable"},"connection_status":"disconnected","health_state":"suspended","applied_revision":"0","period_substitution":{"native_state":native_state,"preference":config.typing.double_space_period,"effective_enabled":false,"control_enabled":control_enabled,"reason":period_reason},"current_app":null,"capture_state":if self.history.paused{"paused"}else{"off"}}});
+                self.native_snapshot(&mut snapshot);
+                Ok(snapshot)
             }
             "patch_config" => {
                 fields(r, &["command", "expected_revision", "changes"])?;
@@ -134,7 +309,14 @@ impl Service {
                         if !allowed.contains(&key.as_str()) {
                             return Err("invalid_argument".into());
                         }
-                        if key == "double_space_period" && val == &json!(true) {
+                        if key == "double_space_period"
+                            && val == &json!(true)
+                            && !matches!(
+                                self.native_period,
+                                crate::period::NativePeriod::Disabled
+                                    | crate::period::NativePeriod::NotApplicable
+                            )
+                        {
                             return Err("capability_locked".into());
                         }
                         value[group][key] = val.clone();
@@ -162,13 +344,15 @@ impl Service {
                     return Err("invalid_argument".into());
                 }
                 let mut c = self.store.config.clone();
-                c.apps.policies.insert(
-                    id.into(),
-                    crate::config::AppPolicy {
-                        input_bypass: boolean(r, "input_bypass")?,
-                        clipboard_blocked: boolean(r, "clipboard_blocked")?,
-                    },
-                );
+                let policy = crate::config::AppPolicy {
+                    input_bypass: boolean(r, "input_bypass")?,
+                    clipboard_blocked: boolean(r, "clipboard_blocked")?,
+                };
+                if !policy.input_bypass && !policy.clipboard_blocked {
+                    c.apps.policies.remove(id);
+                } else {
+                    c.apps.policies.insert(id.into(), policy);
+                }
                 self.store.replace(c, string(r, "expected_revision")?)?;
                 Ok(json!({"revision":self.store.config.revision,"apply_state":"unavailable"}))
             }
@@ -342,6 +526,31 @@ impl Service {
                     json!({"text":output.text,"unmapped":pivot.unmapped+output.unmapped,"normalized":pivot.normalized+output.normalized}),
                 )
             }
+            "reset_preferences" => {
+                fields(r, &["command", "expected_revision", "confirmation_id"])?;
+                let expected = string(r, "expected_revision")?;
+                let token = string(r, "confirmation_id")?;
+                let valid =
+                    self.reset_confirmation
+                        .as_ref()
+                        .is_some_and(|(id, revision, expiry)| {
+                            id == token
+                                && revision == expected
+                                && std::time::Instant::now() <= *expiry
+                        });
+                if !valid {
+                    return Err("permission_denied".into());
+                }
+                self.reset_confirmation = None;
+                let defaults = Config::fresh(crate::config::Platform::current());
+                let mut config = self.store.config.clone();
+                config.ui.theme = defaults.ui.theme;
+                config.typing = defaults.typing;
+                self.store.replace(config, expected)?;
+                Ok(
+                    json!({"revision":self.store.config.revision,"preserved_fields":["ui.locale","ui.tray_icon_style","apps","macros","shortcuts","clipboard","system"],"engine_ack_state":"unavailable"}),
+                )
+            }
             "update_action"
             | "set_windows_history_provider"
             | "set_launch_at_login"
@@ -351,14 +560,57 @@ impl Service {
             | "export_config"
             | "copy_history_entry"
             | "clear_history"
-            | "reset_preferences"
             | "set_input_suspended" => Err("unsupported".into()),
-            "set_language" | "set_current_app_bypass" => Err("stale_target".into()),
+            "set_current_app_bypass" => {
+                fields(
+                    r,
+                    &[
+                        "command",
+                        "target_token",
+                        "expected_revision",
+                        "input_bypass",
+                    ],
+                )?;
+                let token = string(r, "target_token")?;
+                let Some((expected, target)) = &self.native_target_token else {
+                    return Err("stale_target".into());
+                };
+                if token != expected
+                    || !self.native.as_ref().is_some_and(|n| {
+                        n.fresh() && n.status.active && n.status.target.as_ref() == Some(target)
+                    })
+                {
+                    return Err("stale_target".into());
+                }
+                let mut config = self.store.config.clone();
+                let policy = config.apps.policies.entry(target.app_id.clone()).or_insert(
+                    crate::config::AppPolicy {
+                        input_bypass: false,
+                        clipboard_blocked: false,
+                    },
+                );
+                policy.input_bypass = boolean(r, "input_bypass")?;
+                if !policy.input_bypass && !policy.clipboard_blocked {
+                    config.apps.policies.remove(&target.app_id);
+                }
+                self.store
+                    .replace(config, string(r, "expected_revision")?)?;
+                Ok(
+                    json!({"revision":self.store.config.revision,"input_bypass":boolean(r,"input_bypass")?,"apply_state":"pending"}),
+                )
+            }
+            "set_language" => Err("stale_target".into()),
             _ => Err("unsupported".into()),
         }
     }
     fn persisted(&self) -> Value {
-        json!({"persisted_revision":self.store.config.revision,"applied_revision":"0","engine_ack_state":"unavailable"})
+        let applied = self
+            .native
+            .as_ref()
+            .filter(|n| n.fresh())
+            .map(|n| n.status.applied_revision.as_str())
+            .unwrap_or("0");
+        json!({"persisted_revision":self.store.config.revision,"applied_revision":applied,"engine_ack_state":if applied==self.store.config.revision {"applied"}else if self.native.as_ref().is_some_and(|n|n.fresh()) {"pending"}else{"unavailable"}})
     }
     fn apply_limits(&mut self) {
         let c = &self.store.config.clipboard;
@@ -396,4 +648,21 @@ fn now() -> u64 {
         .duration_since(UNIX_EPOCH)
         .map(|d| d.as_millis() as u64)
         .unwrap_or(0)
+}
+
+fn fresh_id() -> Result<String, String> {
+    let mut bytes = [0u8; 16];
+    getrandom::fill(&mut bytes).map_err(|_| "unavailable")?;
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    let hex = bytes.iter().map(|b| format!("{b:02x}")).collect::<String>();
+    let id = format!(
+        "{}-{}-{}-{}-{}",
+        &hex[..8],
+        &hex[8..12],
+        &hex[12..16],
+        &hex[16..20],
+        &hex[20..]
+    );
+    Ok(id)
 }

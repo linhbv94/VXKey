@@ -26,14 +26,24 @@ pub(crate) fn drop_stray_u_after_horn_u(buffer: &str, key: char) -> Option<Strin
     if !matches!(u, 'u' | 'U') {
         return None;
     }
-    let (_, horn) = chars.next()?;
+    let (horn_offset, horn) = chars.next()?;
     if shape_on_vowel(horn) != Some(VowelShape::Horn)
         || !base_vowel(horn).is_some_and(|base| base.eq_ignore_ascii_case(&'u'))
     {
         return None;
     }
     let mut text = String::with_capacity(u_offset + key.len_utf8());
-    text.push_str(&buffer[..u_offset]);
+    text.push_str(&buffer[..horn_offset]);
+    let merged_horn = if u.is_uppercase() && horn.is_lowercase() {
+        let upper = apply_shape_to_vowel('U', VowelShape::Horn)?;
+        tone_on_vowel(horn)
+            .and_then(|tone| apply_tone_to_vowel(upper, tone))
+            .unwrap_or(upper)
+    } else {
+        horn
+    };
+    text.push(merged_horn);
+    text.push_str(&buffer[horn_offset + horn.len_utf8()..u_offset]);
     text.push(key);
     Some(text)
 }
@@ -92,4 +102,22 @@ fn replace_and_append(buffer: &str, offset: usize, old: char, new: char, key: ch
     output.push_str(&buffer[offset + old.len_utf8()..]);
     output.push(key);
     output
+}
+
+/// A tone may resolve `ưo` to `uơ` before the next horn key arrives.
+/// Complete the still-plain `u` instead of treating that key as an undo.
+/// Untoned `uơ` keeps its existing repeated-key escape (`uoww` → `uow`).
+pub(crate) fn complete_toned_open_uo_horn(buffer: &str) -> Option<String> {
+    let (u_offset, u) = open_uo_suffix(buffer)?;
+    let o = buffer.chars().last()?;
+    tone_on_vowel(o)?;
+    if glide::at(buffer, u_offset) == Some(Glide::Qu) {
+        return None;
+    }
+    let shaped = apply_shape_to_vowel(u, VowelShape::Horn)?;
+    let mut output = String::with_capacity(buffer.len() + 2);
+    output.push_str(&buffer[..u_offset]);
+    output.push(shaped);
+    output.push_str(&buffer[u_offset + u.len_utf8()..]);
+    Some(output)
 }

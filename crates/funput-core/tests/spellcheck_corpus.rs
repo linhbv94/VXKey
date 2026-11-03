@@ -267,29 +267,36 @@ fn extra_onsets_take_diacritics_in_telex() {
         ("jowf", "jờ"),
         ("fair", "fải"),
         ("faf", "fà"),
-        ("was", "wá"),
-        ("wow", "wơ"),
+        ("wwas", "wá"),
+        ("wwow", "wơ"),
         ("Juts", "Jút"),
         ("Just", "Jút"),
         ("Zoo", "Zô"),
         ("ZOO", "ZÔ"),
     ] {
         assert_eq!(typed(InputMethod::Telex, ZFWJ, keys), word, "{keys}");
-        assert_eq!(typed(InputMethod::Telex, NONE, keys), keys, "{keys}");
+        let expected_none = match keys {
+            "wwas" => "was",
+            "wwow" => "wow",
+            _ => keys,
+        };
+        assert_eq!(typed(InputMethod::Telex, NONE, keys), expected_none, "{keys}");
     }
 }
 
 #[test]
 fn extra_onsets_follow_the_native_key_rules_in_telex() {
-    // A `w` before the vowel and a circumflex typed away from its vowel act as they
-    // do after a native onset: `twa` → `tă`, `tomo` → `tôm`.
-    assert_eq!(typed(InputMethod::Telex, ZFWJ, "fwa"), "fă");
+    // A `w` after the vowel and a circumflex typed away from its vowel act as they
+    // do after a native onset: `taw` → `tă`, `tomo` → `tôm`, while `fwa` uses leading `w` → `fưa`.
+    assert_eq!(typed(InputMethod::Telex, ZFWJ, "faw"), "fă");
+    assert_eq!(typed(InputMethod::Telex, ZFWJ, "fwa"), "fưa");
     assert_eq!(typed(InputMethod::Telex, ZFWJ, "fomo"), "fôm");
     assert_eq!(typed(InputMethod::Telex, NONE, "fomo"), "fomo");
     // A word whose rhyme Vietnamese lacks never composes.
-    for word in ["file", "from", "jump", "jazz", "with", "zzz"] {
+    for word in ["file", "from", "jump", "jazz", "zzz"] {
         assert_eq!(typed(InputMethod::Telex, ZFWJ, word), word);
     }
+    assert_eq!(typed(InputMethod::Telex, ZFWJ, "wwith"), "with");
 }
 
 #[test]

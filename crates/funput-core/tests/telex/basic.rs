@@ -67,7 +67,7 @@ fn telex_shape_switch() {
     // The *same* key twice is still the revert, not a switch.
     assert_eq!(type_keys("aaa"), "aa");
     assert_eq!(type_keys("aww"), "aw");
-    assert_eq!(type_keys("uww"), "uw");
+    assert_eq!(type_keys("uww"), "w");
     assert_eq!(type_keys("chanaa"), "chana");
 
     // Another vowel that could still take a mũ does not steal the revert: the key

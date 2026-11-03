@@ -9,12 +9,16 @@ use crate::input_method::{AdvancedAction, KeyAction};
 pub use modifiers::tone::tone_from_key;
 
 pub fn classify_advanced_key(buffer: &str, key: char) -> AdvancedAction {
-    advanced::classify(buffer, key)
+    advanced::classify(buffer, key, true)
+}
+
+pub fn classify_telex_key(buffer: &str, key: char) -> AdvancedAction {
+    advanced::classify(buffer, key, false)
 }
 
 /// Classify a Telex keystroke into a method-agnostic action.
 pub fn classify_key(buffer: &str, key: char) -> KeyAction {
-    if crate::composition::intent::has_pending(buffer) {
+    if buffer.starts_with(['q', 'Q']) && crate::composition::intent::has_pending(buffer) {
         return KeyAction::DeferredW;
     }
     if let Some(action) = modifiers::stroke::classify(buffer, key) {

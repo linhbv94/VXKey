@@ -18,6 +18,8 @@ crate-type = ["cdylib", "staticlib", "rlib"]
 # `funput-core` directly. **Off by default**: the iOS and Android keyboards link
 # this crate and have no use for the tables, so they never carry them. CI asserts
 # both halves — that the default build is free of it, and that this one compiles.
+vxkey-native-dev = ["vxkey-native", "vxkey-runtime/development-bridge"]
+vxkey-native = ["dep:vxkey-runtime", "dep:serde_json"]
 charset = ["funput-core/charset"]
 convert = ["charset", "dep:funput-convert"]
 
@@ -26,6 +28,9 @@ funput-core = { path = "../funput-core" }
 funput-convert = { path = "../funput-convert", optional = true }
 funput-engine = { path = "../funput-engine" }
 funput-suggestions = { path = "../funput-suggestions" }
+
+vxkey-runtime = { path = "../vxkey-runtime", optional = true }
+serde_json = { version = "1", optional = true }
 
 [dev-dependencies]
 criterion = { version = "0.8", features = ["html_reports"] }

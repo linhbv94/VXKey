@@ -1,7 +1,9 @@
 # 02. Feature flow và state diagrams — VXKey
 
+> **Quyết định thay thế 2026-11-02 (v0.8):** [Bộ gõ chạy nền](09_background_driver.md) là hợp đồng kiến trúc hiện hành. VXKey giữ nguồn nhập hiện tại; không cài/chọn Input Source. Các đoạn InputMethodKit/TIS/IME activation dưới đây là lịch sử và không được dùng để triển khai driver mới. Các invariant bảo toàn text, config, policy, UI và clipboard vẫn áp dụng.
+
 > **Skill:** `_spec2_feature_flow`  
-> **Version:** 0.5.1 — **Ngày cập nhật:** 2026-10-30  
+> **Version:** 0.7.0 — **Ngày cập nhật:** 2026-10-30
 > **Trạng thái:** Đã soạn để review; chưa được user xác nhận specs ready.  
 > **Đối tượng:** Dev, UI/UX, QA và AI Execution Agents.  
 > **Nguồn scope:** [Tổng quan](00_system_overview.md); quyết định UI Tauri chung Mac/Windows của user.
@@ -10,7 +12,7 @@
 
 | Flow ID | Trigger / actor | Precondition | Success exit | Error / alternative exit |
 |---|---|---|---|---|
-| FL01 | User mở launcher/onboarding | Companion chạy được | Source readback active + ready | Để sau/missing IME/other source, không fake ready |
+| FL01 | User mở launcher/onboarding | Companion chạy được | Helper/permission/tap readback + ready | Để sau/missing helper/missing permission, không fake ready |
 | FL02 | User gõ | Client/source hợp lệ | Text update đúng vùng | Secure/bypass/pass-through; unsafe range skip |
 | FL03 | Mode action/hotkey | Target snapshot hợp lệ hoặc global action rõ | Applied mode, persistence status đúng | stale_target/unavailable/persist_failed |
 | FL04 | User thêm/sửa app policy | Exact app ID xác nhận | Rule saved và runtime boundary ack | Cancel/conflict/client changed |
@@ -24,18 +26,18 @@
 
 ```text
 language_mode = vi | en
-source_status = vxkey_active | other_source | unknown
+driver_status = active | inactive | unknown
 engine_status = ready | unavailable
 connection_status = connected | disconnected | incompatible
 composition_state = idle | composing | quiescing
 clipboard_state = off | monitoring | paused | locked | denied | store_error
 ```
 
-Resolve tray: health suspended → effective_mode=suspended (neutral icon, saved mode không mất); sau đó source other → inactive; source unknown hoặc stale/disconnected → unavailable; active nhưng engine unavailable → unavailable; active + exact app bypass → bypass; còn lại language_mode. Memory chỉ resolve khi focus vào external app có identity xác định. Không xác định app thì không lưu memory, áp global và chọn preedit; clipboard source ambiguity bị skip.
+Resolve tray: health suspended → effective_mode=suspended (neutral icon, saved mode không mất); sau đó driver inactive → inactive; driver unknown hoặc stale/disconnected → unavailable; active nhưng engine unavailable → unavailable; active + exact app bypass → bypass; còn lại language_mode. Memory chỉ resolve khi focus vào external app có identity xác định. Không xác định app thì không lưu memory, áp global và chuyển phím nguyên bản; clipboard source ambiguity bị skip.
 
 ## 2. Onboarding
 
-Mở launcher → companion single-instance → chọn locale → giới thiệu bộ gõ → kiểm IME bundle/version → hướng dẫn Add Input Source bằng OS UI → readback source active → test trên ô fixture → clipboard opt-in riêng → hoàn tất. “Để sau” ở input source không giả ready, vẫn vào Settings/history nếu user bật. Không tự chọn input source hoặc xin Accessibility cho typing/copy-back. Onboarding luôn mở lại được.
+Mở VXKey → companion tự mở embedded Engine → chọn locale → giải thích quyền xử lý phím → user chọn thiết lập quyền → OS prompt/System Settings do user cấp → status readback → explicit Resume → thử gõ trong app fixture → clipboard opt-in riêng. Bỏ qua quyền vẫn vào Settings; không báo typing ready. Không thêm/chọn Input Source; nguồn nhập hiện tại được giữ nguyên.
 
 ## 3. Toggle, focus và pending
 
@@ -63,18 +65,9 @@ Companion không phản hồi: toggle vẫn gõ/đổi được trong session; k
 
 ## 4. Composition safety
 
-| Event | Hành động |
-|---|---|
-| Phím thông thường, bypass | Trả nguyên input, không engine/macro |
-| Secure field / secure input | Tôn trọng OS, không đọc/rewrite text; không bypass bảo vệ OS |
-| Direct rewrite | Kiểm client/focus generation, range UTF-16, text vùng sở hữu; selection không-zero hoặc selection đáng ngờ → không direct rewrite |
-| Không đủ bằng chứng range | Không destructive write; ngừng direct session, chuyển preedit cho session mới |
-| Client cũ còn hợp lệ khi đổi config/source | Commit marked text bằng API client cũ, rồi reset |
-| Client cũ không còn hợp lệ | Clear internal buffer, không write vào client mới; không tự replay phím |
-| Config engine đổi khi composing | Queue config revision tới idle hoặc kết thúc session an toàn; UI hiện pending |
-| Bật bypass giữa session | Quiesce client cũ trước; nếu không thể chứng minh client, clear nội bộ và bypass; không retone muộn |
+Background driver không có IMK marked text hoặc lựa chọn preedit. Engine trả delta xóa/chèn; native driver chỉ áp trên suffix do chính phiên hiện tại sở hữu, AX worker xác minh collapsed caret/element/range, snapshot còn hạn, PID/focus không đổi. Không biết context → raw pass-through và reset. Secure input, bypass, modifier/navigation thắng engine/macro/retone. Chi tiết state/edit/readback ở [spec09](09_background_driver.md).
 
-Không hứa fallback sửa được mọi client. Nếu client không hỗ trợ an toàn, báo limitation và hướng dẫn ABC; không toggle direct tự động vì tên app có trong trust list.
+Không chọn một app vào trust list để bỏ qua range proof. Fast typing/focus race và ứng dụng không hỗ trợ AX là gate native còn mở; không quảng cáo app coverage từ fixture.
 
 ## 5. App policy và config
 
@@ -84,7 +77,7 @@ Settings safe change → validate → persist revision → phát config event �
 
 ## 6. Panel và lifecycle
 
-History hotkey → snapshot external app → show panel/focus search. Escape/click ngoài đóng; không auto-paste hoặc auto restore clipboard. Copy thành công đóng panel; failure giữ panel và selection. OS lock → đóng panel, xóa search/preview/decrypted cache; resume baseline clipboard mới. Quit companion dừng history/tray/UI, nhắc IME còn hoạt động; không kill IME. Disable input source là action OS riêng. Update quiesce theo install spec.
+History hotkey → snapshot external app → show panel/focus search. Escape/click ngoài đóng; không auto-paste hoặc auto restore clipboard. Copy thành công đóng panel; failure giữ panel và selection. OS lock → đóng panel, xóa search/preview/decrypted cache; resume baseline clipboard mới. Quit companion dừng history/tray/UI và đúng owned Engine child. Engine mất parent tự thoát; không đổi nguồn nhập. Update quiesce theo install spec.
 
 
 ## 7. State diagrams và transition matrix
@@ -196,7 +189,7 @@ sequenceDiagram
 
 ### `FL03.set_language`
 
-Preconditions: source VXKey active, connection compatible, external target token(session/PID/app/generation) hợp lệ. Steps: validate mode → IME revalidate token → apply mode tại safe boundary → trả applied session sequence → companion commit memory nếu chưa có config conflict. Postconditions: UI chỉ báo applied khi có ack; disk failure không phủ nhận mode đã đổi trong session, hiện applied_not_saved và retry persistence có kiểm revision. Disconnect trước ack → outcome_unknown, query status khi reconnect, không gửi lại mode mutation mù quáng.
+Preconditions: background driver hoạt động, connection compatible, external target token(session/PID/app/generation) hợp lệ. Steps: validate mode → IME revalidate token → apply mode tại safe boundary → trả applied session sequence → companion commit memory nếu chưa có config conflict. Postconditions: UI chỉ báo applied khi có ack; disk failure không phủ nhận mode đã đổi trong session, hiện applied_not_saved và retry persistence có kiểm revision. Disconnect trước ack → outcome_unknown, query status khi reconnect, không gửi lại mode mutation mù quáng.
 
 ### `FL05.patch_config`
 
@@ -225,7 +218,7 @@ Trigger: user click icon menubar/system tray rồi chọn action theo app. Preco
 3. Click gửi desired boolean, expected_revision và target_token; không gửi thao tác toggle mù để double-click thành bật lại.
 4. Host serialize mutation, validate revision và token còn thuộc panel đang mở, app/PID chưa mất, không có external focus change. VXKey UI lấy focus không làm target stale; chuyển sang external app khác thì stale_target.
 5. Persist riêng input_bypass cho exact app ID; giữ clipboard_blocked và language_memory. Nếu chưa có policy thì clipboard_blocked default false. Khi disable bypass=false và cả hai flags false có thể remove policy record, vẫn giữ memory.
-6. Publish revision cho IME. Có composition cũ thì quiesce đúng client theo mục4 trước runtime bypass; không commit vào client mới. Chưa có IME/source active thì vẫn lưu policy, UI ghi saved/pending_engine đúng trạng thái; không tự chọn nguồn nhập.
+6. Publish revision cho IME. Có composition cũ thì quiesce đúng client theo mục4 trước runtime bypass; không commit vào client mới. Chưa có native driver connected thì vẫn lưu policy, UI ghi saved/pending_engine đúng trạng thái; không tự chọn nguồn nhập.
 7. Success đóng panel. Persist failure giữ menu và báo error, không giả rule mới. Engine apply pending không giả runtime đã áp, trạng thái tiếp theo lấy ack.
 
 Postconditions: Settings→Applications phản ánh cùng rule sau restart. App khác không đổi. Bật lại chỉ gỡ hard bypass, dùng mode đã nhớ/default; không tự bật clipboard hoặc ép VI. Token vô hiệu khi panel đóng, process target thoát hoặc external app đổi. Reopen tạo token mới; host kiểm token, không tin app_name/UI app ID.
@@ -234,7 +227,7 @@ Postconditions: Settings→Applications phản ánh cùng rule sau restart. App 
 
 Native input backend sở hữu punctuation, không WebView/clipboard listener/global remapper. `double_space_period` là stored preference. Fresh config: macOS=false, Windows=true; có giá trị explicit thì giữ, không tính lại mỗi startup/update/import. Runtime native state không lưu như grant vĩnh viễn.
 
-Preconditions: VXKey backend đang active, không hard bypass/secure input; tính năng enabled, native owner cho phép; biết đúng client/focus/caret/selection và sở hữu Space thứ nhất. VI/EN đều có thể dùng punctuation, còn hard bypass thắng. App dùng ABC trên Mac không được companion inject tính năng này toàn máy.
+Preconditions: VXKey backend đang active, không hard bypass/secure input; tính năng enabled, native owner cho phép; biết đúng client/focus/caret/selection và sở hữu Space thứ nhất. VI/EN đều có thể dùng punctuation, còn hard bypass thắng. App dùng ABC vẫn có thể dùng driver native khi đã được chứng minh context; companion/WebView không inject phím.
 
 1. Space thứ nhất là unmodified keydown, không autorepeat/paste/programmatic; finalize composition/macro ở boundary như upstream và giữ đúng một U+0020 đã được client xác nhận. Lưu token gồm session/client/focus_generation/caret, monotonic time và edit revision; không gửi text ra companion.
 2. Space thứ hai phải là distinct unmodified keydown trong500ms; trước Space đầu có grapheme letter/digit do session xác minh. Không áp đầu dòng, sau whitespace/tab/newline hoặc punctuation `.?!,:;`; không sửa indentation.
@@ -269,3 +262,8 @@ FL14: System radio serious/playful→patch_config.ui.tray_icon_style→persist r
 Windows Settings→Clipboard provider native/VXKey. Native: không intercept, OS popup hoạt động. VXKey: explicit user selection→native scoped routing preflight/ack→persist+effective route→Win+V mở đúng1S05. Access/capture chưa consent chỉ mở off/consent surface, không tự monitor.
 
 Đổi về native, quit/crash/safety suspend hoặc route unhealthy→remove/release interception và verify→native hiệu lực. Restore failure phải hiện unknown/unavailable, không giả Windows đã nhận key. Không xóa hoặc đồng bộ history stores, không đổi OS global clipboard policy. State/commands chi tiết04 mục16; Q42 kiểm both directions và fault. Ctrl+Win+V không thuộc rule Win+V, vẫn tới OS; mode modifier-only candidate cancel khi có V.
+
+
+## Native bridge v0.8 — flow hiện hành
+
+Protocol2, component engine, engine_session_id, native foreground target và driver permission/attached status. Saved config và applied revision riêng. Pause disable tap, Resume là readiness ACK rồi host clear latch rồi mới enable. Bridge/worker/main-loop lỗi → suspended, không TIS fallback hoặc tự reattach. Chi tiết [API04](04_api_data.md), [resilience08](08_keyboard_resilience.md), [driver09](09_background_driver.md).

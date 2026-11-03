@@ -16,7 +16,14 @@ use crate::FunputEngine;
 /// panic never crosses the `extern "C"` boundary into the host (Swift/C++). An
 /// engine bug thus drops one keystroke instead of aborting the IME process.
 pub(crate) fn safe<T>(default: T, operation: impl FnOnce() -> T) -> T {
-    catch_unwind(AssertUnwindSafe(operation)).unwrap_or(default)
+    match catch_unwind(AssertUnwindSafe(operation)) {
+        Ok(value) => value,
+        Err(_) => {
+            #[cfg(feature = "vxkey-native")]
+            NATIVE_FAULT.store(true, std::sync::atomic::Ordering::Release);
+            default
+        }
+    }
 }
 
 /// Run `op` against the engine behind a `*mut` handle, guarded by [`safe`]. A null
@@ -44,4 +51,21 @@ pub(crate) unsafe fn with_engine_ref<R: Default>(
     safe(R::default(), || {
         unsafe { engine.as_ref() }.map_or_else(R::default, |e| op(&e.inner))
     })
+}
+
+// A panicked engine is never resumed in-place. The native shell bypasses it until
+// process restart, then the durable recovery marker still requires explicit Resume.
+#[cfg(feature = "vxkey-native")]
+static NATIVE_FAULT: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+#[cfg(feature = "vxkey-native")]
+pub(crate) fn native_faulted() -> bool {
+    NATIVE_FAULT.load(std::sync::atomic::Ordering::Acquire)
+}
+#[cfg(all(test, feature = "vxkey-native"))]
+#[test]
+fn native_panic_latches_fault_without_unwinding_across_ffi() {
+    assert_eq!(safe(7, || panic!("synthetic engine fault")), 7);
+    assert!(native_faulted());
+    assert_eq!(safe(9, || 11), 11);
+    assert!(native_faulted());
 }

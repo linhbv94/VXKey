@@ -98,3 +98,6 @@ pub use suggestion::{
     funput_suggestion_reset, funput_suggestion_stats, funput_suggestion_syllable_tier,
     funput_suggestion_syllable_weight,
 };
+
+#[cfg(all(feature = "vxkey-native", target_os = "macos"))]
+mod vxkey_native;

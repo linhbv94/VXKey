@@ -219,7 +219,7 @@
                   "minimum": 1,
                   "maximum": 2147483647
                 },
-                "ime_session_id": {
+                "engine_session_id": {
                   "type": "string",
                   "format": "uuid"
                 },
@@ -232,7 +232,7 @@
               "required": [
                 "app_id",
                 "pid",
-                "ime_session_id",
+                "engine_session_id",
                 "focus_generation"
               ]
             }
@@ -915,6 +915,65 @@
             "command",
             "expected_revision",
             "provider"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "command": {
+              "const": "convert_text"
+            },
+            "text": {
+              "type": "string",
+              "maxLength": 1048576,
+              "description": "Semantic limit: at most 1 MiB UTF-8 bytes."
+            },
+            "from_charset": {
+              "enum": [
+                "unicode",
+                "tcvn3",
+                "vni_windows",
+                "unicode_combining"
+              ]
+            },
+            "to_charset": {
+              "enum": [
+                "unicode",
+                "tcvn3",
+                "vni_windows",
+                "unicode_combining"
+              ]
+            },
+            "transforms": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "upper",
+                  "lower",
+                  "no_diacritics",
+                  "sentence",
+                  "title"
+                ]
+              },
+              "maxItems": 5,
+              "uniqueItems": true
+            },
+            "keep_d": {
+              "type": "boolean"
+            },
+            "flatten_caps": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "command",
+            "text",
+            "from_charset",
+            "to_charset",
+            "transforms",
+            "keep_d",
+            "flatten_caps"
           ]
         }
       ]

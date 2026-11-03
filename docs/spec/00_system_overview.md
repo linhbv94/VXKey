@@ -1,16 +1,18 @@
 # 00. Tổng quan hệ thống — VXKey
 
+> **Quyết định thay thế 2026-11-02 (v0.8):** [Bộ gõ chạy nền](09_background_driver.md) là hợp đồng kiến trúc hiện hành. VXKey giữ nguồn nhập hiện tại; không cài/chọn Input Source. Các đoạn InputMethodKit/TIS/IME activation dưới đây là lịch sử và không được dùng để triển khai driver mới. Các invariant bảo toàn text, config, policy, UI và clipboard vẫn áp dụng.
+
 > **Skill:** `_spec0_system`  
-> **Version:** 0.5.1 — **Ngày cập nhật:** 2026-10-30  
+> **Version:** 0.7.0 — **Ngày cập nhật:** 2026-10-30
 > **Trạng thái:** Đã soạn để review; chưa được user xác nhận specs ready.  
 > **Đối tượng:** Dev, UI/UX, QA và AI Execution Agents.  
 > **Nguồn scope:** [Tổng quan](00_system_overview.md); quyết định UI Tauri chung Mac/Windows của user.
 
 ## 1. Mục tiêu, alternatives và scope
 
-Bộ gõ Việt Mac trước, bảo toàn văn bản, dễ đổi VI/EN, quản lý app policy và có clipboard history tích hợp. User chọn Tauri UI chung với Windows: chấp nhận thêm WebView/IPC để tái sử dụng layout/copy/Settings, giữ engine native để không tăng latency nhập liệu. Phương án giữ SwiftUI ít packaging hơn nhưng không đạt mục tiêu UI chung; viết lại IME bằng event tap/JS tăng rủi ro và không được chọn.
+Bộ gõ Việt Mac trước, bảo toàn văn bản, dễ đổi VI/EN, quản lý app policy và có clipboard history tích hợp. User chọn Tauri UI chung với Windows: chấp nhận thêm WebView/IPC để tái sử dụng layout/copy/Settings, giữ engine native để không tăng latency nhập liệu. Phương án giữ SwiftUI ít packaging hơn nhưng không đạt mục tiêu UI chung; driver native dùng event tap; không đưa phím qua JS.
 
-Upstream Mac hiện có IMKServer + InputMethodKit và SwiftUI MenuBarExtra/Settings/onboarding trong cùng process; việc tách UI sang companion là thay đổi kiến trúc có chủ đích, phải migration theo từng milestone. Upstream Windows có hook/SendInput + Slint; Tauri thay lớp UI, không tự đổi backend thành TSF. Chưa có native acceptance Windows.
+Upstream Mac dùng InputMethodKit/SwiftUI; VXKey chỉ tái sử dụng Rust engine/C ABI và logic cấu hình phù hợp. Host hiện hành là background keyboard driver (CoreGraphics/AppKit/AX), không giữ IMKServer. Upstream Windows có hook/SendInput + Slint; Tauri thay lớp UI, không tự đổi backend thành TSF. Chưa có native acceptance Windows.
 
 ## 2. Kiến trúc đích
 
@@ -18,14 +20,14 @@ Upstream Mac hiện có IMKServer + InputMethodKit và SwiftUI MenuBarExtra/Sett
 flowchart LR
     ui[React UI chung vi/en] --> host[Tauri Rust companion]
     host --> clip[Clipboard worker và history]
-    host <-->|IPC có xác thực, config và status| mac[Swift InputMethodKit host]
+    host <-->|IPC có xác thực, config và status| mac[Swift background keyboard driver]
     mac --> ffi[C ABI]
     ffi --> core[Rust core và engine]
     host <-->|Adapter native sau| win[Windows input backend]
     win --> core
 ```
 
-Companion sở hữu đúng một tray/status item, UI, config authority, clipboard và updater coordinator. IME có cache config last-known-good, status snapshot và composition state riêng; không chờ companion trên từng phím. Companion không nhận raw keystrokes, surrounding text hoặc composition buffer. Tắt/chết UI vẫn gõ được; tắt IME không tắt clipboard. React dùng Tauri commands đã allowlist, không localhost HTTP server.
+Companion sở hữu đúng một tray/status item, UI, config authority, clipboard và updater coordinator. Native driver có cache config last-known-good, status snapshot và composition state riêng; không chờ companion trên từng phím. Companion không nhận raw keystrokes, surrounding text hoặc composition buffer. Đóng window hoặc WebView lỗi không chặn input khi native host/bridge vẫn healthy. Safety profile v0.7: companion process/bridge chết → ngừng transforms, plain pass-through khi callback còn chạy và durable latch; cần explicit Resume. Pause typing không tắt clipboard. React dùng Tauri commands đã allowlist, không localhost HTTP server.
 
 ## 3. Requirement registry
 
@@ -39,7 +41,7 @@ Companion sở hữu đúng một tray/status item, UI, config authority, clipbo
 | KEY06 | Panel/Settings/helper nội bộ không tạo memory entry hoặc consume pending choice |
 | KEY07 | Tray hiển thị mode hiệu lực; mất snapshot không báo live sai |
 | KEY08 | WebView/clipboard/DB/helper lỗi không chặn IME hot path |
-| KEY09 | Install/update/uninstall chỉ tác động ownership VXKey, rollback giữ ABC/Funput |
+| KEY09 | Install/update/uninstall chỉ tác động ownership VXKey, rollback giữ nguồn nhập và bộ gõ khác |
 | KEY10 | Có recovery bằng mouse/native/OS khi input lỗi; fault injection bắt buộc trước daily-driver |
 | TYP01 | Giữ đủ upstream desktop typing/settings/utilities; gap công nghệ có evidence |
 | TYP02 | Double-space defaults Mac off/Win on, macOS native interlock, rewrite an toàn |

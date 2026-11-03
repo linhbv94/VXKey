@@ -1,0 +1,26 @@
+{
+  "menubar_serious_vi": {
+    "source_sha256": "0c4a4827d9eb7b1b20373007b24f25573b7ac90d3a135219b77fe1dfd8b01cb9",
+    "rgba_sha256": "c3b461804b7e1c71834d6eec6679d4830811741eefcb06498178053bbe94a828",
+    "width": 36,
+    "height": 36
+  },
+  "menubar_serious_en": {
+    "source_sha256": "e252fe3b6f28316d686d8f986ce3ba082213feef5920f5c415d17e98ce90739e",
+    "rgba_sha256": "fb22a4163148c61556056c648d91b956e658674d76641b76adadefcb6fe81312",
+    "width": 36,
+    "height": 36
+  },
+  "menubar_playful_vi": {
+    "source_sha256": "f1c61a73b67fce646462777c4c74b73e700f16eba5456e801f57ea705562ddeb",
+    "rgba_sha256": "20d729a332cff74dadc459850cbc140e8fc484202acbba370d6f136da4f13efa",
+    "width": 36,
+    "height": 36
+  },
+  "menubar_playful_en": {
+    "source_sha256": "60ce2fec8bc0e45bb7849c3c9dd0623e987783db92c6e8abe3917c2c99694b38",
+    "rgba_sha256": "7c363750b5b38d774b59f7d6cc94256895e7f58e2d947103c276b6e07a1c552f",
+    "width": 36,
+    "height": 36
+  }
+}

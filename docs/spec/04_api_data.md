@@ -1,7 +1,9 @@
 # 04. API contracts, data model và integration — VXKey
 
+> **Quyết định thay thế 2026-11-02 (v0.8):** [Bộ gõ chạy nền](09_background_driver.md) là hợp đồng kiến trúc hiện hành. VXKey giữ nguồn nhập hiện tại; không cài/chọn Input Source. Các đoạn InputMethodKit/TIS/IME activation dưới đây là lịch sử và không được dùng để triển khai driver mới. Các invariant bảo toàn text, config, policy, UI và clipboard vẫn áp dụng.
+
 > **Skill:** `_spec4_api_data`  
-> **Version:** 0.5.1 — **Ngày cập nhật:** 2026-10-30  
+> **Version:** 0.7.0 — **Ngày cập nhật:** 2026-10-30
 > **Trạng thái:** Đã soạn để review; chưa được user xác nhận specs ready.  
 > **Đối tượng:** Dev, UI/UX, QA và AI Execution Agents.  
 > **Nguồn scope:** [Tổng quan](00_system_overview.md); quyết định UI Tauri chung Mac/Windows của user.
@@ -46,7 +48,7 @@ macOS đề xuất authenticated local Unix-domain socket trong per-user runtime
 
 Frame: uint32 big-endian byte length + UTF-8 JSON; tối đa2MiB; reject invalid/oversized frame, disconnect. Message `{protocol_version:1,request_id:UUID,session_id:UUID,sequence:counter_string,type:enum,payload:object}`; duplicate/out-of-order sequence rejected. Handshake trao component/version/config_revision; protocol mismatch → incompatible, không apply. Allowed types handshake/status/config_snapshot/config_ack/set_language/language_result/memory_delta/quiesce/quiesce_ack. Payload typed như core/flow; unknown type/field rejected. Clipboard body/raw key/text context không có message type.
 
-Snapshot status: source_status, engine_status, effective_mode, target(nullable DTO ở mục9), focus_generation counter_string, applied_revision, composing bool; không document title hoặc text. Heartbeat1s; mất3 heartbeat → stale/unavailable, reconnect backoff1/2/4/8/30s; không poll trên key handler. UI command timeout2s không giả success; IME apply ack có revision, async; quiesce deadline5s, timeout chặn install. Đồng bộ config không yêu cầu disk/network trên IME hot path. Replay command cũ sau reconnect bị từ chối bởi session_id/generation.
+Snapshot status: driver_status, engine_status, effective_mode, target(nullable DTO ở mục9), focus_generation counter_string, applied_revision, composing bool; không document title hoặc text. Heartbeat1s; mất3 heartbeat → stale/unavailable, reconnect backoff1/2/4/8/30s; không poll trên key handler. UI command timeout2s không giả success; IME apply ack có revision, async; quiesce deadline5s, timeout chặn install. Đồng bộ config không yêu cầu disk/network trên IME hot path. Replay command cũ sau reconnect bị từ chối bởi session_id/generation.
 
 ## 6. Errors và concurrency
 
@@ -59,7 +61,7 @@ Outcome `{ok:boolean,request_id,data|null,error|null}`; error `{code,message_key
 
 Không public REST/GraphQL endpoint. UI gọi `invoke("vxkey_command", {request: DTO})`; DTO có discriminator `command` đúng registry; mọi DTO field snake_case, reject unknown fields. Mọi response dùng envelope ở mục6, không lẫn Tauri reject string tùy ý. Request_id UUID do host cấp/gắn correlation cho response, không gửi text vào error detail. Các uint64 crossing JS được encode decimal string (regex `^(0|[1-9][0-9]{0,19})$`, range≤18446744073709551615), không JSON number vượt precision JS. Các counter/config schema trong package dùng representation string thống nhất, default revision `"1"`.
 
-[config_schema.json](config_schema.json) là schema normative của config trên disk/DTO; [config_example.json](config_example.json) là valid example; [command_schema.json](command_schema.json) là request union cho toàn bộ25commands trong registry. Semantic validators bổ sung byte length, duplicate keys, identity ownership và peer trust; JSON Schema không chứng minh những điều đó.
+[config_schema.json](config_schema.json) là schema normative của config trên disk/DTO; [config_example.json](config_example.json) là valid example; [command_schema.json](command_schema.json) là request union cho toàn bộcommands trong registry. Semantic validators bổ sung byte length, duplicate keys, identity ownership và peer trust; JSON Schema không chứng minh những điều đó.
 
 ### 7.2. Commands chi tiết
 
@@ -70,7 +72,7 @@ Không public REST/GraphQL endpoint. UI gọi `invoke("vxkey_command", {request:
 |---|---|---|---|
 | get_snapshot | object rỗng | config_without_macro_bodies + runtime + capabilities + revision | Không đọc history; macro bodies qua macro tab riêng |
 | patch_config | expected_revision:string, changes:typed partial object | persisted_revision:string, applied_revision:string, engine_ack_state:applied/pending/unavailable | Reject protected clipboard consent/autostart/identity fields; revision_conflict |
-| set_language | mode:vi/en, target:{app_id,pid,ime_session_id,focus_generation} | language_mode, runtime_sequence:string, persistence:saved/pending/failed | stale_target, outcome_unknown; không retry mutation mù |
+| set_language | mode:vi/en, target:{app_id,pid,engine_session_id,focus_generation} | language_mode, runtime_sequence:string, persistence:saved/pending/failed | stale_target, outcome_unknown; không retry mutation mù |
 | set_app_policy | expected_revision, app_id, input_bypass:bool, clipboard_blocked:bool | revision, apply_state | Exact ID; không sửa memory ngầm |
 | forget_app_language | expected_revision, app_id | revision, removed:bool | Idempotent theo data, revision still checked |
 | list_apps | query≤256scalars, limit1..100, offset0..10000 | items[{app_id,display_name,path,availability}], has_more | Không quét ổ đĩa nội dung user |
@@ -228,7 +230,7 @@ Frame/session/auth ở mục5 là yêu cầu đề xuất cần spike chứng mi
 | Type | Direction | Required payload |
 |---|---|---|
 | handshake | Hai chiều | component:ime/companion, app_version, protocol_version:1, config_revision, peer_nonce |
-| status | IME→host | source_status, engine_status, effective_mode, target nullable, applied_revision, composing:bool, runtime_sequence |
+| status | IME→host | driver_status, engine_status, effective_mode, target nullable, applied_revision, composing:bool, runtime_sequence |
 | config_snapshot | Host→IME | config_revision, typing, macros, remember_per_app, language_memory, input_policies; không UI/history/clipboard |
 | config_ack | IME→host | config_revision, apply_state:applied/pending/rejected, error_code nullable |
 | set_language | Host→IME | mode, target, expected_runtime_sequence |
@@ -237,13 +239,13 @@ Frame/session/auth ở mục5 là yêu cầu đề xuất cần spike chứng mi
 | quiesce | Host→IME | job_id, deadline_utc |
 | quiesce_ack | IME→host | job_id, state:idle/busy, applied_revision |
 
-Target DTO: app_id external exact ID, pid positive int32, ime_session_id UUID, focus_generation counter string. Internal UI opening does not invalidate target token by itself; external focus change/client change increments generation. Track original external target separately from OS frontmost UI, otherwise menu click would make every command stale. Source change invalidates token. Quiesce ack không là quyền kill process của OS.
+Target DTO: app_id external exact ID, pid positive int32, engine_session_id UUID, focus_generation counter string. Internal UI opening does not invalidate target token by itself; external focus change/client change increments generation. Track original external target separately from OS frontmost UI, otherwise menu click would make every command stale. Source change invalidates token. Quiesce ack không là quyền kill process của OS.
 
-Heartbeat dùng status, monotonic runtime_sequence; no replay queue across sessions. Schema version mismatch → companion read-only incompatible; protocol mismatch → IME cached operation, UI unavailable. Pair install tương thích theo manifest, không tự downgrade schema để reconnect.
+Heartbeat dùng status, monotonic runtime_sequence; no replay queue across sessions. Schema version mismatch → companion read-only incompatible; protocol mismatch → incompatible/suspended theo safety profile v0.7, UI unavailable. Pair install tương thích theo manifest, không tự downgrade schema để reconnect.
 
 ## 10. Shortcut ownership
 
-`toggle` và `flip` do IME xử lý trong client khi VXKey source active, không companion global listener thứ hai. Khi companion chết, IME dùng validated shortcut cache, vì vậy typing/mode toggle vẫn hoạt động. Validator reject tổ hợp OS-reserved đã biết, duplicate với history shortcut, unsupported modifier-only cho flip/history và unsupported key; không tuyên bố phát hiện được mọi xung đột shortcut bên trong app khác. Companion sửa shortcut qua config và nhận IME ack ở safe boundary.
+`toggle` và `flip` do IME xử lý trong client khi VXKey source active, không companion global listener thứ hai. Khi chỉ đóng Settings window, native owner vẫn chạy và shortcut cache vẫn dùng được. Khi companion process/bridge chết, safety profile v0.7 ngừng transforms/mode toggle tới explicit Resume; không tiếp tục offline typing. Validator reject tổ hợp OS-reserved đã biết, duplicate với history shortcut, unsupported modifier-only cho flip/history và unsupported key; không tuyên bố phát hiện được mọi xung đột shortcut bên trong app khác. Companion sửa shortcut qua config và nhận IME ack ở safe boundary.
 
 `history` do companion đăng ký global hotkey qua platform API; quit companion giải phóng registration. Register failure không persist active giả, đổi shortcut thành null là unregister. Không event tap/Input Monitoring chỉ để lấy shortcut. Một action không được có hai owner hoặc hai listener. Windows adapter phải đạt cùng ownership contract trước expose shortcut như supported. Win+V provider route là ngoại lệ scoped ở mục16, không đi registration generic.
 
@@ -271,7 +273,7 @@ Trong patch_config, typing.double_space_period=true trên Mac khi native enabled
 
 ## 13. Conversion integration boundary
 
-S08 giữ API session của `funput-convert` hiện có và port presentation sang React; không gọi IME IPC cho văn bản/tệp conversion. Companion Rust link crate, worker riêng, không kéo clipboard polling vào engine. Trước M3 conversion phải expose typed wrappers và generate DTO từ session/view/actions của pinned upstream, bổ sung vào command_schema; schema command registry hiện tại chưa bao gồm wrappers conversion, đây là integration gate chưa được giải quyết chứ không capability bị loại. Mapping giữ ConvertAction paste/pickFiles/setInput/setSource/setTarget/setRowSource/copyResult/saveResult/convertFiles/loadMore/receiveFiles/restart và ConvertCasingAction apply/undo/clear/keepD/flattenCaps.
+S08 giữ API session của `funput-convert` hiện có và port presentation sang React; không gọi IME IPC cho văn bản/tệp conversion. Companion Rust link crate, worker riêng, không kéo clipboard polling vào engine. Trước M3 conversion phải expose typed wrappers và generate DTO từ session/view/actions của pinned upstream, bổ sung vào command_schema; schema command registry hiện tại có convert_text, chưa bao gồm wrappers file/batch conversion, đây là integration gate chưa được giải quyết chứ không capability bị loại. Mapping giữ ConvertAction paste/pickFiles/setInput/setSource/setTarget/setRowSource/copyResult/saveResult/convertFiles/loadMore/receiveFiles/restart và ConvertCasingAction apply/undo/clear/keepD/flattenCaps.
 
 File paths từ native dialogs/drop đi host-owned token, không arbitrary path/shell do React cung cấp; mutation phải atomic/no-clobber, symlink/target revalidate. Preserve original bytes, output conflict tạo tên mới hoặc báo lỗi, không overwrite; partial success count theo readback. Explicit Paste/Copy conversion không tự bật history, own clipboard write đi cùng token suppression. Batch/file read limits, cancellation và DTO/output pagination phải được spike trên pinned upstream trước chốt typed wrappers, không báo toàn bộ converter dev-ready từ việc liệt kê feature.
 
@@ -304,3 +306,41 @@ RegisterHotKey không bảo đảm chiếm Win+V vì Windows-key combos được
 Route suppression chỉ khi có recent UI-owner ready/healthy state: không đợi WebView hoặc IPC response trong keyboard callback. Owner failure hoặc hook removed/unresponsive → release interception về OS, runtime state unavailable/fallback native; không báo Win+V là VXKey active từ stored enum. Race giữa press và owner crash vẫn phải fault-test, không hứa mất phím bất khả thi chỉ nhờ heartbeat. Input safety suspension/safe-start disables routing, requested preference có thể giữ nhưng effective route native. Không tự spin reattach hook khi failure.
 
 Tắt hoặc chọn native không tắt clipboard capture VXKey vốn đã opt-in; control capture riêng. Chọn VXKey không bật capture nếu chưa consent. Không đọc/import clipboard history database của Windows. Native storage/sync vẫn do user/OS quản lý, không hứa privacy thay OS.
+
+
+## 14. Hợp đồng companion đã tích hợp sau UI — 2026-10-30
+
+Nguồn hiện hành và khoảng cách với spec đích: [integration report](../qa/integration_review.md). Chưa xác nhận specs ready hoặc production native acceptance.
+
+`convert_text` đã thêm vào request union: `{command,text,from_charset,to_charset,transforms,keep_d,flatten_caps}`; bắt buộc đủ field, không field thừa. Charset unicode/tcvn3/vni_windows/unicode_combining; transforms upper/lower/no_diacritics/sentence/title theo thứ tự, tối đa5 không trùng. Semantic cap1MiB UTF-8. Result `{text,unmapped,normalized}`; chỉ Conversion surface và developer fixture được gọi. File/batch conversion và Undo session vẫn là gate sau; command text không chứng minh toàn bộ S08 parity.
+
+Host helpers dưới đây là các Tauri commands riêng, không phải payload `vxkey_command` và không nhận đường dẫn do JS cung cấp:
+
+| Helper | Args JS / Result | Guard |
+|---|---|---|
+| vxkey_open_surface | surface, tab nullable → void | Native caller label hợp lệ; target/settings tab allowlist; không mở arbitrary URL |
+| vxkey_close_surface | không args → void | Chỉ hide window caller hợp lệ |
+| vxkey_quit | confirmed nullable → void | Tray/Settings; xác nhận cuối chỉ Settings sau xử lý draft; menu Quit/Cmd+Q dùng cùng luồng |
+| vxkey_copy_text | text → void | Conversion only; Mac explicit NSPasteboard write ≤1MiB; không đọc clipboard, không paste; Windows chưa hỗ trợ |
+| vxkey_prepare_reset | expectedRevision → confirmation_id UUID | Settings only; OS CSPRNG, revision-bound, one-use, deadline monotonic30s |
+
+`reset_preferences` sau xác nhận dùng expected_revision + confirmation_id như registry. Reset theme + typing, giữ UI locale/tray style/apps/macros/shortcuts/clipboard/system, trả revision/preserved_fields/engine_ack_state. Cancel dialog không persist; conflict/invalid/replayed token không báo success. Không mint token trong React.
+
+Outer helper args theo quy tắc camelCase của Tauri (`expectedRevision`); JSON DTO bên trong request vẫn snake_case. Settings command allowlist không chứa history bodies hoặc conversion. JS chỉ có core event listen/unlisten; native host giữ quyền mở/đóng cửa sổ và copy. Native driver IPC ở mục5/9 chưa nối; không suy authenticated connection từ host helpers.
+
+Host đọc `NSSpellChecker.isAutomaticPeriodSubstitutionEnabled` trước snapshot/mutation. Native on khóa preference enable; unknown cũng khóa. Native off cho lưu preference, nhưng effective transform vẫn false tới khi IME implementation/ack đạt gate. Poll UI chỉ khi visible, bỏ response cũ; native mutation luôn kiểm lại trạng thái hiện thời.
+
+
+## 17. Native bridge profile v0.8
+
+Protocol version2; strict BE framed JSON ≤2MiB. Component `engine`/`companion`, version0.1.0; protocol1/IME cũ bị từ chối. Unix socket `runtime/engine.sock` trong private data root0700, socket0600, same-UID audit-token-bound Security.framework peer verification. Role identity `com.vxkey.engine` và `com.vxkey.desktop`. Development pin keys `{engine,companion}`; production phải có đúng signer/Team/DR và runtime update evidence.
+
+NativeStatus fields: `driver:{accessibility,listen_access,post_access,attached}` booleans; `engine_session_id` UUID; `loop_sequence` counter_string; `active` biểu thị external target có identity hợp lệ, không có nghĩa tap đang hoạt động; `target` nullable app_id/PID/engine_session_id/focus_generation; composing/mode/suspended/applied_revision/result/memory/fault. Tap attached đòi Accessibility+post_access và !suspended. Target lấy từ NSWorkspace, không dựa IMK client hoặc input source. `fault` nullable engine_fault/bridge_stale/permission_required/driver_fault.
+
+Snapshot `runtime.driver_status` active/inactive/unknown lấy từ attached; `runtime.driver` chứa permission booleans; connection/health/effective_mode/applied_revision độc lập. Không báo ready từ saved config hoặc permission prompt đã mở.
+
+Control actions: set_language(id,mode,target,expected_loop_sequence); suspend(id,suspended,engine_session_id); request_permissions(id,engine_session_id). Mọi ID UUID, strict schema/session, queue hữu hạn8, request expiry2s, không replay. RequestPermissions ACK chỉ chứng minh yêu cầu đã đến helper, không khẳng định OS đã cấp quyền. Tauri helper `vxkey_request_permissions` chỉ Settings native label, không tham số JS; host route đến native session hiện hành. Quyền phải do user cấp.
+
+Config projection chỉ typing/macros/policy/memory/toggle/flip, không UI/clipboard payload. Apply ở boundary, applied revision riêng saved revision. Loop sequence/main-loop lease và transport TTL độc lập; mất bridge → disable tap, persist latch, không chọn layout. Resume chỉ clear đúng incident sau readiness ACK, native chờ authenticated sync tiếp theo mới enable. Helper child ownership và parent-death cleanup theo [spec09](09_background_driver.md).
+
+Native C-ABI tick phân biệt `{"busy":true}` (try-lock miss, giữ lease cũ còn hạn, không reset composer) với NULL (invalid/decode/panic, suspend và latch). Busy khi đang paused/readiness không tạo fault mới; busy kéo dài quá lease live0.5s thì suspend. NativeStatus có diagnostics nullable chỉ chứa counters dev, không phím/văn bản.

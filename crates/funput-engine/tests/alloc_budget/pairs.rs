@@ -5,9 +5,9 @@ use super::{assert_counts_within_budget, measure};
 const CIRCUMFLEX_CANONICAL: &str = "chaan chaanf deem hoom chaats Chaan ";
 const CIRCUMFLEX_FREE: &str = "chana chanaf deme homo chatas Chana ";
 const W_CANONICAL: &str = "lawms cown mowif muaw truowngf nguwowif ";
-const W_DEFERRED: &str = "lwams cwon mwoif mwua trwuongf ngwuoif ";
+const W_DEFERRED: &str = "lamws conw moifw muwa truwongf nguwoif ";
 const MULTI_CANONICAL: &str = "ddwuocj ddwuongf ddwon ddwoif ";
-const MULTI_W_FIRST: &str = "dwduocj dwduongf dwdon dwdoif ";
+const MULTI_W_FIRST: &str = "duwocjd duwongfd ddonw ddoifw ";
 const FULL_CANONICAL: &str = "uw uwf tuw mow truwowngf nguwowif uwngfs";
 const FULL_SHORTCUTS: &str = "w wf t] m[ tr][ngf ng][if wngf WWindowws";
 

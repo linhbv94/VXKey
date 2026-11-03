@@ -1,10 +1,16 @@
 # 05. QA acceptance và validation rules — VXKey
 
+> **Quyết định thay thế 2026-11-02 (v0.8):** [Bộ gõ chạy nền](09_background_driver.md) là hợp đồng kiến trúc hiện hành. VXKey giữ nguồn nhập hiện tại; không cài/chọn Input Source. Các đoạn InputMethodKit/TIS/IME activation dưới đây là lịch sử và không được dùng để triển khai driver mới. Các invariant bảo toàn text, config, policy, UI và clipboard vẫn áp dụng.
+
 > **Skill:** `_spec5_qa_acceptance`  
-> **Version:** 0.5.1 — **Ngày cập nhật:** 2026-10-30  
+> **Version:** 0.7.0 — **Ngày cập nhật:** 2026-10-30
 > **Trạng thái:** Đã soạn để review; chưa được user xác nhận specs ready.  
 > **Đối tượng:** Dev, UI/UX, QA và AI Execution Agents.  
 > **Nguồn scope:** [Tổng quan](00_system_overview.md); quyết định UI Tauri chung Mac/Windows của user.
+
+## Gate background v0.8 (hiện hành)
+
+BG01…BG08 và fault matrix trong [spec09](09_background_driver.md)/[resilience08](08_keyboard_resilience.md) thay các case đăng ký/chọn VXKey Input Source, IMK marked text hoặc fallback chọn ABC bên dưới. Những case source/IMK đó là N/A retired, không phải lỗi chờ triển khai. Giữ mọi test bảo toàn text, app policy, shortcut, persistence, clipboard, UI và release còn phù hợp. Native keyboard acceptance phải chạy dưới nguồn nhập đang có, với embedded Engine đúng hash và quyền do user cấp. Fixture không thay test gõ thật.
 
 ## 1. Quy tắc bằng chứng
 
@@ -426,3 +432,66 @@ Feature: Clipboard shortcut coexistence
 ```
 
 Variants: native history on/off, OS build versions, active source ABC/khác, input bypass app, clipboard capture off/denied/locked, renderer unavailable, adapter callback hang, registration conflict, failed persist, owner crash giữa keypress, left/right Win, extra modifiers, remappers/RDP. Ctrl+Win+V luôn giữ sound output, không mode toggle. Native clipboard DB/sync settings không đổi; không chấp nhận popup giả hoặc disable OS history làm bằng chứng chặn Win+V thành công.
+
+
+## Kiểm chứng tích hợp sau bàn giao UI — 2026-10-30
+
+Bằng chứng hiện hành: [integration report](../qa/integration_review.md). Các case bổ sung:
+
+- INT01: Given123macros, When UI tải đủ các trang rồi thêm/lưu/restart, Then124mục còn đủ; lỗi trang/revision không cho whole-list replace bằng tập thiếu.
+- INT02: Given macro draft dirty, When đổi tab/Close native/Menu Quit/Cmd+Q, Then có Save/Discard/Stay; save fail giữ draft/window, Cancel không persist.
+- INT03: Given native macOS period enabled, Then VXKey enable control bị khóa, stored preference giữ nguyên, effective false; khi detector disabled chỉ lưu preference, chưa suy engine active.
+- INT04: Given một config writer đang sống, When process thứ hai mở cùng root, Then config_in_use và không ghi đè; writer exit giải phóng OS lock.
+- INT05: Given Settings window, When yêu cầu history body hoặc convert_text, Then permission_denied; đổi React surface/query không đổi native authority.
+- INT06: Given Reset confirmation, When Cancel, Then revision/data giữ nguyên; When Confirm với token mới, Then chỉ Theme/Typing reset, giữ macros/apps/locale/shortcuts/clipboard/system; replay token bị reject.
+
+Chỉ các case đã chạy ghi trong report mới được đánh PASS. Native driver typing/recovery/clipboard provenance và Windows acceptance vẫn chưa có từ các case companion này.
+
+
+## 17. Bridge/recovery v0.7 acceptance và bằng chứng
+
+```gherkin
+Feature: Native bridge không chặn đường phím khi lỗi
+  Scenario: Peer cùng UID nhưng sai code identity
+    Given một process không đúng role/CDHash hoặc production requirement
+    When process kết nối native socket
+    Then peer đóng kết nối trước handshake/config/status
+    And không tự suspend phiên đang hợp lệ do unauthenticated traffic
+
+  Scenario: Cấu hình đổi giữa từ
+    Given active composer còn buffer và applied_revision là R
+    When companion lưu cấu hình revision R+1
+    Then persisted_revision là R+1 và engine_ack_state là pending
+    And input cache giữ R đến safe boundary
+    When composition kết thúc
+    Then active engine nhận whole projection và applied_revision là R+1
+
+  Scenario: Worker sống nhưng input main loop bị treo
+    Given background transport vẫn trao packet
+    When loop_sequence không tiến triển trong 3 giây
+    Then runtime không báo live mode
+    And recovery marker giữ suspended qua reconnect/restart
+    And user phải Resume cùng session với healthy main-loop ACK
+
+  Scenario: User chọn Resume với target session cũ
+    Given input process/session đã thay đổi
+    When Resume dùng target_session_id cũ hoặc null
+    Then trả stale_target và marker không bị xóa
+
+  Scenario: Native recovery không cần WebView
+    Given companion có native app menu và bridge đang kết nối
+    When user chọn Tạm ngừng rồi Khôi phục xử lý phím
+    Then native ACK và trạng thái marker/runtime phải khớp
+    And Settings không báo success chỉ từ stored preference
+```
+
+| Case | Evidence hiện có | Còn thiếu để native acceptance |
+| --- | --- | --- |
+| Frame bounds/replay/session/invalid fields/key code | Rust protocol/policy tests | Production version/update interoperability |
+| Mutual peer trust | Signed CDHash pair + fake peer hai chiều | Production signer/Team/DR/trust |
+| Safe-boundary apply | Rust-process fixture + Swift AppSettings/Rust composer | Real IMK composition/client app matrix |
+| Watchdog/latch/Resume | Freeze real Swift main RunLoop + process fault fixtures | Active IMK deadlock, actual ABC switch/readback, simultaneous faults/marker-clear races/disk failures |
+| Native app menu/metadata | Native vi/en process pair, sourceinactive, ACK20→21→22 | Final artifact full runtime replay, sourceactive controls, WebView failure and sleep/wake |
+| Keyboard correctness | Composition ownership fixture; panic guard | Native UTF16/selection/Undo/retone/secure field/latency/coexistence |
+
+Bằng chứng hiện hành: [bridge review](../qa/native_bridge_review.md), [summary](../qa/native_bridge_summary.json). Không đổi Specs ready hoặc QA toàn app sangPASS từ các subset này. Không dùng test active:true target fixture để kết luận PID/current source thật.

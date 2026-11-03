@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: transparent;
+  }
+}
+
+/* Master Theme Tokens */
+:root {
+  --vx-cyan: #06b6d4;
+  --vx-cyan-hover: #0891b2;
+}
+
+/* Dark Theme (Default) */
+.dark body {
+  background-color: #0f1117;
+  color: #f8fafc;
+}
+
+.dark .vx-surface {
+  background: rgba(15, 17, 23, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+}
+
+.dark .vx-card {
+  background: rgba(20, 24, 33, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dark .vx-card-active {
+  background: rgba(6, 182, 212, 0.12);
+  border-color: rgba(6, 182, 212, 0.4);
+}
+
+/* Light Theme */
+.light body {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.light .vx-surface {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #0f172a;
+}
+
+.light .vx-card {
+  background: #f1f5f9;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.light .vx-card-active {
+  background: rgba(6, 182, 212, 0.1);
+  border-color: rgba(6, 182, 212, 0.5);
+}
+
+/* Black / OLED Theme */
+.black body, .oled body {
+  background-color: #000000;
+  color: #f8fafc;
+}
+
+.black .vx-surface, .oled .vx-surface {
+  background: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f8fafc;
+}
+
+.black .vx-card, .oled .vx-card {
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.black .vx-card-active, .oled .vx-card-active {
+  background: rgba(6, 182, 212, 0.15);
+  border-color: rgba(6, 182, 212, 0.5);
+}
+
+/* Native Settings owns the full client area. The shared modal's chrome is not a
+   second window: suppress its backdrop/header/border in this one app adapter. */
+.vx_settings_window .vx_settings_backdrop {
+  position: absolute; inset: 0; display: block; padding: 0;
+  background: transparent; backdrop-filter: none;
+}
+.vx_settings_window .vx_settings_ui {
+  width: 100%; height: 100%; max-width: none; max-height: none;
+  border: 0; border-radius: 0; box-shadow: none;
+}
+.vx_settings_window .vx_settings_header { display: none; }
+.vx_settings_window .vx_settings_nav { padding: 12px; scrollbar-width: thin; }
+.vx_settings_window .vx_settings_tab { min-height: 36px; margin-bottom: 4px; padding: 7px 10px; }
+.vx_settings_window .vx_settings_body { padding: 24px; scrollbar-width: thin; }
+.vx_settings_window .vx_settings_footer { padding: 0 24px; }
+.vx_settings_window .vx_settings_body :is(p,label,button,span) { overflow-wrap: break-word; }
+.vx_settings_window .vx_settings_author { column-gap: 12px; row-gap: 6px; }
+.vx_settings_window .vx_settings_author :is(a,button) { overflow-wrap: anywhere; }
+.vx_settings_window .vx_settings_app_icon { box-shadow: none; }
+.vx_settings_window .vx_settings_body input { min-width: 0; }
+.vx_business_tab { display: flex; flex-direction: column; gap: 24px; font-size: 12px; line-height: 1.5; }
+.vx_business_tab section { min-width: 0; }
+.vx_business_tab h4 { color: var(--vxs_accent); opacity: 1; font-size: 12px; line-height: 18px; font-weight: 600; letter-spacing: .5px; }
+.vx_business_tab :is(button,kbd) { flex-shrink: 0; white-space: nowrap; }
+.vx_business_tab label { line-height: 18px; }
+.vx_business_tab input[type=checkbox], .vx_business_tab input[type=radio] { flex-shrink: 0; margin: 0; }
+.vx_business_tab label > span { min-width: 0; }
+.vx_macro_toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; }
+.vx_macro_toolbar h4 { flex:1 0 160px; }
+.vx_macro_actions { display:flex; flex-shrink:0; gap:8px; }
+.vx_macro_actions button { min-height:32px; padding:6px 10px; }
+.vx_policy_form { display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding:12px; border:1px solid var(--vxs_border); border-radius:8px; background:var(--vxs_card); }
+.vx_policy_app_input { width:100%; flex:1 0 100%; border:1px solid var(--vxs_border); padding:8px 10px; border-radius:6px; background:var(--vxs_bg); color:var(--vxs_text); font:12px/18px ui-monospace,monospace; }
+.vx_policy_form label { white-space:nowrap; }
+.vx_policy_form button { margin-left:auto; }
+.vx_policy_row { display:flex; flex-direction:column; gap:10px; padding:12px; font-size:12px; }
+.vx_policy_identity { display:flex; align-items:center; gap:8px; min-width:0; }
+.vx_policy_actions { display:flex; align-items:center; flex-wrap:wrap; gap:12px; }
+.vx_policy_actions button { margin-left:auto; }
+/* A borderless tray has one rounded surface. No opaque document or native
+   rectangle is allowed outside the panel's alpha corners. */
+html[data-surface=tray], html[data-surface=tray] body, html[data-surface=tray] #root,
+html[data-surface=tray] .vx_app_surface { background:transparent!important; }
+.vx_surface_tray { display:block; }
+.vx_tray_panel { width:100%; max-width:none; box-sizing:border-box; border-radius:12px; overflow:hidden; box-shadow:none; }
+.vx_surface_history, .vx_surface_conversion, .vx_surface_onboarding { display:flex; align-items:center; justify-content:center; }
+/* Business controls share the shell's semantic colors in every appearance. */
+.vx_business_tab [class~="border-white/10"], .vx_business_tab [class~="border-white/15"],
+.vx_business_tab [class~="border-white/20"], .vx_business_tab hr { border-color:var(--vxs_border); }
+.vx_business_tab [class~="bg-white/5"], .vx_business_tab [class~="bg-black/40"],
+.vx_business_tab [class~="bg-black/30"] { background:var(--vxs_card); }
+.vx_business_tab :is(input[type=text],input[type=number],select) {
+  color:var(--vxs_text); background:var(--vxs_bg); border-color:var(--vxs_border); line-height:18px;
+}
+.vx_business_tab input::placeholder { color:var(--vxs_muted); }
+.vx_business_tab kbd { color:var(--vxs_accent); background:var(--vxs_card); border-color:var(--vxs_border); }
+.vx_business_tab label:has(> input[type=checkbox]) { align-items:flex-start; }
+.vx_business_tab label > input[type=checkbox] { margin-top:2px; }
+.vx_business_tab :is([class~="text-cyan-400"],[class~="text-cyan-300"]) { color:var(--vxs_accent); }
+.vx_tray_panel { max-height:640px; }
+
+/* The shared reset sets paragraph margins to zero; this notice lives outside
+   the business stack and therefore needs an explicit, scoped separation. */
+.vx_settings_window p.vx_typing_notice {
+  margin: 0 0 20px; padding: 10px 12px; border: 1px solid var(--vxs_border);
+  border-radius: 8px; background: var(--vxs_card); color: var(--vxs_secondary);
+  font-size: 12px; line-height: 18px;
+}
+.vx_business_tab section > h4 { margin-bottom: 12px; }
+
+.vx_business_tab .vx_disabled_setting { color:var(--vxs_secondary); }
+.vx_business_tab .vx_disabled_hint { color:var(--vxs_muted); margin-top:6px; }
+.vx_settings_window p.vx_development_notice { padding:12px; border:1px solid var(--vxs_border); border-radius:8px; color:var(--vxs_muted); font-size:12px; line-height:18px; }

@@ -42,10 +42,20 @@ final class FunputInputController: IMKInputController {
     // MARK: - Event entry point
 
     override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
-        guard let event, let client = sender as? IMKTextInput else { return false }
-        if AppSettings.shared.shouldBypass(client) { modifierGesture.reset(); composer.clear(); session.reset(); return false }
+        // Only the monitored main loop may touch the cache/composer. Unexpected
+        // off-main IMK delivery is plain pass-through, never a sync dispatch.
+        guard Thread.isMainThread, let event, let client = sender as? IMKTextInput else { return false }
+        if AppSettings.shared.shouldBypass(client, controller: self) {
+            modifierGesture.reset()
+            if vxkey_native_engine_faulted() { return false }
+            // Finalize only the already-visible preedit, without asking the engine
+            // to expand a macro or rewrite the word during suspension/exclusion.
+            let visible = composer.buffer()
+            if !visible.isEmpty { session.commit(visible, boundary: "", on: IMKCompositionSurface(client: client)) }
+            composer.clear(); session.reset(); return false
+        }
         if event.type == .flagsChanged {
-            if modifierGesture.handle(event, combo: AppSettings.shared.toggleShortcut) {
+            if modifierGesture.handle(event, combo: AppSettings.shared.toggleShortcut ?? KeyCombo(kind: "disabled", modifiers: [], keyCode: nil)) {
                 commit(into: client); toggleEnabled(); syncSettings(client: client)
             }
             return false
@@ -56,7 +66,7 @@ final class FunputInputController: IMKInputController {
         syncSettings(client: client)
         if session.endIfClicked() { composer.clear() }
 
-        if AppSettings.shared.toggleShortcut.matches(event) {
+        if AppSettings.shared.toggleShortcut?.matches(event) == true {
             commit(into: client)
             toggleEnabled()
             syncSettings(client: client)
@@ -88,6 +98,7 @@ final class FunputInputController: IMKInputController {
             // its removal may leave the caret at the end of a finished word to re-open.
             guard !composer.buffer().isEmpty else { return reopenPreviousWord(client, event: event) }
             composer.backspace()
+            guard !vxkey_native_engine_faulted() else { return false }
             // A word written into the document hands Backspace to the app to delete.
             return session.backspace(to: composer.buffer(), on: IMKCompositionSurface(client: client))
         }
@@ -116,6 +127,7 @@ final class FunputInputController: IMKInputController {
         }
 
         composer.process(scalar)
+        guard !vxkey_native_engine_faulted() else { return false }
         // Nothing composing after this key → the engine passed it through (e.g. a
         // digit starting a word: a number, not Vietnamese). Let the app insert it.
         if composer.buffer().isEmpty {
@@ -125,6 +137,7 @@ final class FunputInputController: IMKInputController {
     }
 
     override func commitComposition(_ sender: Any!) {
+        guard Thread.isMainThread else { return }
         if let client = sender as? IMKTextInput { commit(into: client) }
     }
 
@@ -134,18 +147,23 @@ final class FunputInputController: IMKInputController {
     /// (so the menu bar reflects it immediately); a manual toggle stays pinned for
     /// the app it was made in (see `AppSettings.resolveVietnamese`).
     override func activateServer(_ sender: Any!) {
+        guard Thread.isMainThread else { super.activateServer(sender); return }
         modifierGesture.reset()
         super.activateServer(sender)
-        composer.clear()
+        if !vxkey_native_engine_faulted() { composer.clear() }
         session.reset()
+        AppSettings.shared.activate(self, client: (sender as? IMKTextInput) ?? self.client())
         applyPerAppDefault()
         syncSettings()
         // Focus on a field is the start of input: arm so the first letter is capitalized.
-        if AppSettings.shared.autoCapitalizeEnabled { composer.armCapitalization() }
+        if AppSettings.shared.autoCapitalizeEnabled && !vxkey_native_engine_faulted() { composer.armCapitalization() }
     }
 
     override func deactivateServer(_ sender: Any!) {
+        guard Thread.isMainThread else { super.deactivateServer(sender); return }
+        modifierGesture.reset()
         if let client = sender as? IMKTextInput { commit(into: client) }
+        AppSettings.shared.deactivate(self)
         super.deactivateServer(sender)
     }
 }

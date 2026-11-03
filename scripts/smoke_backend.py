@@ -32,6 +32,14 @@ with tempfile.TemporaryDirectory(prefix="vxkey_smoke_") as data_dir:
     assert after["data"]["revision"] == result[1]["data"]["revision"]
     assert after["data"]["config"]["ui"]["tray_icon_style"] == "playful"
     assert not after["data"]["config"]["system"]["launch_companion_at_login"]
-    evidence = {"status": "pass", "scope": "isolated JSON-lines developer service", "checks": ["fresh defaults", "persisted revision", "process restart readback", "real charset converter", "native action unsupported", "unknown fields rejected", "autostart remains off"], "native_activation": False}
+    owner = subprocess.Popen([str(root / "target/debug/vxkey_backend"), "--data-dir", data_dir], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    try:
+        owner.stdin.write('{"command":"get_snapshot"}\n'); owner.stdin.flush()
+        assert json.loads(owner.stdout.readline())["ok"]
+        rival = subprocess.run([str(root / "target/debug/vxkey_backend"), "--data-dir", data_dir], input="", text=True, capture_output=True, timeout=5)
+        assert rival.returncode != 0 and "config_in_use" in rival.stderr
+    finally:
+        owner.communicate(timeout=5)
+    evidence = {"status": "pass", "scope": "isolated JSON-lines developer service", "checks": ["fresh defaults", "persisted revision", "process restart readback", "real charset converter", "native action unsupported", "unknown fields rejected", "autostart remains off", "competing process writer rejected"], "native_activation": False}
     (root / "docs/qa/backend_smoke.json").write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + "\n")
     print("Backend isolated smoke: PASS")

@@ -7,11 +7,32 @@ use std::{
 #[derive(Debug)]
 pub struct ConfigStore {
     path: PathBuf,
+    _writer_lock: fs::File,
     pub config: Config,
 }
 impl ConfigStore {
     pub fn open(path: impl Into<PathBuf>, platform: Platform) -> Result<Self, String> {
         let path = path.into();
+        let parent = path.parent().ok_or("invalid_path")?;
+        let mut builder = fs::DirBuilder::new();
+        builder.recursive(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::DirBuilderExt;
+            builder.mode(0o700);
+        }
+        builder.create(parent).map_err(|_| "persist_failed")?;
+        let mut options = OpenOptions::new();
+        options.read(true).write(true).create(true).truncate(false);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let writer_lock = options
+            .open(parent.join("config.lock"))
+            .map_err(|_| "persist_failed")?;
+        writer_lock.try_lock().map_err(|_| "config_in_use")?;
         let config = if path.exists() {
             let mut bytes = Vec::new();
             fs::File::open(&path)
@@ -27,7 +48,11 @@ impl ConfigStore {
             Config::fresh(platform)
         };
         config.validate()?;
-        Ok(Self { path, config })
+        Ok(Self {
+            path,
+            config,
+            _writer_lock: writer_lock,
+        })
     }
     pub fn replace(&mut self, mut new: Config, expected: &str) -> Result<(), String> {
         if expected != self.config.revision {
