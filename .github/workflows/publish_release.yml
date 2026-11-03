@@ -1,0 +1,46 @@
+name: Publish verified VXKey release
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Verified stable app tag
+        required: true
+        type: string
+      build_run:
+        description: Successful release build run ID
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: vxkey_publish_${{ inputs.tag }}
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+          persist-credentials: false
+          path: app
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          path: tooling
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Publish with exact app config and reviewed workflow tooling
+        working-directory: app
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          BUILD_RUN: ${{ inputs.build_run }}
+        run: python3 ../tooling/scripts/publish_release.py
