@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "revision": "1",
+  "ui": {
+    "locale": "vi",
+    "theme": "system",
+    "tray_icon_style": "serious"
+  },
+  "typing": {
+    "input_method": "telex",
+    "tone_style": "modern",
+    "language_mode": "vi",
+    "composition_mode": "direct_verified",
+    "smart_restore": true,
+    "retone": true,
+    "auto_capitalize": false,
+    "eager_restore": true,
+    "spell_check": false,
+    "extra_onsets": [],
+    "double_space_period": false
+  },
+  "apps": {
+    "remember_per_app": true,
+    "language_memory": {},
+    "policies": {}
+  },
+  "macros": {
+    "enabled": true,
+    "in_en": true,
+    "entries": [],
+    "smart_case": true
+  },
+  "shortcuts": {
+    "toggle": {
+      "kind": "modifier_chord",
+      "modifiers": [
+        "control",
+        "alt"
+      ]
+    },
+    "history": {
+      "kind": "key_chord",
+      "modifiers": [
+        "control",
+        "meta"
+      ],
+      "key_code": "KeyV"
+    },
+    "flip": null
+  },
+  "clipboard": {
+    "enabled": false,
+    "history_mode": "session",
+    "max_entries": 200,
+    "ttl_days": 7,
+    "windows_history_provider": "native"
+  },
+  "system": {
+    "launch_companion_at_login": false,
+    "show_tray_icon": true
+  }
+}

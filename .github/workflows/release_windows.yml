@@ -1,0 +1,78 @@
+name: Add verified Windows installer to VXKey draft
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Immutable tag whose successful Mac draft already exists
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: vxkey_windows_release_${{ inputs.tag }}
+  cancel-in-progress: false
+jobs:
+  windows:
+    if: github.event.repository.private == false
+    runs-on: windows-2022
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: ${{ inputs.tag }}
+      RUSTUP_TOOLCHAIN: stable
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Require existing draft and matching version
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($env:RELEASE_TAG -notmatch '^v[0-9]+\.[0-9]+\.[0-9]+$') { throw 'Invalid tag' }
+          $release = gh release view $env:RELEASE_TAG --json isDraft,isPrerelease,tagName | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0 -or !$release.isDraft -or $release.isPrerelease) { throw 'Verified Mac draft required; never modify a published release' }
+          $version = (Get-Content -Raw desktop/package.json | ConvertFrom-Json).version
+          if ($env:RELEASE_TAG -ne "v$version") { throw 'Tag/version mismatch' }
+          if ((git rev-parse HEAD).Trim() -ne $env:GITHUB_SHA) { throw 'Dispatch this workflow with --ref equal to the release tag' }
+          New-Item -ItemType Directory -Force build/mac_draft | Out-Null
+          gh release download $env:RELEASE_TAG --pattern latest.json --dir build/mac_draft
+          if ($LASTEXITCODE -ne 0) { throw 'Missing Mac manifest' }
+      - name: Engine regression
+        shell: pwsh
+        run: cargo +stable test --manifest-path platforms/windows_engine/Cargo.toml --release --locked
+      - name: Build production Windows per-user installer
+        shell: pwsh
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
+        run: ./scripts/build_windows_release.ps1
+      - name: Verify signatures and merge manifest without replacing Mac
+        shell: pwsh
+        run: node scripts/finalize_windows_release.mjs build/windows_release_assets build/mac_draft/latest.json
+      - name: Production backend and manifest regression
+        shell: pwsh
+        run: |
+          cargo +stable test --manifest-path desktop/src-tauri/Cargo.toml --release --lib --features windows-production --locked
+          if ($LASTEXITCODE -ne 0) { throw 'Backend regression failed' }
+          node --test desktop/tests/windows_release.test.mjs desktop/tests/update_handle.test.mjs
+          if ($LASTEXITCODE -ne 0) { throw 'Release regression failed' }
+      - name: Upload to draft only
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $release = gh release view $env:RELEASE_TAG --json isDraft | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0 -or !$release.isDraft) { throw 'Release is no longer a draft' }
+          gh release upload $env:RELEASE_TAG "build/windows_release_assets/vxkey_$((Get-Content -Raw desktop/package.json | ConvertFrom-Json).version)_windows_x64_setup.exe" --clobber
+          if ($LASTEXITCODE -ne 0) { throw 'Installer upload failed' }
+          gh release upload $env:RELEASE_TAG build/windows_release_assets/latest.json --clobber
+          if ($LASTEXITCODE -ne 0) { throw 'Manifest upload failed' }

@@ -48,7 +48,7 @@ export function SystemTab({
   const { stream, ax, listen, post, ready: permissionsReady } = nativePermissions(snapshot);
   const isActive =
     permissionsReady &&
-    Boolean(driver?.attached) &&
+    (snapshot.platform === 'windows' || Boolean(driver?.attached)) &&
     runtime.driver_status === 'active' &&
     runtime.effective_mode !== 'suspended';
 
@@ -65,7 +65,7 @@ export function SystemTab({
     setActionBusy(false);
     if (!res.ok) {
       setActionError(
-        vi
+        snapshot.platform === 'windows' ? (vi ? 'Chưa đổi được trạng thái bộ gõ Windows. Hãy kiểm tra kết nối hoặc thoát và mở lại VXKey.' : 'The Windows input state was not changed. Check the connection or quit and reopen VXKey.') : vi
           ? 'Chưa đổi được trạng thái bộ gõ. Nếu vừa cấp quyền trong macOS, hãy nhấn "Khởi động lại VXKey".'
           : 'Could not change input method state. If you just granted permissions in macOS, click "Restart VXKey".'
       );
@@ -222,6 +222,14 @@ export function SystemTab({
           </div>
         </dl>
 
+        {snapshot.platform === 'windows' && (
+          <div className="space-y-2 pt-2">
+            <p className="text-xs opacity-70">{vi ? 'Không cần quyền quản trị. VXKey xử lý ứng dụng chạy quyền thường; ứng dụng chạy quyền Administrator được bỏ qua.' : 'Administrator access is not required. VXKey processes standard-user applications; elevated applications are bypassed.'}</p>
+            <button type="button" disabled={!connected || actionBusy} onClick={() => void handleToggleSuspend()} className="px-3 py-2 rounded-lg bg-cyan-600 text-white text-xs">
+              {isActive ? (vi ? 'Tạm ngừng xử lý phím' : 'Pause input processing') : (vi ? 'Bắt đầu gõ tiếng Việt' : 'Start typing Vietnamese')}
+            </button>
+          </div>
+        )}
         {snapshot.platform === 'macos' && (
           <div className="flex flex-wrap items-center gap-2 pt-1">
             {permissionsReady ? (
@@ -392,17 +400,18 @@ export function SystemTab({
         <hr className="border-black/10 dark:border-white/10 my-4" />
 
         {/* Khởi động cùng hệ thống */}
-        <div className="p-3.5 rounded-lg border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 space-y-1 vx_disabled_setting">
-          <label className="flex items-center gap-2.5 cursor-not-allowed">
+        <div className={`p-3.5 rounded-lg border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 space-y-1 ${snapshot.capabilities.autostart ? '' : 'vx_disabled_setting'}`}>
+          <label className="flex items-center gap-2.5">
             <input
               type="checkbox"
-              checked={false}
-              disabled={true}
+              checked={sys.launch_companion_at_login}
+              disabled={disabled || !snapshot.capabilities.autostart}
+              onChange={e => onSystemChange({launch_companion_at_login:e.target.checked})}
               className="accent-cyan-500 rounded"
             />
             <span className="text-xs font-medium">{t.launchAtLogin}</span>
           </label>
-          <p className="vx_disabled_hint text-[11px] pl-6 leading-relaxed">{t.launchAtLoginDesc}</p>
+          <p className="vx_disabled_hint text-[11px] pl-6 leading-relaxed">{snapshot.platform === 'windows' ? (vi ? 'Mở VXKey cùng Windows. Bộ gõ luôn khởi động ở trạng thái tạm dừng; chọn Bắt đầu khi sẵn sàng.' : 'Open VXKey with Windows. Input always starts paused; choose Start when ready.') : t.launchAtLoginDesc}</p>
         </div>
       </section>
     </div>

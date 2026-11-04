@@ -15,7 +15,7 @@ name = "vxkey-desktop"
 path = "src/main.rs"
 
 [build-dependencies]
-tauri-build = { version = "2", default-features = false }
+tauri-build = { version = "2", default-features = false , features = [] }
 
 [dependencies]
 vxkey-runtime = { path = "../../crates/vxkey-runtime" }
@@ -26,8 +26,16 @@ tauri = { version = "2", default-features = false, features = ["wry", "tray-icon
 tauri-plugin-updater = "2"
 tauri-plugin-process = "2"
 
+[target.'cfg(windows)'.dependencies]
+vxkey-windows-engine = { path = "../../platforms/windows_engine" }
+funput-core = { path = "../../crates/funput-core" }
+funput-engine = { path = "../../crates/funput-engine" }
+windows-sys = { version = "=0.61.2", features = ["Win32_Foundation", "Win32_System_JobObjects", "Win32_System_Threading", "Win32_Security", "Win32_System_DataExchange", "Win32_System_Memory"] }
+windows-registry = "=0.6.1"
+
 [features]
 custom-protocol = ["tauri/custom-protocol"]
+windows-production = []
 
 [target.'cfg(target_os = "macos")'.dependencies]
 objc2 = "0.6"

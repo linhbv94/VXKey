@@ -53,7 +53,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$RELEASE_TAG" --verify-tag --draft --title "VXKey ${RELEASE_TAG#v}" --notes-file "docs/release_notes/${RELEASE_TAG#v}.md" build/release_assets/*
+          if [ -f "docs/release_notes/${RELEASE_TAG#v}.md" ]; then
+            gh release create "$RELEASE_TAG" --verify-tag --draft --title "VXKey ${RELEASE_TAG#v}" --notes-file "docs/release_notes/${RELEASE_TAG#v}.md" build/release_assets/*
+          else
+            gh release create "$RELEASE_TAG" --verify-tag --draft --title "VXKey ${RELEASE_TAG#v}" --generate-notes build/release_assets/*
+          fi
       - name: Cleanup signer
         if: always()
         run: python3 scripts/ci_macos_signer.py cleanup

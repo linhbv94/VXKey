@@ -26,7 +26,7 @@ export function LiveTypingTest({ snapshot, compact = false, autoFocusWhenReady =
   const canTest =
     runtime.connection_status === 'connected' &&
     permissionsReady &&
-    Boolean(driver?.attached) &&
+    (snapshot.platform === 'windows' || Boolean(driver?.attached)) &&
     runtime.driver_status === 'active' &&
     runtime.effective_mode !== 'suspended';
 
@@ -162,8 +162,8 @@ export function LiveTypingTest({ snapshot, compact = false, autoFocusWhenReady =
                   ? 'Ô này dùng phiên core Rust riêng trong app, không kiểm đường gõ native, quyền OS hay thao tác sửa chữ trong ứng dụng khác.'
                   : 'This uses a separate Rust core session inside the app. It does not test native input, OS access, or text replacement in other apps.'
                 : vi
-                ? 'Hãy cấp đủ quyền và nhấn "Bắt đầu gõ tiếng Việt" để mở khóa ô gõ thử.'
-                : 'Grant permissions and click "Start typing Vietnamese" to unlock the test box.'}
+                ? snapshot.platform === 'windows' ? 'Nhấn "Bắt đầu gõ tiếng Việt" để mở khóa ô gõ thử.' : 'Hãy cấp đủ quyền và nhấn "Bắt đầu gõ tiếng Việt" để mở khóa ô gõ thử.'
+                : snapshot.platform === 'windows' ? 'Click "Start typing Vietnamese" to unlock the test box.' : 'Grant permissions and click "Start typing Vietnamese" to unlock the test box.'}
             </p>
           </div>
         </div>

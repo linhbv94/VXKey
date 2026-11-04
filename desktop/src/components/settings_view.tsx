@@ -175,13 +175,13 @@ export function SettingsView({
   const driver = runtime.driver;
   const permissionsReady =
     runtime.connection_status === 'connected' &&
-    Boolean(driver?.accessibility && driver?.listen_access && driver?.post_access);
+    (snapshot.platform === 'windows' || Boolean(driver?.accessibility && driver?.listen_access && driver?.post_access));
   const isReadyAndActive =
     permissionsReady &&
-    Boolean(driver?.attached) &&
+    (snapshot.platform === 'windows' || Boolean(driver?.attached)) &&
     runtime.driver_status === 'active' &&
     runtime.effective_mode !== 'suspended';
-  const showAttentionBadge = snapshot.platform === 'macos' && !isReadyAndActive;
+  const showAttentionBadge = (snapshot.platform === 'macos' || snapshot.platform === 'windows') && !isReadyAndActive;
 
   const handleQuickResume = async () => {
     setBusy(true);
@@ -299,7 +299,7 @@ export function SettingsView({
 
         {activeTab === 'typing' && (
           <div className="space-y-4">
-            {snapshot.platform === 'macos' && (
+            {(snapshot.platform === 'macos' || snapshot.platform === 'windows') && (
               <div
                 role="status"
                 className={`p-3.5 rounded-xl border flex flex-wrap items-center justify-between gap-3 text-xs ${
@@ -334,11 +334,11 @@ export function SettingsView({
                           : 'Input method active — Ready to type Vietnamese'
                         : permissionsReady
                         ? language === 'vi'
-                          ? 'Đã đủ quyền hệ thống · Bộ gõ đang tạm ngừng'
-                          : 'Permissions granted · Input method is paused'
+                          ? snapshot.platform === 'windows' ? 'Bộ gõ sẵn sàng · Đang tạm ngừng' : 'Đã đủ quyền hệ thống · Bộ gõ đang tạm ngừng'
+                          : snapshot.platform === 'windows' ? 'Input method ready · Paused' : 'Permissions granted · Input method is paused'
                         : language === 'vi'
-                        ? 'Cần cấp quyền hệ thống macOS để xử lý bàn phím'
-                        : 'macOS system permissions required for keyboard processing'}
+                        ? snapshot.platform === 'windows' ? 'Chưa kết nối engine Windows' : 'Cần cấp quyền hệ thống macOS để xử lý bàn phím'
+                        : snapshot.platform === 'windows' ? 'Windows engine disconnected' : 'macOS system permissions required for keyboard processing'}
                     </p>
                   </div>
                 </div>
@@ -357,7 +357,7 @@ export function SettingsView({
                       </span>
                     </button>
                   )}
-                  {onPermissionSetup && (
+                  {onPermissionSetup && snapshot.platform === 'macos' && (
                     <button
                       type="button"
                       disabled={busy}

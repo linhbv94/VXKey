@@ -1,0 +1,12 @@
+{
+  "productName": "VXKey",
+  "identifier": "com.vxkey.desktop",
+  "build": {"beforeBuildCommand": "npm run build"},
+  "bundle": {
+    "createUpdaterArtifacts": true,
+    "windows": {
+      "nsis": {"installerHooks": "windows_release_installer_hooks.nsh"}
+    }
+  },
+  "plugins": {"updater": {"endpoints": ["https://github.com/linhbv94/VXKey/releases/latest/download/latest.json"]}}
+}

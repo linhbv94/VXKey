@@ -1,4 +1,5 @@
 //! Explicit copy only. No clipboard reads, monitoring, paste, or permission changes.
+#[cfg(not(windows))]
 pub fn write(text: &str) -> Result<(), &'static str> {
     if text.len() > 1024 * 1024 {
         return Err("quota_exceeded");
@@ -19,6 +20,27 @@ pub fn write(text: &str) -> Result<(), &'static str> {
             }
         })
     }
-    #[cfg(not(target_os = "macos"))]
+    #[cfg(windows)]
+    { return Err("owner_required"); }
+    #[cfg(not(any(target_os = "macos",windows)))]
     Err("unsupported")
+}
+
+#[cfg(windows)]
+pub fn write_windows(text:&str, owner:windows_sys::Win32::Foundation::HWND)->Result<(),&'static str>{
+        if text.len()>1024*1024 || owner.is_null(){return Err("quota_exceeded")}
+        use windows_sys::Win32::{Foundation::GlobalFree,System::{Memory::*,DataExchange::*}};
+        let units:Vec<u16>=text.encode_utf16().chain(Some(0)).collect();
+        unsafe {
+            let memory=GlobalAlloc(GMEM_MOVEABLE,units.len()*2);
+            if memory.is_null(){return Err("write_failed")}
+            let data=GlobalLock(memory);
+            if data.is_null(){GlobalFree(memory);return Err("write_failed")}
+            std::ptr::copy_nonoverlapping(units.as_ptr(),data.cast::<u16>(),units.len());GlobalUnlock(memory);
+            if OpenClipboard(owner)==0{GlobalFree(memory);return Err("clipboard_busy")}
+            let success=EmptyClipboard()!=0 && !SetClipboardData(13,memory).is_null();
+            CloseClipboard();
+            if !success{GlobalFree(memory);return Err("write_failed")}
+            Ok(())
+        }
 }

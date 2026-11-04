@@ -4,6 +4,7 @@
   "description": "VXKey \u2014 Desktop Companion and Settings",
   "type": "module",
   "scripts": {
+    "build:windows_test": "node scripts/build_windows_test.mjs",
     "dev": "vite",
     "build": "node scripts/check_settings_ui.mjs && tsc && vite build",
     "preview": "vite preview"

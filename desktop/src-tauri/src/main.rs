@@ -1,6 +1,20 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
+    #[cfg(windows)]
+    if std::env::args().nth(1).as_deref()==Some("--windows-engine-helper") {
+        if vxkey_desktop_backend::windows::helper_main().is_err(){std::process::exit(1);}
+        return;
+    }
+    #[cfg(windows)]
+    let _instance=match vxkey_desktop_backend::windows::instance(){Ok(Some(instance))=>instance,Ok(None)=>return,Err(_)=>std::process::exit(1)};
+    #[cfg(windows)]
+    if std::env::var_os("VXKEY_DATA_DIR").is_none() {
+        if let Some(root)=std::env::var_os("APPDATA") {
+            // Candidate namespace; production Mac identity/data are unchanged.
+            unsafe {std::env::set_var("VXKEY_DATA_DIR",std::path::PathBuf::from(root).join(vxkey_desktop_backend::windows::DATA_NAME));}
+        }
+    }
     let result = vxkey_runtime::paths::data_dir().and_then(vxkey_desktop_backend::builder);
     match result {
         Ok(builder) => {
@@ -13,6 +27,10 @@ fn main() {
                 }
             };
             app.run(|handle, event| {
+                #[cfg(windows)]
+                if matches!(event,tauri::RunEvent::Ready) && std::env::args().any(|arg|arg=="--startup") {
+                    for window in handle.webview_windows().values(){let _=window.hide();}
+                }
                 if let tauri::RunEvent::Exit = event {
                     vxkey_desktop_backend::stop_owned_engine(handle);
                 }
@@ -56,6 +74,7 @@ fn main() {
     }
 }
 
+#[cfg_attr(all(windows,not(debug_assertions)),allow(dead_code))]
 fn qa_surface() -> Option<&'static str> {
     #[cfg(debug_assertions)]
     if std::env::var_os("VXKEY_DATA_DIR").is_some() {

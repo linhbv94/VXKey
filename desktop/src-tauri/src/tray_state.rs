@@ -5,6 +5,7 @@ use vxkey_runtime::service::Service;
 pub enum State {
     Live,
     Suspended,
+    #[cfg_attr(windows,allow(dead_code))]
     Bypassed,
     Disconnected,
     Inactive,
@@ -50,6 +51,7 @@ impl Signature {
         format!("VXKey — {mode}{state}")
     }
 }
+#[cfg_attr(windows,allow(dead_code))]
 pub fn snapshot(service: &Mutex<Service>) -> Option<Signature> {
     let service = service.try_lock().ok()?;
     let c = &service.store.config;
@@ -81,6 +83,7 @@ pub fn snapshot(service: &Mutex<Service>) -> Option<Signature> {
         state,
     })
 }
+#[cfg_attr(windows,allow(dead_code))]
 pub fn render(
     service: &Mutex<Service>,
     previous: &Mutex<Option<Signature>>,

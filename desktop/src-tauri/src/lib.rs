@@ -1,7 +1,10 @@
 //! Companion owns persistence and windows; keyboard processing remains a separate process.
+#[cfg(not(windows))]
 mod about;
 mod clipboard;
 mod tray_state;
+#[cfg(windows)]
+pub mod windows;
 use serde_json::{Value, json};
 use std::{
     path::PathBuf,
@@ -16,8 +19,9 @@ use vxkey_runtime::{
 type TraySignature = tray_state::Signature;
 pub struct Backend(
     Arc<Mutex<Service>>,
-    Mutex<Option<TraySignature>>,
+    #[cfg_attr(windows,allow(dead_code))] Mutex<Option<TraySignature>>,
     std::sync::atomic::AtomicBool,
+    #[cfg(windows)] Arc<windows::Host>,
     #[cfg(target_os = "macos")] Option<vxkey_runtime::bridge::local::Host>,
     #[cfg(target_os = "macos")] Option<vxkey_runtime::bridge::local::Latch>,
     #[cfg(target_os = "macos")] Arc<Mutex<Option<std::process::Child>>>,
@@ -27,6 +31,8 @@ impl Backend {
         let store = ConfigStore::open(data_dir.join("config.json"), Platform::current())?;
         store.save_initial()?;
         let service = Arc::new(Mutex::new(Service::new(store)));
+        #[cfg(windows)]
+        let windows = windows::Host::start(&service.lock().map_err(|_| "unavailable")?.store.config)?;
         #[cfg(target_os = "macos")]
         let recovery = vxkey_runtime::bridge::local::Latch::new(&data_dir).ok();
         #[cfg(target_os = "macos")]
@@ -35,6 +41,8 @@ impl Backend {
             service,
             Mutex::new(None),
             std::sync::atomic::AtomicBool::new(false),
+            #[cfg(windows)]
+            windows,
             #[cfg(target_os = "macos")]
             host,
             #[cfg(target_os = "macos")]
@@ -129,6 +137,15 @@ async fn vxkey_request_permissions(
     .map_err(|_| "unavailable".to_string())?
 }
 fn show_about(app: &tauri::AppHandle) -> Result<(), String> {
+    #[cfg(windows)]
+    {
+        let window = app.get_webview_window("settings").ok_or("unavailable")?;
+        window.show().map_err(|_| "unavailable")?;
+        window.set_focus().map_err(|_| "unavailable")?;
+        return window.emit("settings_tab", "about").map_err(|_| "unavailable".into());
+    }
+    #[cfg(not(windows))]
+    {
     let vi = app
         .state::<Backend>()
         .0
@@ -140,6 +157,7 @@ fn show_about(app: &tauri::AppHandle) -> Result<(), String> {
         .locale
         == "vi";
     about::show(vi)
+    }
 }
 #[tauri::command]
 fn vxkey_show_about(window: tauri::WebviewWindow, app: tauri::AppHandle) -> Result<(), String> {
@@ -174,6 +192,9 @@ fn vxkey_copy_text(window: tauri::WebviewWindow, text: String) -> Result<(), Str
     if window.label() != "conversion" {
         return Err("permission_denied".into());
     }
+    #[cfg(windows)]
+    {return clipboard::write_windows(&text,window.hwnd().map_err(|_|"unavailable")?.0 as _).map_err(str::to_string);}
+    #[cfg(not(windows))]
     clipboard::write(&text).map_err(str::to_string)
 }
 #[tauri::command]
@@ -222,6 +243,17 @@ async fn vxkey_command(
         "conversion" => Surface::Conversion,
         _ => return failure("permission_denied"),
     };
+    #[cfg(windows)]
+    {
+        let update_menu=request["changes"]["ui"].get("locale").is_some();
+        let host=state.3.clone(); let service=state.0.clone();
+        let response=tauri::async_runtime::spawn_blocking(move || windows::dispatch(&host,&service,surface,request)).await.unwrap_or_else(|_| failure("unavailable"));
+        sync_tray(&app);
+        if update_menu && response["ok"]==true {let _=install_menu(&app);}
+        return response;
+    }
+    #[cfg(not(windows))]
+    {
     #[cfg(target_os = "macos")]
     if matches!(
         request.get("command").and_then(Value::as_str),
@@ -292,6 +324,7 @@ async fn vxkey_command(
     }
 
     response
+    }
 }
 #[tauri::command]
 fn vxkey_open_surface(
@@ -388,6 +421,22 @@ fn apply_tray(app: &tauri::AppHandle) {
         return;
     };
     let state = app.state::<Backend>();
+    #[cfg(windows)]
+    {
+        let Ok(service)=state.0.try_lock() else {return};
+        let config=&service.store.config;
+        let observed=state.3.observed();
+        let signature=tray_state::Signature{style:config.ui.tray_icon_style.clone(),mode:if observed.as_ref().is_some_and(|s|s.value["vi"]==true){"vi".into()}else{"en".into()},visible:config.system.show_tray_icon,locale:config.ui.locale.clone(),state:match observed {None=>tray_state::State::Disconnected,Some(ref o) if o.value["running"]!=true=>tray_state::State::Suspended,Some(ref o) if !o.value["fault"].is_null()=>tray_state::State::Inactive,_=>tray_state::State::Live}};
+        drop(service);
+        let mut bytes=signature.asset().to_vec();
+        // Windows does not tint template icons: use a stable blue glyph on both
+        // light and dark taskbars, with lower opacity while paused/disconnected.
+        for p in bytes.chunks_exact_mut(4){p[0]=0;p[1]=150;p[2]=220;if signature.dimmed(){p[3]=(u16::from(p[3])*45/100) as u8;}}
+        let _=tray.set_icon(Some(tauri::image::Image::new_owned(bytes,36,36)));
+        let _=tray.set_tooltip(Some(signature.tooltip()));let _=tray.set_visible(signature.visible);
+        return;
+    }
+    #[cfg(not(windows))]
     tray_state::render(&state.0, &state.1, |signature| {
         let mut bytes = signature.asset().to_vec();
         if signature.dimmed() {
@@ -411,6 +460,34 @@ pub fn builder(data_dir: PathBuf) -> Result<tauri::Builder<tauri::Wry>, String> 
         .plugin(tauri_plugin_process::init())
         .manage(state)
         .setup(|app| {
+            #[cfg(windows)]
+            {
+                if app.config().identifier!=windows::APP_ID {return Err("Windows build feature/identity mismatch".into());}
+                let service=app.state::<Backend>().0.clone();let host=app.state::<Backend>().3.clone();
+                std::thread::spawn(move || {
+                    let mut mode_revision=0u64;
+                    while let Ok(snapshot)=host.request(json!({"command":"snapshot"})) {
+                        let next=snapshot["mode_revision"].as_u64().unwrap_or(0);
+                        if next!=mode_revision {
+                            let config=if let Ok(mut service)=service.lock(){
+                                if snapshot["revision"]!=service.store.config.revision {continue;}
+                                mode_revision=next;
+                                let mut c=service.store.config.clone();
+                                c.typing.language_mode=if snapshot["vi"]==true{"vi".into()}else{"en".into()};
+                                if let Some(memory)=snapshot["memory"].as_object(){c.apps.language_memory=memory.iter().filter_map(|(app,on)|on.as_bool().map(|on|(app.clone(),if on{"vi".into()}else{"en".into()}))).collect();}
+                                let expected=service.store.config.revision.clone();
+                                if service.store.replace(c,&expected).is_ok(){
+                                    let c=service.store.config.clone();
+                                    let _=host.request(json!({"command":"configure","config":c}));
+                                    Some(c)
+                                }else{None}
+                            }else{None};
+                            let _=config;
+                        }
+                        std::thread::sleep(std::time::Duration::from_millis(500));
+                    }
+                });
+            }
             // Menu-bar utility: closing Settings must not leave a Dock app behind.
             #[cfg(target_os = "macos")]
             app.set_activation_policy(tauri::ActivationPolicy::Accessory);
@@ -529,6 +606,11 @@ pub fn builder(data_dir: PathBuf) -> Result<tauri::Builder<tauri::Wry>, String> 
             Ok(())
         })
         .on_menu_event(|app, event| {
+            #[cfg(windows)]
+            if matches!(event.id().as_ref(), "suspend_input"|"resume_input") {
+                let host=app.state::<Backend>().3.clone();let pause=event.id().as_ref()=="suspend_input";
+                std::thread::spawn(move||{let _=host.set_paused(pause);});
+            }
             #[cfg(target_os = "macos")]
             if matches!(event.id().as_ref(), "suspend_input" | "resume_input") {
                 let state = app.state::<Backend>();
@@ -588,6 +670,8 @@ pub fn builder(data_dir: PathBuf) -> Result<tauri::Builder<tauri::Wry>, String> 
         ]))
 }
 
+
+#[cfg(not(windows))]
 fn install_menu(app: &tauri::AppHandle) -> tauri::Result<()> {
     use tauri::menu::{Menu, MenuItem, PredefinedMenuItem as P, Submenu};
     let state = app.state::<Backend>();
@@ -865,6 +949,8 @@ fn native_recovery_notice(vi: bool, suspended: bool, success: bool) {
 /// Stop and reap only the helper spawned by this companion. Child retains PID
 /// ownership until wait, preventing accidental signalling of a reused PID.
 pub fn stop_owned_engine(app: &tauri::AppHandle) {
+    #[cfg(windows)]
+    app.state::<Backend>().3.stop();
     #[cfg(target_os = "macos")]
     if let Ok(mut child) = app.state::<Backend>().5.lock() {
         if let Some(mut child) = child.take() {
@@ -874,4 +960,16 @@ pub fn stop_owned_engine(app: &tauri::AppHandle) {
     }
     #[cfg(not(target_os = "macos"))]
     let _ = app;
+}
+
+#[cfg(windows)]
+fn install_menu(app:&tauri::AppHandle)->tauri::Result<()> {
+    use tauri::menu::{Menu,MenuItem};
+    let vi=app.state::<Backend>().0.lock().map(|s|s.store.config.ui.locale=="vi").unwrap_or(true);
+    let settings=MenuItem::with_id(app,"settings",if vi{"Cài đặt…"}else{"Settings…"},true,None::<&str>)?;
+    let pause=MenuItem::with_id(app,"suspend_input",if vi{"Tạm ngừng xử lý phím"}else{"Pause input processing"},true,None::<&str>)?;
+    let resume=MenuItem::with_id(app,"resume_input",if vi{"Bắt đầu gõ tiếng Việt"}else{"Start typing Vietnamese"},true,None::<&str>)?;
+    let quit=MenuItem::with_id(app,"quit",if vi{"Thoát VXKey"}else{"Quit VXKey"},true,None::<&str>)?;
+    if let Some(tray)=app.tray_by_id("vxkey"){tray.set_menu(Some(Menu::with_items(app,&[&settings,&pause,&resume,&quit])?))?;}
+    Ok(())
 }

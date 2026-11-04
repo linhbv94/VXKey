@@ -60,6 +60,7 @@ pub enum Command {
 
 #[derive(Clone, Debug)]
 pub struct Snapshot {
+    pub target: Option<Target>,
     pub driver_kind: &'static str,
     pub diagnostics: Diagnostics,
     pub vietnamese: bool,
@@ -281,9 +282,10 @@ fn run(
                                 }
                                 Command::Snapshot(tx) => {
                                     let _ = tx.try_send(Snapshot {
+                                        target: host.targets.try_lock().ok().and_then(|cache| cache.as_ref().filter(|(_, at)| at.elapsed() < Duration::from_millis(250)).map(|(target, _)| (**target).clone())),
                                         driver_kind: "windows_hook_stream",
                                         diagnostics: host.session.diagnostics(),
-                                        vietnamese: host.session.settings().vietnamese,
+                                        vietnamese: host.session.effective_vietnamese(),
                                         language_memory: host
                                             .session
                                             .settings()

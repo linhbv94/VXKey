@@ -1,7 +1,7 @@
 # AGENTS.md — Quy tắc riêng VXKey
 
-Version: 1.4.0
-Ngày update: 2026-11-04
+Version: 1.6.0
+Ngày update: 2026-11-05
 
 Áp dụng cùng quy tắc global và [quy tắc workspace](../.agents/AGENTS.md). Đây là chỉ đạo trực tiếp của user dành riêng VXKey.
 
@@ -40,9 +40,20 @@ User đã mở máy Windows, pull workspace và yêu cầu cập nhật hướng
 
 Agent trên Windows đọc work log tổng và [Windows handoff](docs/qa/windows_engine/windows_handoff.md); nếu symlink `docs` không có thì đọc canonical `../_summary/docs/vxkey/qa/windows_engine/windows_handoff.md`. Kiểm tra môi trường thực rồi build/link GUI Test, probe trước engine thật. Không chạy shell Slint cũ ở `platforms/windows`, không suy native PASS từ37 portable tests. Track dài hạn vẫn MỞ.
 
+### Tiếp tục app Windows có tray — 2026-11-04
+
+Sau native trial cơ bản PASS, user giao hoàn thiện app/tray để quay Mac release và xác nhận triển khai bộ cài per-user không admin. Scope hiện hành gồm Windows Tauri owner/helper, tray, Settings/config, startup paused và NSIS Test; được sửa nhánh `cfg(windows)` của companion và UI platform routing cần thiết. Bảo toàn hành vi Mac, native/shared engine, root Cargo/lock, signer và workflow Mac. Default JSON được chuyển thành runtime resources có nội dung byte-for-byte như examples để Windows không cần docs private khi compile.
+
+Windows child dùng anonymous inherited pipes riêng thay cho named pipe listener đề xuất: bounded frames/session/sequence/PID, Job Object kill-on-close trước bootstrap hook. Không expose control listener hay raw keyboard/text qua IPC. Bản cài `VXKey Test`, namespace/data riêng, updater production tắt; không tự coi là release production hoặc full native matrix PASS. [Báo cáo app Windows](docs/qa/windows_app_20261104/report.md) là entry point mới. Không suy quyền publish/tag/dispatch từ lệnh hoàn thiện local; chỉ user đóng track dài hạn.
+
+### Chuẩn bị đem sang Mac release — 2026-11-05
+
+User xác nhận bản cuối gõ OK và giao tiếp tục tự chủ khi AFK đến khi sẵn sàng đem sang Mac release. Phạm vi gồm profile production Windows, workflow build/merge Windows vào draft Mac, gate publish kết hợp và commit/push riêng VXKey + docs để Mac pull; không tạo tag, dispatch hoặc publish trong lượt chuẩn bị này. `windows-production` phải đi cùng `tauri.windows.release.conf.json`; Test và production tách ID/data/singleton/startup. Không cài production lên máy để thay Test đã nghiệm thu.
+
+Native Mac, shared Funput, signer/key và root Cargo/lock tiếp tục được bảo toàn. Sửa plumbing release tối thiểu được ghi riêng: default JSON lấy từ code resource nguyên trạng thay docs private; thiếu file notes private trên CI thì tạo draft với generated notes để user review; publish Mac-only giữ gate cũ, Windows là lựa chọn bổ sung có run ID riêng. [Handoff Mac release](docs/qa/windows_app_20261104/mac_release_handoff.md) liệt kê bước cần chạy trên Mac/CI và phần chưa được kiểm chứng ở Windows.
+
 ## Lịch sử cập nhật
 
+- 1.6.0 (2026-11-05): Ghi nhận lệnh AFK/hoàn thiện release handoff, tách Test/production Windows, build/manifest/publish gates và plumbing code-only CI.
+- 1.5.0 (2026-11-04): User mở scope app/tray Windows và NSIS per-user sau native cơ bản; ghi owner/helper/private pipe, Test isolation và ranh giới Mac/release.
 - 1.4.0 (2026-11-04): User chuyển tiếp sang workspace Windows và cho commit/push code+docs bàn giao; thêm entry point và thứ tự native QA, giữ bảo toàn Mac/release boundary.
-- 1.3.0 (2026-11-04): User cho triển khai riêng engine Windows; bảo toàn Mac/shared source và production; native Windows QA hoãn đến khi có máy, cập nhật routing/evidence.
-
-- 1.2.0 (2026-11-04): Sửa routing sau khi docs chuyển về `_summary/docs/vxkey`; plan Windows2.0 theo session stream và Win11x64. Khi đó user chốt triển sau.

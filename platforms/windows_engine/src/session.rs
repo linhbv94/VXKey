@@ -136,6 +136,9 @@ impl Session {
     pub fn mode_revision(&self) -> u64 {
         self.mode_revision
     }
+    pub fn effective_vietnamese(&self) -> bool {
+        self.vi()
+    }
     pub fn target(&self) -> Option<&Target> {
         self.target.as_ref()
     }

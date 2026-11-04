@@ -82,10 +82,11 @@ impl Platform {
 }
 impl Config {
     pub fn fresh(platform: Platform) -> Self {
+        // Defaults are runtime resources, not private documentation dependencies.
         let source = if platform == Platform::Windows {
-            include_str!("../../../docs/spec/config_example_windows.json")
+            include_str!("defaults/config_example_windows.json")
         } else {
-            include_str!("../../../docs/spec/config_example.json")
+            include_str!("defaults/config_example.json")
         };
         // Checked-in examples are compiled into the binary; user input never reaches expect.
         serde_json::from_str(source).expect("VXKey default config is valid")
@@ -253,6 +254,13 @@ pub fn choice(value: &str, allowed: &[&str]) -> Result<(), String> {
     }
 }
 pub fn valid_app_id(id: &str) -> bool {
+    #[cfg(windows)]
+    if id.len() <= 32768 && !id.chars().any(char::is_control)
+        && (id.as_bytes().get(1..3) == Some(b":\\") || id.starts_with(r"\\"))
+        && !id.split('\\').any(|part| part == "." || part == "..")
+    {
+        return true;
+    }
     id.len() <= 255
         && id.split('.').count() > 1
         && id.split('.').all(|p| {

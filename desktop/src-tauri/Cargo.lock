@@ -4010,6 +4010,8 @@ dependencies = [
 name = "vxkey-desktop-backend"
 version = "1.1.0"
 dependencies = [
+ "funput-core",
+ "funput-engine",
  "objc2",
  "objc2-app-kit",
  "objc2-foundation",
@@ -4020,6 +4022,9 @@ dependencies = [
  "tauri-plugin-process",
  "tauri-plugin-updater",
  "vxkey-runtime",
+ "vxkey-windows-engine",
+ "windows-registry",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -4033,6 +4038,15 @@ dependencies = [
  "libc",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "vxkey-windows-engine"
+version = "0.1.0"
+dependencies = [
+ "funput-core",
+ "funput-engine",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

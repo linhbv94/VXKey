@@ -1,0 +1,16 @@
+{
+  "productName": "VXKey Test",
+  "identifier": "com.vxkey.desktop.test.windows",
+  "build": {"beforeBuildCommand": "npm run build:windows_test"},
+  "bundle": {
+    "targets": ["nsis"],
+    "resources": [],
+    "icon": ["assets/windows_icon.ico"],
+    "createUpdaterArtifacts": false,
+    "windows": {
+      "webviewInstallMode": {"type": "downloadBootstrapper", "silent": true},
+      "nsis": {"installMode": "currentUser", "languages": ["English", "Vietnamese"], "displayLanguageSelector": true, "installerHooks": "windows_installer_hooks.nsh"}
+    }
+  },
+  "plugins": {"updater": {"endpoints": []}}
+}
