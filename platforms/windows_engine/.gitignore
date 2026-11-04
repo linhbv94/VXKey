@@ -1,0 +1,3 @@
+# This standalone executable/harness graph needs its own reproducible lockfile.
+!Cargo.lock
+target/
