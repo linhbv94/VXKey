@@ -1,3 +1,0 @@
-    Finished `release` profile [optimized] target(s) in 0.18s
-2026-11-02 23:15:14.696 background_fixture[53750:24015520] Error received in message reply handler: Connection invalid
-2026-11-02 23:15:14.696 background_fixture[53750:24015531] Connection Invalid error for service com.apple.hiservices-xpcservice.

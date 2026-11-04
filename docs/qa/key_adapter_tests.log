@@ -1,9 +1,0 @@
-{
-  "status": "pass",
-  "checks": [
-    "real Swift cache timer applies native revision",
-    "three real cache Resume/Pause transactions acknowledged and reflected"
-  ],
-  "os_hook_mocked": true,
-  "native_typing_tested": false
-}

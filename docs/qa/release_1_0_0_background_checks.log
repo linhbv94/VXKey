@@ -1,5 +1,0 @@
-   Compiling vxkey-runtime v0.1.0 (/Users/vic/_Work/VXUtilities/vxkey/crates/vxkey-runtime)
-   Compiling funput-ffi v0.1.0 (/Users/vic/_Work/VXUtilities/vxkey/crates/funput-ffi)
-    Finished `release` profile [optimized] target(s) in 22.47s
-2026-11-03 09:10:44.870 background_fixture[72531:24334042] Error received in message reply handler: Connection invalid
-2026-11-03 09:10:44.870 background_fixture[72531:24334055] Connection Invalid error for service com.apple.hiservices-xpcservice.

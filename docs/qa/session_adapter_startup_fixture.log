@@ -1,8 +1,0 @@
-    Finished `release` profile [optimized] target(s) in 0.42s
-{
-  "checks" : 104,
-  "event_posting_performed" : false,
-  "native_typing_tested" : false,
-  "scope" : "integrated stream composition\/delivery fixtures",
-  "status" : "pass"
-}
