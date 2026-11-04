@@ -5,6 +5,10 @@ root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 cd "$root"
 python3 scripts/check_macos_sdk.py >/dev/null
 python3 scripts/render_tray_assets.py
+if [ "${VXKEY_TEST_BUILD:-0}" = "1" ]; then
+  export VITE_VXKEY_TEST_APP=1
+  export TAURI_CONFIG='{"identifier":"com.vxkey.test.desktop","productName":"VXKey Test","plugins":{"updater":{"endpoints":[]}}}'
+fi
 npm run build --prefix desktop
 MACOSX_DEPLOYMENT_TARGET=26.0 cargo +stable build --manifest-path desktop/src-tauri/Cargo.toml --features custom-protocol --offline
 python3 - <<'PY'

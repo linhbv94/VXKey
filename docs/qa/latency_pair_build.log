@@ -1,0 +1,67 @@
+    Finished `release` profile [optimized] target(s) in 0.07s
+{
+  "baseline_sdk": "27.0",
+  "checks": [
+    {
+      "binary": "/Users/vic/_Work/VXUtilities/vxkey/build/latency_candidate/native_candidate/VXKeyEngine.app/Contents/MacOS/VXKeyEngine",
+      "sdk_slices": [
+        "27.0"
+      ],
+      "pass": true
+    }
+  ]
+}
+Candidate: /Users/vic/_Work/VXUtilities/vxkey/build/latency_candidate/native_candidate/VXKeyEngine.app (not installed or activated)
+Native tray assets: 4 SVG polygons → 36x36 RGBA
+
+> vxkey@0.1.0 build
+> node scripts/check_settings_ui.mjs && tsc && vite build
+
+Settings UI 1.0.0: source/CSS/copy integrity PASS
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 1959 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.54 kB │ gzip:   0.36 kB
+dist/assets/index-BWoI4O28.css   53.38 kB │ gzip:   9.94 kB
+dist/assets/index-D4fADpBV.js   349.56 kB │ gzip: 102.12 kB
+
+✓ built in 913ms
+   Compiling vxkey-desktop-backend v0.1.0 (/Users/vic/_Work/VXUtilities/vxkey/desktop/src-tauri)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.88s
+/Users/vic/_Work/VXUtilities/vxkey/build/latency_candidate/desktop_candidate/VXKey.app
+{
+  "baseline_sdk": "27.0",
+  "checks": [
+    {
+      "binary": "/Users/vic/_Work/VXUtilities/vxkey/build/latency_candidate/desktop_candidate/VXKey.app/Contents/MacOS/VXKey",
+      "sdk_slices": [
+        "27.0"
+      ],
+      "pass": true
+    }
+  ]
+}
+{
+  "status": "built_background_development_pair",
+  "signing": "explicit ad-hoc pins; NOT production identity or TCC retention",
+  "artifacts": {
+    "engine": {
+      "app": "build/latency_candidate/desktop_candidate/VXKey.app/Contents/Resources/VXKeyEngine.app",
+      "bundle_id": "com.vxkey.engine",
+      "cdhash": "dfa371c9fd4b9956bab65ced1839e7be574f4a22",
+      "binary_sha256": "59dcbba6740be4a8ee07e30a23ebe531f0b9be7c8fcc7270a143afd4b5cbad0d"
+    },
+    "companion": {
+      "app": "build/latency_candidate/desktop_candidate/VXKey.app",
+      "bundle_id": "com.vxkey.desktop",
+      "cdhash": "23a6d2368a215e72473ac8b7f1e4b8363d6bdd71",
+      "binary_sha256": "7a86136ac0cf62c31734a66243672c4cb0f75890aed365e113ab82b099080c14"
+    }
+  },
+  "data_root": "build/latency_candidate/qa_integration_data",
+  "input_source_required": false,
+  "runtime_typing_tested": false,
+  "autostart_enabled": false
+}

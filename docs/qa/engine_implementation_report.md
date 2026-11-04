@@ -1,3 +1,5 @@
+> Checkpoint mới: [integration review](integration_review.md). Tài liệu bên dưới là bàn giao/báo cáo tại thời điểm trước; không dùng trạng thái cũ thay kết quả kiểm chứng mới.
+
 # VXKey — kết quả triển khai engine và bàn giao
 
 Ngày: 2026-10-30. Phạm vi: fork/source, engine foundation, native candidate build, adapter backend cho UI. Chưa phải bản dùng hằng ngày hoặc full spec acceptance.

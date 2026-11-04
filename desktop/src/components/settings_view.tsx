@@ -32,15 +32,31 @@ import {
   Keyboard,
   ClipboardList,
   Cpu,
+  ShieldCheck,
+  CheckCircle2,
+  AlertTriangle,
+  Play,
 } from 'lucide-react';
 
 interface Props {
   snapshot: Snapshot;
   onRefresh: () => void;
   onClose?: () => void;
+  onPermissionSetup?: () => void;
+  onRevealSettings?: () => void;
+  requestedTab?: string | null;
+  onTabConsumed?: () => void;
 }
 
-export function SettingsView({ snapshot, onRefresh, onClose = () => {} }: Props) {
+export function SettingsView({
+  snapshot,
+  onRefresh,
+  onClose = () => {},
+  onPermissionSetup,
+  onRevealSettings,
+  requestedTab,
+  onTabConsumed,
+}: Props) {
   const [activeTab, setActiveTab] = useState('general');
   const macroDraft = useRef<MacroDraftHandle | null>(null);
   const [resetConfirmation,setResetConfirmation] = useState<{id:string;revision:string}|null>(null);
@@ -51,6 +67,13 @@ export function SettingsView({ snapshot, onRefresh, onClose = () => {} }: Props)
   const performAction = (action: string) => {
     if (action === 'close') onClose();
     else if (action === 'quit') void invoke('vxkey_quit', {confirmed:true}).catch(() => setNotice('VXKey: quit failed'));
+    else if (action === 'restart') {
+      try { localStorage.setItem('vxkey_setup_pending_resume', '1'); } catch {}
+      void invoke('vxkey_restart_app', {confirmed: true}).catch(() => {
+        try { localStorage.removeItem('vxkey_setup_pending_resume'); } catch {}
+        setNotice(snapshot.config.ui.locale === 'vi' ? 'Chưa khởi động lại được VXKey. Nháp đã lưu sẽ được giữ nguyên.' : 'VXKey could not restart. Saved drafts are preserved.');
+      });
+    }
     else if (action === 'reset') void beginReset();
     else setActiveTab(action);
   };
@@ -61,6 +84,8 @@ export function SettingsView({ snapshot, onRefresh, onClose = () => {} }: Props)
   };
   const quitRef = useRef(() => guardAction('quit'));
   quitRef.current = () => guardAction('quit');
+  const restartRef = useRef(() => {});
+  restartRef.current = () => { onRevealSettings?.(); guardAction('restart'); };
   const closeRef = useRef(() => guardAction('close'));
   closeRef.current = () => guardAction('close');
   useEffect(() => {
@@ -71,11 +96,18 @@ export function SettingsView({ snapshot, onRefresh, onClose = () => {} }: Props)
       const unlisten = await listen<string>('settings_tab', event => guardAction(event.payload));
       const unclose = await listen('request_close', () => closeRef.current());
       const unquit = await listen('request_quit', () => quitRef.current());
-      const cleanup = () => {unlisten(); unclose(); unquit();};
+      const unrestart = await listen('request_restart', () => restartRef.current());
+      const cleanup = () => {unlisten(); unclose(); unquit(); unrestart();};
       if (disposed) cleanup(); else stop = cleanup;
     })();
     return () => {disposed = true; stop?.();};
   }, []);
+  useEffect(() => {
+    if (requestedTab) {
+      setActiveTab(requestedTab);
+      onTabConsumed?.();
+    }
+  }, [requestedTab, onTabConsumed]);
   const update = useAppUpdater();
   const [busy, setBusy] = useState(false);
   useEffect(() => {
@@ -139,15 +171,51 @@ export function SettingsView({ snapshot, onRefresh, onClose = () => {} }: Props)
     onRefresh();
   };
 
+  const runtime = snapshot.runtime;
+  const driver = runtime.driver;
+  const permissionsReady =
+    runtime.connection_status === 'connected' &&
+    Boolean(driver?.accessibility && driver?.listen_access && driver?.post_access);
+  const isReadyAndActive =
+    permissionsReady &&
+    Boolean(driver?.attached) &&
+    runtime.driver_status === 'active' &&
+    runtime.effective_mode !== 'suspended';
+  const showAttentionBadge = snapshot.platform === 'macos' && !isReadyAndActive;
+
+  const handleQuickResume = async () => {
+    setBusy(true);
+    const res = await sendCommand('set_input_suspended', {
+      target_session_id: runtime.engine_session_id ?? null,
+      suspended: false,
+      reason: 'user',
+    });
+    setBusy(false);
+    if (res.ok) {
+      showToast(
+        language === 'vi'
+          ? 'Đã kích hoạt bộ gõ tiếng Việt!'
+          : 'Activated Vietnamese input method!'
+      );
+    } else {
+      showToast(
+        language === 'vi'
+          ? 'Chưa kích hoạt được. Hãy kiểm tra quyền hệ thống.'
+          : 'Could not activate. Please check system permissions.'
+      );
+    }
+    onRefresh();
+  };
+
   // Define tabs
   const tabs: SettingsTab[] = [
     { id: 'general', label: t.tabs.general, icon: <Sliders size={16} /> },
-    { id: 'typing', label: t.tabs.typing, icon: <Type size={16} /> },
+    { id: 'typing', label: t.tabs.typing, icon: <Type size={16} />, badge: showAttentionBadge },
     { id: 'apps', label: t.tabs.apps, icon: <LayoutGrid size={16} /> },
     { id: 'macros', label: t.tabs.macros, icon: <Code size={16} /> },
     { id: 'shortcuts', label: t.tabs.shortcuts, icon: <Keyboard size={16} /> },
     { id: 'clipboard', label: t.tabs.clipboard, icon: <ClipboardList size={16} /> },
-    { id: 'system', label: t.tabs.system, icon: <Cpu size={16} /> },
+    { id: 'system', label: t.tabs.system, icon: <Cpu size={16} />, badge: showAttentionBadge },
     { id: 'updates', label: t.tabs.updates, icon: <Sparkles size={16} />, information: true },
     { id: 'about', label: t.tabs.about, icon: <Info size={16} />, information: true },
     { id: 'support', label: t.tabs.support, icon: <Coffee size={16} />, information: true },
@@ -230,15 +298,100 @@ export function SettingsView({ snapshot, onRefresh, onClose = () => {} }: Props)
         )}
 
         {activeTab === 'typing' && (
-          <div>
-          {!snapshot.capabilities.native_engine && <p role="status" className="vx_typing_notice">{language === 'vi' ? 'Bộ gõ chưa kết nối. Bạn vẫn có thể lưu thiết lập.' : 'The input method is disconnected. You can still save your preferences.'}</p>}
-          <TypingTab
-            config={config}
-            runtime={snapshot.runtime}
-            language={language}
-            disabled={busy}
-            onChange={patch => handlePatch({ typing: patch })}
-          /></div>
+          <div className="space-y-4">
+            {snapshot.platform === 'macos' && (
+              <div
+                role="status"
+                className={`p-3.5 rounded-xl border flex flex-wrap items-center justify-between gap-3 text-xs ${
+                  isReadyAndActive
+                    ? 'border-emerald-500/30 bg-emerald-500/10'
+                    : permissionsReady
+                    ? 'border-cyan-500/35 bg-cyan-500/10'
+                    : 'border-amber-500/35 bg-amber-500/10'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  {isReadyAndActive ? (
+                    <CheckCircle2
+                      size={16}
+                      className="text-emerald-600 dark:text-emerald-400 shrink-0"
+                    />
+                  ) : (
+                    <AlertTriangle
+                      size={16}
+                      className={
+                        permissionsReady
+                          ? 'text-cyan-600 dark:text-cyan-400 shrink-0'
+                          : 'text-amber-600 dark:text-amber-400 shrink-0'
+                      }
+                    />
+                  )}
+                  <div>
+                    <p className="font-semibold">
+                      {isReadyAndActive
+                        ? language === 'vi'
+                          ? 'Bộ gõ đang hoạt động — Sẵn sàng gõ tiếng Việt'
+                          : 'Input method active — Ready to type Vietnamese'
+                        : permissionsReady
+                        ? language === 'vi'
+                          ? 'Đã đủ quyền hệ thống · Bộ gõ đang tạm ngừng'
+                          : 'Permissions granted · Input method is paused'
+                        : language === 'vi'
+                        ? 'Cần cấp quyền hệ thống macOS để xử lý bàn phím'
+                        : 'macOS system permissions required for keyboard processing'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {!isReadyAndActive && permissionsReady && (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => void handleQuickResume()}
+                      className="vx_permission_primary inline-flex items-center gap-1.5 text-xs"
+                    >
+                      <Play size={13} />
+                      <span>
+                        {language === 'vi' ? 'Bắt đầu gõ tiếng Việt' : 'Start typing'}
+                      </span>
+                    </button>
+                  )}
+                  {onPermissionSetup && (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={onPermissionSetup}
+                      className={
+                        !permissionsReady
+                          ? 'vx_permission_primary inline-flex items-center gap-1.5 text-xs'
+                          : 'vx_permission_secondary inline-flex items-center gap-1.5 text-xs'
+                      }
+                    >
+                      <ShieldCheck size={13} />
+                      <span>
+                        {!permissionsReady
+                          ? language === 'vi'
+                            ? 'Thiết lập quyền bàn phím'
+                            : 'Set up permissions'
+                          : language === 'vi'
+                          ? 'Màn hình Thiết lập & Gõ thử'
+                          : 'Setup & Live Test'}
+                      </span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+            <TypingTab
+              config={config}
+              runtime={snapshot.runtime}
+              snapshot={snapshot}
+              language={language}
+              disabled={busy}
+              onChange={patch => handlePatch({ typing: patch })}
+            />
+          </div>
         )}
 
         {activeTab === 'apps' && (
@@ -333,18 +486,9 @@ export function SettingsView({ snapshot, onRefresh, onClose = () => {} }: Props)
             disabled={busy}
             onSystemChange={patch => handlePatch({ system: patch })}
             onUiChange={patch => handlePatch({ ui: patch })}
+            onRefresh={onRefresh}
+            onPermissionSetup={onPermissionSetup}
           />
-        )}
-
-        {activeTab === 'general' && (
-          <section className="rounded-lg border border-cyan-500/30 p-3 text-sm space-y-2" aria-live="polite">
-            <h3>{language === 'vi' ? 'Quyền xử lý bàn phím' : 'Keyboard permissions'}</h3>
-            <p>{language === 'vi' ? 'VXKey Engine cần Accessibility và Input Monitoring để xử lý phím trên máy. Không cần thêm Input Source. Sau khi cho phép trong System Settings, quay lại đây kiểm tra rồi bấm Resume.' : 'VXKey Engine needs Accessibility and Input Monitoring to process keys locally. No Input Source is required. Return from System Settings, check permissions, then choose Resume.'}</p>
-            <p>Accessibility: {String(snapshot.runtime.driver?.accessibility ?? false)} · Input Monitoring: {String(snapshot.runtime.driver?.listen_access ?? false)} · {snapshot.runtime.connection_status}</p>
-            <button disabled={busy || !snapshot.runtime.engine_session_id} onClick={() => void invoke('vxkey_request_permissions').then(onRefresh).catch(() => setNotice(language === 'vi' ? 'Chưa yêu cầu được quyền; kiểm tra kết nối VXKey Engine rồi thử lại.' : 'Permission request failed; check VXKey Engine connection and retry.'))}>{language === 'vi' ? 'Yêu cầu quyền' : 'Request permissions'}</button>
-            <button onClick={onRefresh}>{language === 'vi' ? 'Kiểm tra lại' : 'Check again'}</button>
-            <button disabled={busy || !snapshot.runtime.driver?.accessibility || !snapshot.runtime.driver?.listen_access || !snapshot.runtime.driver?.post_access} onClick={() => void sendCommand('set_input_suspended',{target_session_id:snapshot.runtime.engine_session_id,suspended:false,reason:'user'}).then(result => {if(!result.ok)setNotice('Resume failed');onRefresh();})}>Resume</button>
-          </section>
         )}
 
         {activeTab === 'updates' && (

@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-30",
+  "status": "native_visual_subset_verified",
+  "binary_sha256": "66aef3cb657f88477f8a85f5574e3fada1f4554ee97a30a256b3096a6db3ec6c",
+  "bundle": "build/desktop_candidate/VXKey.app",
+  "sdk": "27.0",
+  "build_log": "ui_window_build.log",
+  "final_binary_screenshots": [
+    "ui_window_native/resume/final_about_native_en.jpg",
+    "ui_window_native/resume/final_about_settings_vi_dark.jpg",
+    "ui_window_native/resume/final_apps_vi_dark.jpg",
+    "ui_window_native/resume/final_clipboard_vi_dark.jpg",
+    "ui_window_native/resume/final_general_vi_dark.jpg",
+    "ui_window_native/resume/final_macros_vi_dark.jpg",
+    "ui_window_native/resume/final_shortcuts_vi_dark.jpg",
+    "ui_window_native/resume/final_support_vi_dark.jpg",
+    "ui_window_native/resume/final_system_vi_dark.jpg",
+    "ui_window_native/resume/final_tray_en_light.jpg",
+    "ui_window_native/resume/final_tray_vi_dark.jpg",
+    "ui_window_native/resume/final_typing_vi_dark.jpg",
+    "ui_window_native/resume/final_updates_vi_dark.jpg"
+  ],
+  "earlier_same_ui_checks": [
+    "640x520 English/light Typing scroll and System",
+    "Pure Black General and Macros",
+    "populated app rows and long ID",
+    "macro dirty toolbar and Cancel",
+    "native About vi/en from tray and app menu"
+  ],
+  "final_change_after_earlier_checks": "Native focus snapshot refresh only; final_* images recaptured after build. Other images remain historical stage evidence.",
+  "visibility_log": "ui_window_native/resume/host_visibility.jsonl",
+  "checks": {
+    "frontend_vendor_typescript_vite": "pass",
+    "tauri_build": "pass",
+    "sdk_artifact": "pass",
+    "macro_loader_tests": 2,
+    "escape_tray": "noWindowsAvailable and host visible=false",
+    "about_tray_hidden_before_panel": "host visible=false",
+    "normal_startup": "Settings verified before temporary tray override; override removed for handoff"
+  },
+  "limits": [
+    "Windows not executed",
+    "IME not installed/activated",
+    "direct system-tray icon click and click outside on unrelated app not fully exercised; focus_lost hide observed when opening Settings/About",
+    "OS-native About light appearance not tested; only current OS dark appearance",
+    "No full locale x theme x tab matrix",
+    "No daily-driver typing, recovery/watchdog or production release acceptance"
+  ],
+  "qa_app_stopped": true,
+  "qa_surface_override_removed": true,
+  "autostart_enabled": false,
+  "transparency_evidence": "Native screenshots are composited JPEG 320x376; visual single rounded panel, no alpha-channel assertion.",
+  "fixture_writer_lock_released": true,
+  "fixture_ui": {
+    "locale": "vi",
+    "theme": "system",
+    "tray_icon_style": "serious"
+  }
+}

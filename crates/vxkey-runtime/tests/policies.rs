@@ -630,3 +630,93 @@ fn removing_policy_keeps_independent_language_memory() {
         "en"
     );
 }
+#[test]
+fn test_keystroke_requires_active_native_and_composes_via_funput() {
+    use serde_json::json;
+    use vxkey_runtime::{
+        bridge::{DriverStatus, NativeStatus},
+        service::{Service, Surface},
+    };
+    let d = tempfile::tempdir().unwrap();
+    let store = ConfigStore::open(d.path().join("config.json"), Platform::Macos).unwrap();
+    let mut service = Service::new(store);
+    let session_id = "00000000-0000-4000-8000-000000000010".to_string();
+
+    // Disconnected -> unavailable
+    let disconnected = service.dispatch_from(
+        Surface::Settings,
+        json!({"command": "test_keystroke", "action": "key", "key": "a"}),
+    );
+    assert_eq!(disconnected["error"]["code"], "unavailable");
+
+    // Suspended -> permission_denied
+    service.accept_native(
+        NativeStatus {
+            diagnostics: None,
+            driver: DriverStatus {
+                accessibility: true,
+                listen_access: true,
+                post_access: true,
+                attached: false,
+            },
+            engine_session_id: session_id.clone(),
+            loop_sequence: "1".into(),
+            active: false,
+            target: None,
+            composing: false,
+            mode: "vi".into(),
+            suspended: true,
+            applied_revision: "1".into(),
+            result: None,
+            memory: None,
+            fault: None,
+        },
+        session_id.clone(),
+    );
+    let suspended = service.dispatch_from(
+        Surface::Settings,
+        json!({"command": "test_keystroke", "action": "key", "key": "a"}),
+    );
+    assert_eq!(suspended["error"]["code"], "permission_denied");
+
+    // Active & attached -> composes Vietnamese with real Funput engine
+    service.accept_native(
+        NativeStatus {
+            diagnostics: None,
+            driver: DriverStatus {
+                accessibility: true,
+                listen_access: true,
+                post_access: true,
+                attached: true,
+            },
+            engine_session_id: session_id.clone(),
+            loop_sequence: "2".into(),
+            active: false,
+            target: None,
+            composing: false,
+            mode: "vi".into(),
+            suspended: false,
+            applied_revision: "1".into(),
+            result: None,
+            memory: None,
+            fault: None,
+        },
+        session_id,
+    );
+    let mut rendered = String::new();
+    for ch in "ddwojwc".chars() {
+        let res = service.dispatch_from(
+            Surface::Settings,
+            json!({"command": "test_keystroke", "action": "key", "key": ch.to_string()}),
+        );
+        assert_eq!(res["ok"], true);
+        let replace = res["data"]["replace_chars"].as_u64().unwrap() as usize;
+        let insert = res["data"]["insert"].as_str().unwrap();
+        let chars: Vec<char> = rendered.chars().collect();
+        rendered = chars[..chars.len().saturating_sub(replace)]
+            .iter()
+            .collect::<String>()
+            + insert;
+    }
+    assert_eq!(rendered, "được");
+}

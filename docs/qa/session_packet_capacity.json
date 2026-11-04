@@ -1,0 +1,40 @@
+{
+  "event_posting_performed" : false,
+  "results" : [
+    {
+      "actual_utf16" : 1,
+      "requested_utf16" : 1,
+      "round_trip_exact" : true
+    },
+    {
+      "actual_utf16" : 20,
+      "requested_utf16" : 20,
+      "round_trip_exact" : true
+    },
+    {
+      "actual_utf16" : 21,
+      "requested_utf16" : 21,
+      "round_trip_exact" : true
+    },
+    {
+      "actual_utf16" : 64,
+      "requested_utf16" : 64,
+      "round_trip_exact" : true
+    },
+    {
+      "actual_utf16" : 128,
+      "requested_utf16" : 128,
+      "round_trip_exact" : true
+    },
+    {
+      "actual_utf16" : 1024,
+      "requested_utf16" : 1024,
+      "round_trip_exact" : true
+    },
+    {
+      "actual_utf16" : 8192,
+      "requested_utf16" : 8192,
+      "round_trip_exact" : true
+    }
+  ]
+}

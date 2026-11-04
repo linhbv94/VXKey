@@ -5,6 +5,14 @@ struct EditPlan {
     let backspaces: Int
     let output: String
     let resultingText: String
+    /// Reconcile observed text with the composer's retained result after an AX delay.
+    static func reconcile(owned: String, target: String) -> EditPlan? {
+        let actual=Array(owned.unicodeScalars), desired=Array(target.unicodeScalars)
+        var common=0
+        while common<min(actual.count,desired.count), actual[common]==desired[common] { common+=1 }
+        let suffix=String(String.UnicodeScalarView(desired.dropFirst(common)))
+        return make(owned:owned,backspaces:actual.count-common,output:suffix)
+    }
     static func unicodeChunks(_ text: String) -> [[UInt16]] {
         var chunks: [[UInt16]] = []; var current: [UInt16] = []
         for scalar in text.unicodeScalars {

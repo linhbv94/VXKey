@@ -245,4 +245,32 @@ spin { permissionCache.ready }
 check(permissionCache.current.accessibility,"TCC reader executes off keyboard/main run loop")
 permissionTime=3
 check(!permissionCache.ready && !permissionCache.current.post,"Expired permission cache fails closed without a synchronous preflight")
+check(ContextGuard.allowsSubrole(status:.attributeUnsupported,subrole:nil),"Custom editor without named role may attempt exact proof")
+check(ContextGuard.allowsSubrole(status:.noValue,subrole:nil),"Missing subrole does not exclude an application")
+check(!ContextGuard.allowsSubrole(status:.success,subrole:kAXSecureTextFieldSubrole),"Secure text field is still excluded")
+check(!ContextGuard.allowsSubrole(status:.cannotComplete,subrole:nil),"AX RPC failure cannot claim nonsecure context")
+let canvasInput=ContextGuard.ProbeInput(pid:getpid(),epoch:9,entries:[ContextGuard.Expected(revision:1,text:"d",start:-1)],prior:nil)
+if case .waiting = ContextGuard.evaluate(canvasInput,element:fakeElement,range:CFRange(location:1,length:0),sliceReader:{_ in nil}) {
+    check(true,"Any editor without exact text slice cannot authorize rewrite")
+} else { check(false,"Any editor without exact text slice cannot authorize rewrite") }
+if case .verified(let canvasProof) = ContextGuard.evaluate(canvasInput,element:fakeElement,range:CFRange(location:1,length:0),sliceReader:{_ in "d"}) {
+    check(canvasProof.start==0 && canvasProof.text=="d","Capability-based editor requires exact suffix before rewrite")
+} else { check(false,"Capability-based editor requires exact suffix before rewrite") }
+for (keys,expected) in [("ddwojwc","được"),("casch","cách"),("cachs","cách"),("mwojwt","mượt")] {
+    for delayedKeys in [2,3] {
+        composer.apply(ComposerConfiguration(inputMethod:.telex)); composer.clear()
+        var logical="", actual=""
+        for (index,key) in keys.unicodeScalars.enumerated() {
+            let response=composer.processText(key)
+            if response.result.action == ACTION_NONE { logical += String(key) }
+            else { logical=EditPlan.make(owned:logical,backspaces:Int(response.result.backspace),output:response.output)!.resultingText }
+            if index<delayedKeys { actual += String(key) }
+            else { actual=EditPlan.reconcile(owned:actual,target:logical)!.resultingText }
+        }
+        check(actual==expected,"Delayed-prefix reconciliation: \(keys) after \(delayedKeys) raw keys")
+    }
+}
+let boundedReconcile=EditPlan.reconcile(owned:"dd",target:"đ")!
+check(boundedReconcile.backspaces==2 && boundedReconcile.resultingText=="đ","Deferred correction deletes only the observed owned prefix")
+check(EditPlan.reconcile(owned:"a\u{301}",target:"á")==nil,"Deferred reconciliation retains combining ownership rejection")
 print(String(data: try! JSONSerialization.data(withJSONObject: ["status":"pass","checks":checks,"native_event_tap_tested":false], options:[.prettyPrinted,.sortedKeys]), encoding:.utf8)!)

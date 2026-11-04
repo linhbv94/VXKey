@@ -1,0 +1,68 @@
+    Finished `release` profile [optimized] target(s) in 0.03s
+{
+  "baseline_sdk": "27.0",
+  "checks": [
+    {
+      "binary": "/Users/vic/_Work/VXUtilities/vxkey/build/native_candidate/VXKeyInput.app/Contents/MacOS/VXKeyInput",
+      "sdk_slices": [
+        "27.0"
+      ],
+      "pass": true
+    }
+  ]
+}
+Candidate: /Users/vic/_Work/VXUtilities/vxkey/build/native_candidate/VXKeyInput.app (not installed or activated)
+Native tray assets: 4 SVG polygons → 36x36 RGBA
+
+> vxkey@0.1.0 build
+> node scripts/check_settings_ui.mjs && tsc && vite build
+
+Settings UI 1.0.0: source/CSS/copy integrity PASS
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 1959 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.54 kB │ gzip:   0.35 kB
+dist/assets/index-V1qi0hZH.css   52.99 kB │ gzip:   9.91 kB
+dist/assets/index-Bs7ZwtAT.js   348.53 kB │ gzip: 101.70 kB
+
+✓ built in 702ms
+   Compiling vxkey-desktop-backend v0.1.0 (/Users/vic/_Work/VXUtilities/vxkey/desktop/src-tauri)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.84s
+/Users/vic/_Work/VXUtilities/vxkey/build/desktop_candidate/VXKey.app
+{
+  "baseline_sdk": "27.0",
+  "checks": [
+    {
+      "binary": "/Users/vic/_Work/VXUtilities/vxkey/build/desktop_candidate/VXKey.app/Contents/MacOS/VXKey",
+      "sdk_slices": [
+        "27.0"
+      ],
+      "pass": true
+    }
+  ]
+}
+{
+  "status": "built_development_pair",
+  "signing": "explicit ad-hoc CDHash pins; NOT production identity or permission retention",
+  "artifacts": {
+    "companion": {
+      "app": "build/desktop_candidate/VXKey.app",
+      "bundle_id": "com.vxkey.desktop",
+      "cdhash": "acb3ac5fa346df4f06965bb7338c04338ef8c930",
+      "binary_sha256": "d87826d039f0b45cfc51834ec8530d9d29c9cfbbbd50f0198471b07a69107393"
+    },
+    "ime": {
+      "app": "build/native_candidate/VXKeyInput.app",
+      "bundle_id": "com.vxkey.inputmethod",
+      "cdhash": "75c9b4613201d255b881912f467b193c47b80882",
+      "binary_sha256": "8becd14603c3f68e65744d8dadc73923cb052139169e61598a88b61c65539a31"
+    }
+  },
+  "data_root": "build/qa_integration_data",
+  "ime_installed": false,
+  "ime_activated": false,
+  "runtime_connected_tested": false,
+  "autostart_enabled": false
+}

@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-03",
+  "candidate": "build/cmd_a_safe_candidate/desktop_candidate/VXKey.app",
+  "permission_action": "User approved specific binary and performed OS authentication; replaced only VXKey entry through Settings UI; ON",
+  "mkey_changed": false,
+  "resume_status": {
+    "diagnostics": {
+      "bypassed": 0,
+      "failed": 0,
+      "missing_target": 0,
+      "rewrites": 0,
+      "seen": 0,
+      "unverified": 0,
+      "verified": 0
+    },
+    "driver": {
+      "accessibility": true,
+      "attached": true,
+      "listen_access": true,
+      "post_access": true
+    },
+    "fault": null,
+    "result": {
+      "id": "fd77f1d9-462e-4587-af20-d8cedd4d04fe",
+      "outcome": "applied"
+    },
+    "sequence": "107",
+    "suspended": false
+  },
+  "native_typing_accepted": false,
+  "next_gate": "Release agent handoff; first-word issue stays open, production permission/updater preparation required",
+  "status": "user_first_attempt_failed_later_attempts_worked_qa_handoff_with_known_issue",
+  "user_result": "lần đầu thì k được. nhưng xong thì lại được",
+  "latest_runtime_status_fresh": false,
+  "latest_runtime_note": "trace contains Resume transition only; not a fresh post-typing health probe",
+  "additional_swift_assertions_passed": 86,
+  "artifact_hashes_rechecked": true
+}

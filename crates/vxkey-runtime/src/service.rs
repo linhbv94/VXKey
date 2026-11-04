@@ -11,9 +11,13 @@ pub struct Service {
     pub history: History,
     pub suspended: bool,
     pub native: Option<crate::bridge::Observation>,
+    /// Negotiated on the authenticated native connection, not a UI preference.
+    pub native_session_stream: bool,
     native_target_token: Option<(String, crate::bridge::Target)>,
     pub native_period: crate::period::NativePeriod,
     reset_confirmation: Option<(String, String, std::time::Instant)>,
+    pub test_session: crate::engine::InputSession,
+    test_config_key: (String, String),
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Surface {
@@ -69,6 +73,7 @@ impl Service {
         });
     }
     pub fn native_snapshot(&self, value: &mut Value) {
+        value["capabilities"]["native_session_stream"] = json!(self.native_session_stream);
         let Some(observation) = self.native.as_ref().filter(|n| n.fresh()) else {
             return;
         };
@@ -168,6 +173,7 @@ impl Service {
                 "export_config",
                 "reset_preferences",
                 "update_action",
+                "test_keystroke",
             ]
             .contains(&command),
             Surface::Tray => [
@@ -186,7 +192,7 @@ impl Service {
                 "clear_history",
             ]
             .contains(&command),
-            Surface::Onboarding => ["get_snapshot"].contains(&command),
+            Surface::Onboarding => ["get_snapshot", "test_keystroke"].contains(&command),
             Surface::Conversion => ["get_snapshot", "convert_text"].contains(&command),
         };
         if !allowed {
@@ -212,6 +218,7 @@ impl Service {
     }
     pub fn new(store: ConfigStore) -> Self {
         Self {
+            native_session_stream: false,
             store,
             history: History::default(),
             suspended: true,
@@ -219,6 +226,8 @@ impl Service {
             native_target_token: None,
             native_period: crate::period::NativePeriod::Unknown,
             reset_confirmation: None,
+            test_session: crate::engine::InputSession::default(),
+            test_config_key: (String::new(), String::new()),
         }
     }
     pub fn dispatch(&mut self, request: Value) -> Value {
@@ -600,6 +609,83 @@ impl Service {
                 )
             }
             "set_language" => Err("stale_target".into()),
+            "test_keystroke" => {
+                fields(r, &["command", "action", "key"])?;
+                let action = string(r, "action")?;
+                let key_str = string(r, "key")?;
+                let Some(native) = self.native.as_ref().filter(|n| n.fresh()) else {
+                    return Err("unavailable".into());
+                };
+                if native.status.suspended
+                    || !native.status.driver.attached
+                    || !native.status.driver.accessibility
+                    || (!self.native_session_stream &&
+                        (!native.status.driver.listen_access || !native.status.driver.post_access))
+                    || native.status.fault.is_some()
+                {
+                    return Err("permission_denied".into());
+                }
+                let mut effective_config = self.store.config.clone();
+                effective_config.typing.language_mode = native.status.mode.clone();
+                let current_key = (
+                    effective_config.revision.clone(),
+                    effective_config.typing.language_mode.clone(),
+                );
+                if self.test_config_key != current_key {
+                    self.test_session.clear();
+                    self.test_session.configure(&effective_config);
+                    self.test_config_key = current_key;
+                }
+                match action {
+                    "reset" => {
+                        self.test_session.clear();
+                        self.test_session.configure(&effective_config);
+                        Ok(json!({
+                            "replace_chars": 0,
+                            "insert": "",
+                            "buffer": self.test_session.buffer(),
+                            "mode": effective_config.typing.language_mode,
+                            "input_method": effective_config.typing.input_method,
+                        }))
+                    }
+                    "backspace" => {
+                        let res = self.test_session.backspace(&effective_config);
+                        let (replace_chars, insert) = match res.action {
+                            funput_engine::Action::Send => (res.backspace, res.output),
+                            _ => (1, String::new()),
+                        };
+                        Ok(json!({
+                            "replace_chars": replace_chars,
+                            "insert": insert,
+                            "buffer": self.test_session.buffer(),
+                            "mode": effective_config.typing.language_mode,
+                            "input_method": effective_config.typing.input_method,
+                        }))
+                    }
+                    "key" => {
+                        let mut chars = key_str.chars();
+                        let Some(ch) = chars.next() else {
+                            return Err("invalid_argument".into());
+                        };
+                        if chars.next().is_some() {
+                            return Err("invalid_argument".into());
+                        }
+                        let res = self.test_session.process(ch, &effective_config);
+                        let (replace_chars, insert) = match res.action {
+                            funput_engine::Action::Send => (res.backspace, res.output),
+                            _ => (0, ch.to_string()),
+                        };
+                        Ok(json!({
+                            "replace_chars": replace_chars,
+                            "insert": insert,
+                            "buffer": self.test_session.buffer(),
+                            "mode": effective_config.typing.language_mode,
+                            "input_method": effective_config.typing.input_method,
+                        }))
+                    }
+                    _ => Err("invalid_argument".into()),
+                }
+            }
             _ => Err("unsupported".into()),
         }
     }

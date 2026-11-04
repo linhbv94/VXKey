@@ -1,0 +1,17 @@
+[
+  {
+    "finding_id": "VXKEY_SAFE_001",
+    "severity": "high",
+    "confidence": "high",
+    "verdict": "confirmed",
+    "evidence_level": [
+      "source",
+      "fixture"
+    ],
+    "location": "native/macos_background/event_driver.swift:278",
+    "title": "Empty proof authorizes rewrite without verified owned text",
+    "status": "fixed_source_fixture_native_pending",
+    "native_reproduced": false,
+    "fix_report": "../run_20261103_cmd_a_fix/report.md"
+  }
+]

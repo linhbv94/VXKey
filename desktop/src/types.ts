@@ -70,6 +70,7 @@ export interface Capabilities {
   native_capture: boolean;
   encrypted_history: boolean;
   native_engine: boolean;
+  native_session_stream?: boolean;
   native_shortcuts: boolean;
   autostart: boolean;
   windows_history_provider: boolean;

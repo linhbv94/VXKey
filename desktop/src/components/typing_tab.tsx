@@ -1,15 +1,17 @@
-import type { Config, Runtime } from '../types';
+import type { Config, Runtime, Snapshot } from '../types';
 import { uiCopy } from '../services/copy';
+import { LiveTypingTest } from './live_typing_test';
 
 interface Props {
   config: Config;
   runtime: Runtime;
+  snapshot?: Snapshot;
   language: 'vi' | 'en';
   disabled?: boolean;
   onChange: (patch: Partial<Config['typing']>) => void;
 }
 
-export function TypingTab({ config, runtime, language, disabled = false, onChange }: Props) {
+export function TypingTab({ config, runtime, snapshot, language, disabled = false, onChange }: Props) {
   const t = uiCopy[language].typing;
   const typing = config.typing;
   const period = runtime.period_substitution;
@@ -221,6 +223,13 @@ export function TypingTab({ config, runtime, language, disabled = false, onChang
           ))}
         </div>
       </section>
+
+      {snapshot && (
+        <>
+          <hr className="border-black/10 dark:border-white/10" />
+          <LiveTypingTest snapshot={snapshot} compact />
+        </>
+      )}
     </div>
   );
 }

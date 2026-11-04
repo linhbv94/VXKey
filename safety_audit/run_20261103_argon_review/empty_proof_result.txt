@@ -1,0 +1,1 @@
+CONFIRMED: real ContextGuard returns empty proof while d is pending; ACTION_SEND predicate accepts caret=5 and edit plan deletes 1 scalar despite no verified d slice. No OS events posted.

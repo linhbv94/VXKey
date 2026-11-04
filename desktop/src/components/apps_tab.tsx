@@ -180,7 +180,8 @@ export function AppsTab({
                       disabled={disabled}
                       onClick={() => onRemovePolicy(appId)}
                       className="text-rose-400 hover:text-rose-300 p-1"
-                      title={t.actions}
+                      title={language === 'vi' ? 'Xóa quy tắc' : 'Remove rule'}
+                      aria-label={language === 'vi' ? `Xóa quy tắc cho ${appId}` : `Remove rule for ${appId}`}
                     >
                       <Trash2 size={14} />
                     </button>

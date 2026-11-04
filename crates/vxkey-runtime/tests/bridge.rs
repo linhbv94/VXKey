@@ -244,3 +244,70 @@ fn background_driver_permission_and_attachment_invariants() {
     };
     assert!(control.validate().is_ok());
 }
+
+#[test]
+fn recovery_timestamp_preserves_first_incident_and_explicit_resume_guard() {
+    use std::os::unix::fs::PermissionsExt;
+    let dir = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let latch = local::Latch::new(dir.path()).unwrap();
+    latch.set("bridge_disconnected").unwrap();
+    let first = latch.incident().unwrap();
+    let doc: serde_json::Value = serde_json::from_slice(&first).unwrap();
+    assert!(doc["occurred_at_unix_ms"].as_u64().unwrap() > 0);
+    latch.set("driver_fault").unwrap();
+    assert_eq!(latch.incident().unwrap(), first);
+    assert!(latch.clear(Some(b"wrong incident")).is_err());
+    assert!(latch.is_set());
+    latch.clear(Some(&first)).unwrap();
+    assert!(!latch.is_set());
+}
+
+#[test]
+fn session_driver_negotiation_is_explicit_and_version_bound() {
+    for (component, accepted, independent) in [
+        ("engine", true, false), ("engine_stream", true, true), ("other", false, false),
+    ] {
+        let bytes = frame(Message::Handshake(Handshake {
+            component: component.into(), app_version: env!("CARGO_PKG_VERSION").into(),
+        }));
+        let result = Wire::accept(&mut Cursor::new(bytes));
+        assert_eq!(result.is_ok(), accepted);
+        if let Ok(wire) = result { assert_eq!(wire.independent_typing, independent); }
+    }
+    let bytes = frame(Message::Handshake(Handshake {
+        component: "engine_stream".into(), app_version: "wrong".into(),
+    }));
+    assert!(Wire::accept(&mut Cursor::new(bytes)).is_err());
+}
+#[test]
+fn attached_keyboard_driver_uses_ax_and_actual_tap_not_preflight() {
+    let mut status = native_status();
+    status.driver.attached = true;
+    status.driver.listen_access = false;
+    status.driver.post_access = false;
+    assert!(status.validate().is_ok());
+    status.driver.accessibility = false;
+    assert!(status.validate().is_err());
+    status.driver.accessibility = true;
+    status.suspended = true;
+    assert!(status.validate().is_err());
+}
+
+#[test]
+fn live_test_uses_negotiated_permissions_and_still_requires_attached_driver() {
+    use vxkey_runtime::{service::{Service, Surface}, storage::ConfigStore};
+    let dir=tempfile::tempdir().unwrap();
+    let store=ConfigStore::open(dir.path().join("config.json"),Platform::Macos).unwrap();
+    let mut service=Service::new(store);
+    let mut status=native_status();
+    status.driver.attached=true; status.driver.listen_access=false; status.driver.post_access=false;
+    service.accept_native(status.clone(),fresh_id().unwrap());
+    let command=serde_json::json!({"command":"test_keystroke","action":"key","key":"a"});
+    assert_eq!(service.dispatch_from(Surface::Settings,command.clone())["error"]["code"],"permission_denied");
+    service.native_session_stream=true;
+    assert_eq!(service.dispatch_from(Surface::Settings,command.clone())["ok"],true);
+    status.driver.attached=false;
+    service.accept_native(status,fresh_id().unwrap());
+    assert_eq!(service.dispatch_from(Surface::Settings,command)["error"]["code"],"permission_denied");
+}

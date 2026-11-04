@@ -1,0 +1,92 @@
+[
+  {
+    "mode": 0,
+    "keys": "w",
+    "output": "ư"
+  },
+  {
+    "mode": 0,
+    "keys": "W",
+    "output": "Ư"
+  },
+  {
+    "mode": 0,
+    "keys": "thw",
+    "output": "thư"
+  },
+  {
+    "mode": 0,
+    "keys": "vwng",
+    "output": "vưng"
+  },
+  {
+    "mode": 0,
+    "keys": "thwr",
+    "output": "thử"
+  },
+  {
+    "mode": 0,
+    "keys": "nhwng",
+    "output": "nhưng"
+  },
+  {
+    "mode": 0,
+    "keys": "chwx",
+    "output": "chữ"
+  },
+  {
+    "mode": 0,
+    "keys": "vwaf",
+    "output": "vừa"
+  },
+  {
+    "mode": 0,
+    "keys": "casi",
+    "output": "cái"
+  },
+  {
+    "mode": 2,
+    "keys": "w",
+    "output": "ư"
+  },
+  {
+    "mode": 2,
+    "keys": "W",
+    "output": "Ư"
+  },
+  {
+    "mode": 2,
+    "keys": "thw",
+    "output": "thư"
+  },
+  {
+    "mode": 2,
+    "keys": "vwng",
+    "output": "vưng"
+  },
+  {
+    "mode": 2,
+    "keys": "thwr",
+    "output": "thử"
+  },
+  {
+    "mode": 2,
+    "keys": "nhwng",
+    "output": "nhưng"
+  },
+  {
+    "mode": 2,
+    "keys": "chwx",
+    "output": "chữ"
+  },
+  {
+    "mode": 2,
+    "keys": "vwaf",
+    "output": "vừa"
+  },
+  {
+    "mode": 2,
+    "keys": "casi",
+    "output": "cái"
+  }
+]

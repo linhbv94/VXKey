@@ -1,0 +1,217 @@
+{
+  "date": "2026-11-04",
+  "status": "native_typing_policy_toggle_backspace_pass_flip_issue_open",
+  "report": "docs/qa/session_adapter_integration.md",
+  "fixture_checks": 96,
+  "runtime_tests": 59,
+  "ui_assertions": 145,
+  "control_bridge_gates": 5,
+  "control_bridge_os_hook_mocked": true,
+  "native_typing_accepted": true,
+  "native_permission_flow_verified": true,
+  "native_onboarding_required_permissions": [
+    "accessibility"
+  ],
+  "actual_last_status": {
+    "diagnostics": {
+      "bypassed": 0,
+      "failed": 0,
+      "missing_target": 0,
+      "rewrites": 0,
+      "seen": 0,
+      "unverified": 0,
+      "verified": 0
+    },
+    "driver": {
+      "accessibility": true,
+      "attached": true,
+      "listen_access": true,
+      "post_access": true
+    },
+    "fault": null,
+    "result": {
+      "id": "e53fa7af-9379-43ea-8e29-bdd24dfffc5d",
+      "outcome": "applied"
+    },
+    "sequence": "3842",
+    "suspended": false
+  },
+  "artifact_verification": {
+    "engine": {
+      "same_as_granted_binary": true,
+      "strict_exit": 0
+    },
+    "companion": {
+      "same_as_granted_binary": true,
+      "strict_exit": 0
+    }
+  },
+  "mkey": "user confirmed temporarily paused Vietnamese processing",
+  "production_promoted": false,
+  "default_driver_changed": false,
+  "windows_execution_authorized": false,
+  "release_authorized": false,
+  "long_term_track": "open_user_only_close",
+  "native_resume_ack_verified": true,
+  "native_hook_attached_verified": true,
+  "native_ui_active_verified": true,
+  "bundle_frozen": true,
+  "source_only_ui_followup": {
+    "file": "desktop/src/components/permission_setup.tsx",
+    "changes": [
+      "Step3 no longer marked complete merely because hook is active",
+      "Active directions point to external editor rather than a nonexistent native test box",
+      "App-rule delete button identifies Remove rule and app ID instead of generic Actions"
+    ],
+    "included_in_current_candidate": false,
+    "frontend_build_pass": true,
+    "build_log": "docs/qa/session_adapter_ui_followup_build.log",
+    "files": [
+      "desktop/src/components/permission_setup.tsx",
+      "desktop/src/components/apps_tab.tsx"
+    ]
+  },
+  "native_typing_acceptance_scope": "prescribed Telex/macro corpus in TextEdit and Figma; immediate first word after Cmd+A/delete and Shift+Enter in TextEdit",
+  "physical_trials": {
+    "source": "user physical typing confirmation 2026-11-04",
+    "telex_keys": "as af aa ngaan hangf casch cachs ddwojwc w vxqa ",
+    "expected": "á à â ngân hàng cách cách được ư Kiểm tra macro dài hơn hai mươi ký tự 🧪 ",
+    "apps": [
+      "TextEdit scratch",
+      "Figma canvas scratch"
+    ],
+    "long_macro_complete": true,
+    "TextEdit_cmd_a_delete_immediate_word": "được cái",
+    "TextEdit_shift_enter_immediate_word": "được mượt",
+    "user_confirmation": "Cả hai app, macro dài và các lần xóa/xuống dòng đều đúng",
+    "full_parity_accepted": false,
+    "daily_use_accepted": false,
+    "toggle_and_backspace": {
+      "source": "user physical typing confirmation 2026-11-04",
+      "toggle": {
+        "binding": "Control+Option modifier chord",
+        "procedure": "aa→â; toggle→aa; toggle back→â",
+        "pass": true
+      },
+      "backspace": {
+        "keys": "chaof, Backspace once, s",
+        "expected": "chá",
+        "pass": true
+      },
+      "user_confirmation": "còn 2 cái kia thì ổn"
+    },
+    "z_diacritic_removal": {
+      "source": "user additional usage report",
+      "user_confirmation": "test gõ dấu rồi bỏ dấu với Z cũng đang tốt nhé",
+      "pass_reported": true,
+      "exact_keys_recorded": false,
+      "all_diacritic_combinations_tested": false
+    },
+    "flip": {
+      "status": "open_not_accepted",
+      "temporary_qa_binding": "Control+Option+F5",
+      "factory_default": null,
+      "user_report": "ấn xong thấy có một list xổ xuống gợi ý từ pas",
+      "exact_final_text_confirmed": false,
+      "source_defect": "flip handler strips flags then StreamDelivery returns unchanged F5 virtual keycode; a special-key command can reach the editor instead of Unicode insertion",
+      "native_exact_event_trace_available": false,
+      "apple_reference": "https://developer.apple.com/documentation/appkit/nstextview/complete(_:)"
+    }
+  },
+  "app_policy_native": {
+    "source": "user physical typing + Settings UI confirmation",
+    "config_revision": "2",
+    "applied_revision_confirmed": "2",
+    "TextEdit": {
+      "keys": "ddwojwc vxqa ",
+      "result": "unchanged raw keys; macro not expanded"
+    },
+    "Figma_canvas": {
+      "keys": "ddwojwc",
+      "result": "được"
+    },
+    "pass": true,
+    "temporary_policy_removed_via_ui": true,
+    "restored_config_revision": "3",
+    "restored_applied_revision_confirmed": "3"
+  },
+  "illustrator_report": {
+    "source": "user report",
+    "text": "cả illustrator cũng đang ok nhé",
+    "prescribed_corpus_confirmed": false
+  },
+  "native_lifecycle": {
+    "pause": {
+      "driver": {
+        "accessibility": true,
+        "attached": false,
+        "listen_access": true,
+        "post_access": true
+      },
+      "suspended": true,
+      "fault": null,
+      "control_result": {
+        "id": "32425886-b3ba-4644-a482-504de7540d2c",
+        "outcome": "applied"
+      },
+      "pass": true
+    },
+    "resume": {
+      "driver": {
+        "accessibility": true,
+        "attached": true,
+        "listen_access": true,
+        "post_access": true
+      },
+      "suspended": false,
+      "fault": null,
+      "control_result": {
+        "id": "6f1ae02c-c0c7-46c6-9c73-cd184ceac575",
+        "outcome": "applied"
+      },
+      "pass": true
+    },
+    "before_quit_pids": {
+      "companion": 51610,
+      "helper": 51620
+    },
+    "quit": {
+      "via": "native Cmd+Q",
+      "remaining_candidate_processes": [],
+      "pass": true
+    },
+    "same_binary_reopen": {
+      "accessibility": true,
+      "permission_regrant_required": false,
+      "initial_observation_pending_was_misreported_as_permission_required": true,
+      "false_startup_latch_reproduced": true,
+      "manual_resume_succeeded": true,
+      "updater_retention_tested": false
+    }
+  },
+  "fixture_checks_latest_source": 104,
+  "control_bridge_gates_latest_source": 6,
+  "source_startup_permission_fix": {
+    "status": "source_and_fixture_pass_not_in_current_candidate",
+    "root_cause": "PermissionCache has no observation initially; ready=false was sent as permission_required and latched before the first actual AX grant read",
+    "change": "unknown keeps driver stopped but emits no permission denial; an observed denial still faults",
+    "files": [
+      "native/macos_background/permission_cache.swift",
+      "native/macos_session/session_event_driver.swift",
+      "native/macos_background/runtime_settings.swift"
+    ],
+    "swift_fixture": "docs/qa/session_adapter_startup_fixture.log",
+    "two_process_fixture": "docs/qa/session_adapter_startup_control.log",
+    "native_acceptance": false
+  },
+  "pending_native_gates": [
+    "flip special-key transport issue LOG_011; current F5 QA binding not accepted",
+    "full retone matrix beyond chaof/Backspace/s",
+    "VNI/advanced/uppercase/layout matrix",
+    "integrated sentinel/selection/autocomplete/undo/rapid focus",
+    "native helper parent crash and sleep/wake",
+    "new bundle startup fix acceptance",
+    "daily-use canary",
+    "signed N to N+1 updater retention"
+  ]
+}

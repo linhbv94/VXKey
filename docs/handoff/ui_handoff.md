@@ -1,3 +1,7 @@
+> Checkpoint mới: [integration review](../qa/integration_review.md). Tài liệu bên dưới là bàn giao/báo cáo tại thời điểm trước; không dùng trạng thái cũ thay kết quả kiểm chứng mới.
+
+> Kiến trúc hiện hành 2026-11-02: bộ gõ chạy nền, giữ ABC/nguồn nhập đang dùng, Rust Funput + native keyboard driver + Tauri UI. Không yêu cầu Input Source VXKey. Đọc [hợp đồng background driver](../spec/09_background_driver.md) trước các hướng dẫn IME lịch sử.
+
 # VXKey — bàn giao UI
 
 Ngày: 2026-10-30. Trạng thái: engine foundation có tests; native candidate compile; frontend chưa triển khai. Anti đã dừng theo user. Tài liệu này phục vụ user tự giao Anti, không tự khởi chạy CLI.

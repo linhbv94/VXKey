@@ -1,0 +1,70 @@
+Window: "VXKey Settings", App: VXKey.
+0 standard window VXKey Settings, Secondary Actions: Raise
+	1 scroll area
+		2 HTML content Description: VXKey, URL: tauri://localhost/index.html?surface=settings
+			3 container VXKey Settings
+				4 tab group (selectable) Mục cài đặt
+					5 tab (selectable) Chung
+					6 tab (selectable) Bộ gõ
+					7 tab (selectable) Ứng dụng
+					8 tab (selectable) Gõ tắt
+					9 tab (selectable) Phím tắt
+					10 tab (selectable) Lịch sử sao chép
+					11 tab (selected) Hệ thống, Value: on
+					12 tab (selectable) Cập nhật
+					13 tab (selectable) Giới thiệu
+					14 tab (selectable) Ủng hộ tác giả
+				15 container Hệ thống
+					16 heading THIẾT LẬP HỆ THỐNG, Value: 4
+						17 text THIẾT LẬP HỆ THỐNG
+					18 container
+						19 checkbox Hiện biểu tượng VXKey trên thanh Menu / Khay hệ thống, Value: 1
+						20 text Hiện biểu tượng VXKey trên thanh Menu / Khay hệ thống
+					21 text Kiểu biểu tượng thanh Menu (Menubar Icon)
+					22 container
+						23 radio button Nghiêm túc / Hiển thị chữ V cho Tiếng Việt và E cho Tiếng Anh tinh tế, thanh lịch., Value: 1
+						24 text Nghiêm túc
+						25 image V
+						26 text /
+						27 image E
+						28 text Hiển thị chữ V cho Tiếng Việt và E cho Tiếng Anh tinh tế, thanh lịch.
+					29 container
+						30 radio button Nhây / Hiển thị chữ Ư đặc trưng cho Tiếng Việt và W phá cách cho Tiếng Anh., Value: 0
+						31 text Nhây
+						32 image Ư
+						33 text /
+						34 image W
+						35 text Hiển thị chữ Ư đặc trưng cho Tiếng Việt và W phá cách cho Tiếng Anh.
+					36 container
+						37 checkbox (disabled) Khởi động cùng hệ thống, Value: 0
+						38 text Khởi động cùng hệ thống
+					39 text Tạm thời tắt mặc định trong giai đoạn kiểm thử độ ổn định.
+					40 heading TRẠNG THÁI BỘ GÕ, Value: 4
+						41 text TRẠNG THÁI BỘ GÕ
+					42 description list
+						43 text Kết nối
+						44 text Đã kết nối
+						45 text Bộ gõ chạy nền
+						46 text Chưa hoạt động
+						47 text Xử lý phím
+						48 text Đã tạm ngừng
+						49 text Cấu hình đã áp dụng / đã lưu
+						50 container
+							51 text 24  /  24
+						52 text Quyền Trợ năng
+						53 text Chưa cấp
+					54 text Chưa có đủ quyền xử lý phím.
+					55 text Giữ nguyên ABC hoặc nguồn nhập đang dùng. VXKey cần quyền Trợ năng để xử lý phím; sau khi cấp quyền, chọn Tiếp tục trong menu VXKey.
+					56 button Thiết lập quyền xử lý phím…
+				57 container
+					58 button Khôi phục mặc định
+					59 button Đóng
+	60 close button
+	61 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	62 minimize button
+	63 text VXKey Settings
+64 menu bar
+	65 VXKey
+	66 Sửa
+
+The focused UI element is 11 tab (selected) Hệ thống, Value: on

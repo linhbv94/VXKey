@@ -34,5 +34,209 @@
     "swift_fixture": "pass",
     "tauri_library_check": "pass",
     "clippy": "not_installed"
+  },
+  "post_ui_review": {
+    "owner": "Codex",
+    "report": "docs/qa/integration_review.md",
+    "evidence": "docs/qa/integration_evidence.json",
+    "anti_invoked": false,
+    "cargo_passed": 1185,
+    "runtime_tests_passed": 38,
+    "frontend_regression_passed": 2,
+    "native_companion_subset": "pass; see exact scope in report",
+    "ime_installed": false,
+    "ime_activated": false,
+    "daily_driver_qa": false,
+    "next_gate": "Background driver native permission and typing/fault QA"
+  },
+  "ui_visual_checkpoint": {
+    "status": "native_visual_subset_verified",
+    "resume_only_on_explicit_user_request": false,
+    "report": "docs/qa/ui_window_review.md",
+    "evidence": "docs/qa/ui_window_evidence.json",
+    "qa_app_stopped": true,
+    "next": "UI subset historical; bridge implementation/native metadata review takes precedence; full locale/theme and source-active tray checks remain",
+    "anti_invoked": false
+  },
+  "native_bridge": {
+    "owner": "Codex",
+    "status": "implementation_and_fixture_subset_verified_native_typing_gate_open",
+    "report": "docs/qa/native_bridge_review.md",
+    "evidence": "docs/qa/native_bridge_summary.json",
+    "artifacts": "docs/qa/native_pair_artifacts.json",
+    "anti_invoked": false,
+    "cargo_passed": 1197,
+    "two_process_cases": 11,
+    "swift_adapter_cases": 4,
+    "native_source_activated": false,
+    "next_gate": "Historical IMK fixture evidence only; read architecture_decision"
+  },
+  "architecture_decision": {
+    "date": "2026-11-02",
+    "owner": "Codex",
+    "driver": "native background event tap; no Input Source",
+    "spec": "docs/spec/09_background_driver.md",
+    "report": "docs/qa/background_driver_review.md",
+    "ime_legacy_retired": true,
+    "anti_invoked": false,
+    "native_typing_qa": false,
+    "status": "qa_fix_turn_checkpoint_release_handoff_known_first_attempt_failure",
+    "permission_entry": "VXKey",
+    "permission_granted": true,
+    "candidate": "build/cmd_a_safe_candidate/desktop_candidate/VXKey.app",
+    "post_event_granted": true,
+    "artifacts": "docs/qa/cmd_a_safe_pair_artifacts.json",
+    "mkey_paused_by_user": true,
+    "native_vietnamese_text_readback": false,
+    "real_resume_prior_candidate": true,
+    "deadlock_evidence": "docs/qa/resume_companion_sample.txt",
+    "typing_test_evidence": "docs/qa/cmd_a_safe_native_evidence.json",
+    "permission_action_pending": null,
+    "next_gate": "Release agent reads docs/handoff/release_1_0_0_handoff.md; production permission/updater TODO and user release confirmation",
+    "next_candidate": "build/cmd_a_safe_candidate/desktop_candidate/VXKey.app",
+    "resume_only_on_explicit_user_request": false,
+    "review_report": "docs/qa/argon_review_validation.md",
+    "implementation_report": "docs/qa/tone_order_review.md"
+  },
+  "mac_session_spike": {
+    "status": "P1_native_pass_basic_P2_pass_integration_pending",
+    "user_execution_authorized": true,
+    "candidate": "build/session_spike_candidate_v6/vxkey_session_spike.app",
+    "permission_granted": true,
+    "report": "docs/qa/session_spike_review.md",
+    "evidence": "docs/qa/session_spike_evidence.json",
+    "freeze_granted_binary": true,
+    "production_promoted": false,
+    "next_gate": "MAC_ADAPT_01/02, then MAC_ADAPT_03/04; selected route is a pilot result, not production acceptance",
+    "filter_physical_pass_clients": [
+      "TextEdit",
+      "Figma_canvas_scratch"
+    ],
+    "composer_native_accepted": true,
+    "spike_process_running": false,
+    "spike_hook_attached": false,
+    "mkey_reopened": true,
+    "delivery": "return_original",
+    "acceptance_scope": "Isolated pilot only; no production/full-parity/daily-use acceptance",
+    "documentation_updated_at": "2026-11-04",
+    "selected_next_direction": {
+      "id": "MAC_ADAPTER_002",
+      "status": "selected_for_followup_implementation_not_promoted",
+      "spec": "docs/spec/11_mac_driver_replan.md",
+      "route": "session_tap_local_funput_return_original",
+      "delete_delivery": "bounded_backspace_batch_via_proxy",
+      "text_delivery": "original_physical_keydown_unicode_with_physical_keyup",
+      "core_and_tauri_replaced": false,
+      "ordinary_typing_requires_ax_text_proof": false,
+      "accessibility_os_permission_is_separate": true,
+      "exact_client_internal_root_cause_verified": false,
+      "full_parity_or_production_acceptance": false,
+      "doc_update_scope": "documentation_only_no_code_build_runtime_or_permission_change"
+    },
+    "implementation_backlog": [
+      {
+        "id": "MAC_ADAPT_01",
+        "phase": "P2",
+        "status": "planned_unimplemented",
+        "deliverable": "ACTION_RESTORE/English restore, output >20 UTF16 and full macro/retone/VNI/advanced/hotkey parity",
+        "gate": "oracle plus native output and sentinels; no silent truncation or feature removal"
+      },
+      {
+        "id": "MAC_ADAPT_02",
+        "phase": "P2",
+        "status": "remaining_native_matrix_open",
+        "deliverable": "uppercase/layout/autocomplete/undo/focus/editor/terminal/secure input matrix",
+        "gate": "client-specific native evidence; any out-of-scope edit blocks promotion"
+      },
+      {
+        "id": "MAC_ADAPT_03",
+        "phase": "P3",
+        "status": "planned_unimplemented",
+        "deliverable": "helper ownership, authenticated last-known-good config, distinct pause/permission/engine/tap/control states",
+        "gate": "UI/bridge delay does not stop typing; explicit pause/fault held; quit/update removes hook"
+      },
+      {
+        "id": "MAC_ADAPT_04",
+        "phase": "P4",
+        "status": "planned_unimplemented",
+        "deliverable": "real app integration, validated config/policy/language memory, exclusion-before-engine, permission/readiness UX and spec sync",
+        "gate": "capabilities and app exclusion operate in integrated candidate with correct identity"
+      },
+      {
+        "id": "MAC_ADAPT_05",
+        "phase": "P5",
+        "status": "planned_not_release_authorization",
+        "deliverable": "stable test candidate and long-use canary",
+        "gate": "user acceptance and separate signing/updater/retention gates before release"
+      }
+    ]
+  },
+  "mac_session_integration": {
+    "owner": "Codex",
+    "date": "2026-11-04",
+    "status": "native_typing_policy_toggle_backspace_pass_flip_issue_open",
+    "report": "docs/qa/session_adapter_integration.md",
+    "artifacts": "docs/qa/session_adapter_artifacts.json",
+    "default_build_changed": false,
+    "fixture_checks": 96,
+    "runtime_tests": 59,
+    "ui_permission_assertions": 145,
+    "bridge_gates": 5,
+    "bridge_os_hooks_mocked": true,
+    "native_typing_accepted": true,
+    "windows_execution_authorized": false,
+    "release_authorized": false,
+    "long_term_track": "open_user_only_close",
+    "evidence": "docs/qa/session_adapter_evidence.json",
+    "legacy_compile_pass": true,
+    "native_resume_ack_verified": true,
+    "native_hook_attached_verified": true,
+    "mkey_vietnamese_paused_confirmed": true,
+    "native_typing_acceptance_scope": "TextEdit/Figma prescribed Telex+long macro corpus; TextEdit first word after delete/Shift+Enter",
+    "full_parity_accepted": false,
+    "fixture_checks_latest_source": 104,
+    "bridge_gates_latest_source": 6,
+    "native_app_exclusion_pass": true,
+    "native_pause_resume_quit_pass": true,
+    "native_same_binary_permissions_retained": true,
+    "native_startup_false_latch_reproduced": true,
+    "startup_fix_source_fixture_pass": true,
+    "startup_fix_deployed": false,
+    "native_toggle_pass": true,
+    "native_backspace_basic_pass": true,
+    "user_z_removal_reported_pass": true,
+    "native_flip_accepted": false,
+    "flip_issue": "LOG_011 F5 keycode leaks special-key command on returned Unicode event",
+    "next_candidate_source_fixes": [
+      "LOG_010 pending permission observation false latch",
+      "onboarding and app rule delete labels"
+    ],
+    "remaining_source_issue": "LOG_011 flip delivery on non-text shortcut key",
+    "handoff": {
+      "date": "2026-11-04",
+      "file": "anti_next_handoff.md",
+      "status": "ready_for_user_to_assign_anti",
+      "anti_invoked_by_codex": false,
+      "order": [
+        "A1 existing LOG_010 patch validation",
+        "A2 LOG_011 special-key flip delivery",
+        "A3 new isolated Test candidate and native regression"
+      ],
+      "running_snapshot": {
+        "companion_pid": 55110,
+        "helper_pid": 55122,
+        "mkey_process_seen": false
+      },
+      "frozen_artifacts_unchanged": true
+    },
+    "rollback_checkpoint": {
+      "path": "build/checkpoints/pre_anti_2026_11_04",
+      "guide": "checkpoint_rollback.md",
+      "source_files_scratch_restore_verified": 4004,
+      "frozen_bundle_hash_and_strict_verified": true,
+      "working_tree_restored_during_probe": false,
+      "os_permissions_backed_up": false,
+      "auto_restore_whole_work_log": false
+    }
   }
 }

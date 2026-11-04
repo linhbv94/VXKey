@@ -11,9 +11,12 @@ cp docs/spec/config_example.json "$out/Contents/Resources/default_config.json"
 cp icon.icns "$out/Contents/Resources/icon.icns"
 python3 scripts/write_native_info.py "$out/Contents/Info.plist"
 printf APPLVXKY > "$out/Contents/PkgInfo"
+adapter_flags=""
+if [ "${VXKEY_SESSION_ADAPTER:-0}" = "1" ]; then adapter_flags="-D VXKEY_SESSION_ADAPTER"; fi
 swiftc -sdk "$(xcrun --show-sdk-path)" -target arm64-apple-macos26.0 -module-cache-path build/swift_module_cache \
+  $adapter_flags \
   -import-objc-header native/macos/bridging_vxkey.h -I crates/funput-ffi/include \
-  native/macos_background/*.swift platforms/macos/Funput/Model/InputMethod.swift \
+  native/macos_background/*.swift native/macos_session/*.swift platforms/macos/Funput/Model/InputMethod.swift \
   platforms/macos/Funput/ExtraOnsets/ExtraOnsetLetters.swift \
   platforms/macos/Funput/IME/FunputComposer.swift platforms/macos/Funput/IME/ComposerConfiguration.swift \
   platforms/macos/Funput/IME/FunputComposer+Text.swift \

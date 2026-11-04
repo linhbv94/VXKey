@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-30",
+  "status": "implementation_and_fixture_subset_verified_native_typing_gate_open",
+  "owner": "Codex",
+  "anti_invoked": false,
+  "checks": {
+    "cargo": {
+      "passed": 1197,
+      "failed": 0,
+      "log": "native_bridge_cargo_tests.log",
+      "vxkey_runtime_passed": 49
+    },
+    "two_process": {
+      "status": "pass",
+      "cases": 11,
+      "evidence": "native_bridge_evidence.json"
+    },
+    "swift_adapter": {
+      "status": "pass",
+      "cases": 4,
+      "evidence": "swift_bridge_evidence.json"
+    },
+    "frontend_macro_loader": {
+      "passed": 2,
+      "failed": 0,
+      "log": "native_bridge_frontend_tests.log"
+    },
+    "composition_fixture": {
+      "status": "pass",
+      "log": "native_bridge_composition_tests.log"
+    }
+  },
+  "artifact_evidence": "native_pair_artifacts.json",
+  "build_log": "native_bridge_build.log",
+  "observed_pair_evidence": "native_bridge_native/observed_pair_artifacts.json",
+  "final_pair_full_runtime_replay": false,
+  "native_pair_observed_subset": [
+    "two real apps authenticated and ack revision20",
+    "Settings tone patch ack21 then restore ack22",
+    "native menu Pause/Resume with marker readback",
+    "vi/en System status and native menu feedback",
+    "source inactive throughout"
+  ],
+  "fixture_final": {
+    "revision": "24",
+    "locale": "vi",
+    "theme": "system",
+    "tone_style": "modern",
+    "macro_count": 124,
+    "autostart_enabled": false,
+    "suspended_marker_retained": true
+  },
+  "writer_lock_released": true,
+  "ime_installed": false,
+  "ime_activated": false,
+  "tcc_or_keychain_changed": false,
+  "production_identity_verified": false,
+  "daily_driver_qa": false,
+  "commit_push_release": false,
+  "remaining": [
+    "controlled IMK installation/activation and actual typing app matrix",
+    "actual ABC fallback and active-client deadlock/fault/selection/Undo/latency",
+    "production signer/namespace/Team/DR and paired installer/update",
+    "OS-frontmost/panel-session token for other sources",
+    "custom/global/history shortcuts, native period edit, clipboard provenance/encryption",
+    "Intel and Windows native verification",
+    "final artifact full runtime replay after final lifecycle/TTL/validation hardening"
+  ],
+  "source_hashes": {
+    "crates/vxkey-runtime/src/bridge.rs": "e12563d9811bdd872e682d1abb226640d7b4c2e3b6bc8043e1a602f10e4a11e3",
+    "crates/vxkey-runtime/src/bridge/local.rs": "b3c6e4bca783240127f160019dd320a1a843d03e199a36d1b5c94e11f130f6ba",
+    "crates/vxkey-runtime/src/bridge/trust.rs": "c7cdb8646e4d7dfdec37e5a3850c095489018d08df8d42fdd31efe0392a6d1b1",
+    "crates/vxkey-runtime/native/macos_trust.c": "e83baa1c88f9c6d4b163dd5f5c5b049cf1c174e5ca7f52f8b37b21840a62806b",
+    "crates/vxkey-runtime/src/service.rs": "01baa2a3717325db994234209f7bd542f2120c746fc7676078ecf23c1f4c3dcd",
+    "crates/funput-ffi/src/vxkey_native.rs": "60cdacd45149df22225632bab6fb8451c1a2b04a045895c616796bb21f7c583e",
+    "crates/funput-ffi/src/abi/guard.rs": "f398d1489fed823e698191224a5991f58e8f3ad2ce3734fcdc04c59605368fe1",
+    "native/macos/runtime_settings.swift": "535e4049a97b04da13885856a4acb2772cf19dabb8becf0069f97e96cb922e7f",
+    "native/macos/input_controller.swift": "f7f2b286bdcf3893821aab2d195cc514afe0955b8b74937637ed2e6a0beffee9",
+    "desktop/src-tauri/src/lib.rs": "a1a4e5f6c74479e5e0e89cf4e7dce2a11bc208d878316dffed7b753272086cdf"
+  },
+  "git_head": "26314079efe6908dfe890c6c81a754bc84117f99",
+  "working_tree_uncommitted": true,
+  "task_owned_processes_stopped": true
+}

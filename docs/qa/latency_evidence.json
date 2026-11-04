@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-02",
+  "status": "fixture_trace_received_tone_order_core_bug_reproduced",
+  "candidate": "build/latency_candidate/desktop_candidate/VXKey.app",
+  "swift_assertions_passed": 67,
+  "native_typing_accepted": false,
+  "measured_input_latency_ms": null,
+  "open_user_issues": [
+    "LOG_005",
+    "LOG_006",
+    "LOG_007"
+  ],
+  "baseline_sample": "docs/qa/word_engine_idle_sample.txt",
+  "recovery_marker": "new qa_candidate_unverified; existing root untouched",
+  "accessibility": true,
+  "listen_access": true,
+  "post_access": true,
+  "resume_ack": true,
+  "permission_action": "Explicit approval; replaced only VXKey entry via Settings UI; ON",
+  "post_change_sample": "docs/qa/latency_engine_idle_sample.txt",
+  "sample_scope": "3sec/10ms baseline, no controlled typing timing",
+  "tcc_on_main_in_post_sample": false,
+  "tcc_worker_seen_in_post_sample": true,
+  "latest_user_smoothness": "still not smooth",
+  "probe_page": "docs/qa/typing_probe.html",
+  "probe_page_js_syntax": "pass",
+  "probe_browser_open": "denied: file protocol blocked by URL policy; not bypassed",
+  "next_gate": "tone_order_candidate native QA; selection and jitter remain open",
+  "trace_findings": "ddwojwc deterministically produces đuọwc in pre-fix C ABI; ddwowjc/ddwowcj compose được",
+  "followup_report": "docs/qa/tone_order_review.md"
+}

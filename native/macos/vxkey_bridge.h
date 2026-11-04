@@ -1,5 +1,6 @@
 #include <stdbool.h>
 bool vxkey_native_start(const char *root);
+bool vxkey_native_start_session(const char *root);
 char *vxkey_native_tick(const char *status);
 void vxkey_native_free(char *value);
 

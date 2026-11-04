@@ -3,6 +3,7 @@ import Carbon
 import ApplicationServices
 import os
 
+#if !VXKEY_SESSION_ADAPTER
 final class EventDriver {
     let composer = FunputComposer()
     // QA-only isolated TextEdit probe. Read once at launch, never in a callback.
@@ -48,6 +49,7 @@ final class EventDriver {
     private var epoch: UInt64 = 0
     private var window = StreamWindow()
     private var bypassWord = false
+    private var deferredRendered: String?
     var hasUnverifiedEvents: Bool { window.isPending }
     private var consumed = Set<UInt16>()
     private let gesture = NativeModifierGesture()
@@ -109,7 +111,7 @@ final class EventDriver {
     }
     func reset(immediate: Bool = true) {
         if !vxkey_native_engine_faulted() { composer.clear() }
-        owned = ""; start = -1; bypassWord=false; window = StreamWindow(); epoch &+= 1
+        owned = ""; deferredRendered=nil; start = -1; bypassWord=false; window = StreamWindow(); epoch &+= 1
         if let pid = AppSettings.shared.targetPIDValue { context.expect(pid: pid, text: "", start: -1, epoch: epoch, immediate: immediate) }
     }
     func syncSettings() {
@@ -223,6 +225,7 @@ final class EventDriver {
         }
         guard let proxy else { reset(); return pass }
         if code == 51 {
+            if deferredRendered != nil { reset(immediate:false); return pass }
             guard settings.retoneAfterBackspace, !owned.isEmpty,
                   let snapshot = context.latest(pid: pid, epoch: epoch), snapshot.verified,
                   snapshot.text == owned, snapshot.caret == start + owned.utf16.count,
@@ -262,25 +265,41 @@ final class EventDriver {
         if owned.last == " ", composer.buffer().isEmpty {
             if let snapshot, snapshot.verified, !window.isPending { start = snapshot.caret }
             else if start >= 0 { start += owned.utf16.count }
-            owned = ""
+            owned = ""; deferredRendered=nil
         }
         if start < 0, let snapshot, snapshot.verified, snapshot.start >= 0 {
             start = snapshot.start
         }
+        let logical = deferredRendered ?? owned
         let result = composer.processText(scalar, source: event.flags.contains(.maskNumericPad) ? .numpad : .standard)
         if vxkey_native_engine_faulted() { fault(); return pass }
-        if result.result.action == ACTION_NONE {
+        if result.result.action == ACTION_NONE && deferredRendered == nil {
             owned.append(Character(String(scalar)))
             if owned.utf16.count > 128 || owned.hasSuffix("  ") { reset(immediate: false) }
             else { expectOwned() }
             return pass
         }
-        guard let resolvedStart = ContextGuard.rewriteStart(snapshot: snapshot, pid: pid, epoch: epoch,
-            owned: owned, start: start, backspaces: Int(result.result.backspace), window: window, now: now) else {
-            abandonWord(); return pass
+        let target: String
+        if result.result.action == ACTION_NONE {
+            target = logical + String(scalar)
+        } else {
+            guard let logicalPlan=EditPlan.make(owned:logical,backspaces:Int(result.result.backspace),output:result.output) else { reset(immediate:false); return pass }
+            target=logicalPlan.resultingText
         }
-        guard let plan = EditPlan.make(owned: owned, backspaces: Int(result.result.backspace), output: result.output),
-              let events = batch(plan) else { reset(); return pass }
+        guard let plan = EditPlan.reconcile(owned:owned,target:target) else { reset(immediate:false); return pass }
+        guard let resolvedStart = ContextGuard.rewriteStart(snapshot: snapshot, pid: pid, epoch: epoch,
+            owned: owned, start: start, backspaces: plan.backspaces, window: window, now: now) else {
+            // A late AX response is not a reason to bypass the rest of this word.
+            // Keep both actual pass-through text and logical composer state. No edit
+            // is sent until a later exact nonempty checkpoint permits reconciliation.
+            deferredRendered=target
+            owned.append(Character(String(scalar)))
+            if owned.utf16.count>128 || target.utf16.count>128 { abandonWord() }
+            else { expectOwned() }
+            return pass
+        }
+        guard let events = batch(plan) else { reset(); return pass }
+        deferredRendered=nil
         start = resolvedStart
         owned = plan.resultingText
         expectOwned()
@@ -293,3 +312,4 @@ final class EventDriver {
         if let source { CFRunLoopRemoveSource(CFRunLoopGetMain(), source, .commonModes) }
     }
 }
+#endif

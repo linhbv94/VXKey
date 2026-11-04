@@ -1,3 +1,4 @@
+import { nativePermissions } from '../services/native_permissions';
 import { useState, useLayoutEffect, useRef } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import type { Snapshot } from '../types';
@@ -39,9 +40,23 @@ export function TrayPanel({ snapshot, onNavigate, onRefresh }: Props) {
   const runtime = snapshot.runtime;
   const [error, setError] = useState<string | null>(null);
   const isPlayful = snapshot.config.ui.tray_icon_style === 'playful';
+  const permissionsMissing = snapshot.platform === 'macos' && nativePermissions(snapshot).missing;
+  const isDriverActive =
+    runtime.connection_status === 'connected' &&
+    !permissionsMissing &&
+    runtime.driver_status === 'active' &&
+    runtime.effective_mode !== 'suspended';
 
-  const isVi = runtime.effective_mode === 'vi';
-  const isEn = runtime.effective_mode === 'en';
+  const activeMode =
+    runtime.effective_mode === 'vi' || runtime.effective_mode === 'en'
+      ? runtime.effective_mode
+      : isDriverActive
+      ? snapshot.config.typing.language_mode === 'en'
+        ? 'en'
+        : 'vi'
+      : null;
+  const isVi = activeMode === 'vi';
+  const isEn = activeMode === 'en';
 
   const [busy, setBusy] = useState(false);
   const target = runtime.current_app;
@@ -73,10 +88,12 @@ export function TrayPanel({ snapshot, onNavigate, onRefresh }: Props) {
   };
 
   const getStatusText = () => {
+    if (runtime.connection_status !== 'connected') return t.statusUnavailable;
+    if (permissionsMissing) return language === 'vi' ? 'Cần cấp quyền' : 'Permissions needed';
     if (runtime.effective_mode === 'suspended') return t.statusSuspended;
-    if (runtime.effective_mode === 'unavailable') return t.statusUnavailable;
     if (runtime.effective_mode === 'bypass') return language === 'vi' ? 'Đã loại trừ ứng dụng này' : 'This application is excluded';
-    return isVi || isEn ? t.statusActive : t.statusUnavailable;
+    if (isDriverActive || isVi || isEn) return t.statusActive;
+    return t.statusUnavailable;
   };
 
   const handleOpenSurface = (target: 'settings' | 'history' | 'conversion' | 'onboarding', tab?: string) => onNavigate(target, tab);
@@ -102,16 +119,45 @@ export function TrayPanel({ snapshot, onNavigate, onRefresh }: Props) {
         </div>
         <span
           className={`px-2 py-0.5 rounded text-[10px] font-medium border ${
-            runtime.effective_mode === 'suspended'
-              ? 'bg-amber-500/10 text-amber-500 dark:text-amber-400 border-amber-500/20'
-              : runtime.effective_mode === 'unavailable'
+            runtime.connection_status !== 'connected'
               ? 'bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/20'
+              : permissionsMissing || runtime.effective_mode === 'suspended'
+              ? 'bg-amber-500/10 text-amber-500 dark:text-amber-400 border-amber-500/20'
               : 'bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border-emerald-500/20'
           }`}
         >
           {getStatusText()}
         </span>
       </div>
+
+      {/* Prominent Setup or Resume Callout when not active */}
+      {permissionsMissing ? (
+        <button
+          type="button"
+          onClick={() => handleOpenSurface('settings', 'typing')}
+          className="w-full py-2 px-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-colors shadow-sm"
+        >
+          <Shield size={14} />
+          <span>
+            {language === 'vi' ? 'Thiết lập quyền bàn phím…' : 'Set up keyboard permissions…'}
+          </span>
+        </button>
+      ) : (
+        runtime.connection_status === 'connected' &&
+        runtime.effective_mode === 'suspended' && (
+          <button
+            type="button"
+            disabled={busy || !runtime.engine_session_id}
+            onClick={() => void handleSuspension()}
+            className="w-full py-2 px-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-colors shadow-sm disabled:opacity-50"
+          >
+            <Shield size={14} />
+            <span>
+              {language === 'vi' ? 'Bắt đầu gõ tiếng Việt' : 'Start typing Vietnamese'}
+            </span>
+          </button>
+        )
+      )}
 
       {/* Mode selection buttons */}
       <div className="grid grid-cols-2 gap-2">

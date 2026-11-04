@@ -5,6 +5,8 @@ root=Path(__file__).resolve().parents[1];cfg=json.loads((root/'scripts/release_i
 def verify(app):
  for target,identifier in [(app,cfg['app_id']),(app/'Contents/Resources/VXKeyEngine.app',cfg['helper_id'])]:
   info=plistlib.loads((target/'Contents/Info.plist').read_bytes());assert info['CFBundleIdentifier']==identifier and info['CFBundleShortVersionString']==version;assert 'LSEnvironment' not in info
+  icon=info['CFBundleIconFile'];icon=icon if icon.endswith('.icns') else icon+'.icns'
+  assert (target/'Contents/Resources'/icon).read_bytes()==(root/'icon.icns').read_bytes(), 'Bundled icon differs from approved ICNS'
   subprocess.run(['codesign','--verify','--deep','--strict',str(target)],check=True)
   r=subprocess.run(['codesign','-d','-r-',str(target)],capture_output=True,text=True,check=True);dr=r.stdout+r.stderr
   assert ('certificate leaf = H"'+cfg['certificate_sha1'].lower()+'"') in dr and 'cdhash' not in dr

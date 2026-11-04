@@ -1,0 +1,22 @@
+{
+  "status": "built_background_development_pair",
+  "signing": "explicit ad-hoc pins; NOT production identity or TCC retention",
+  "artifacts": {
+    "engine": {
+      "app": "build/latency_candidate/desktop_candidate/VXKey.app/Contents/Resources/VXKeyEngine.app",
+      "bundle_id": "com.vxkey.engine",
+      "cdhash": "dfa371c9fd4b9956bab65ced1839e7be574f4a22",
+      "binary_sha256": "59dcbba6740be4a8ee07e30a23ebe531f0b9be7c8fcc7270a143afd4b5cbad0d"
+    },
+    "companion": {
+      "app": "build/latency_candidate/desktop_candidate/VXKey.app",
+      "bundle_id": "com.vxkey.desktop",
+      "cdhash": "23a6d2368a215e72473ac8b7f1e4b8363d6bdd71",
+      "binary_sha256": "7a86136ac0cf62c31734a66243672c4cb0f75890aed365e113ab82b099080c14"
+    }
+  },
+  "data_root": "build/latency_candidate/qa_integration_data",
+  "input_source_required": false,
+  "runtime_typing_tested": false,
+  "autostart_enabled": false
+}

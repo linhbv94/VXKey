@@ -169,3 +169,33 @@ html[data-surface=tray] .vx_app_surface { background:transparent!important; }
 .vx_business_tab .vx_disabled_setting { color:var(--vxs_secondary); }
 .vx_business_tab .vx_disabled_hint { color:var(--vxs_muted); margin-top:6px; }
 .vx_settings_window p.vx_development_notice { padding:12px; border:1px solid var(--vxs_border); border-radius:8px; color:var(--vxs_muted); font-size:12px; line-height:18px; }
+
+/* App-owned permission flow: one primary action, stable accessible hit targets. */
+.vx_permission_primary, .vx_permission_secondary {
+  min-height: 36px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, opacity 150ms ease;
+}
+.vx_permission_primary {
+  background: var(--color-cyan-600, #0891b2);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+.vx_permission_primary:hover:not(:disabled) { background: var(--color-cyan-700, #0e7490); }
+.vx_permission_secondary {
+  background: rgba(128, 128, 128, 0.08);
+  color: inherit;
+  border: 1px solid rgba(128, 128, 128, 0.24);
+}
+.vx_permission_secondary:hover:not(:disabled) {
+  background: rgba(128, 128, 128, 0.16);
+  border-color: rgba(128, 128, 128, 0.36);
+}
+.vx_permission_primary:disabled, .vx_permission_secondary:disabled { opacity: .5; cursor: default; }
+.vx_permission_primary:focus-visible, .vx_permission_secondary:focus-visible { outline: 2px solid var(--color-cyan-500, #06b6d4); outline-offset: 3px; }

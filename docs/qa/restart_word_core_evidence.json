@@ -1,0 +1,29 @@
+{
+  "scope": "core C ABI, no native timing or Ctrl+A state",
+  "cases": [
+    {
+      "keys": "ddw",
+      "output": "đư"
+    },
+    {
+      "keys": "ddwowcj",
+      "output": "được"
+    },
+    {
+      "keys": "dduwowcj",
+      "output": "được"
+    },
+    {
+      "keys": "ddwocj",
+      "output": "được"
+    },
+    {
+      "keys": "ddwoc",
+      "output": "đươc"
+    },
+    {
+      "keys": "casi",
+      "output": "cái"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+
+> vxkey@1.0.1 build
+> node scripts/check_settings_ui.mjs && tsc && vite build
+
+Settings UI 1.0.0: source/CSS/copy integrity PASS
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 1967 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.54 kB │ gzip:   0.36 kB
+dist/assets/index-BDHovW4w.css   61.79 kB │ gzip:  11.14 kB
+dist/assets/index-BEcg-EN_.js   388.86 kB │ gzip: 112.78 kB
+
+✓ built in 1.17s

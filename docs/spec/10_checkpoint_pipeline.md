@@ -1,5 +1,7 @@
 # VXKey — checkpoint pipeline cho background driver
 
+> Review2026-11-03: [kế hoạch adapter mới](11_mac_driver_replan.md) ghi hạn chế coverage của AX bắt buộc và gate kiểm chứng phương án thay thế. Đây vẫn là contract baseline hiện tại, chưa phải contract adapter đề xuất.
+
 Ngày: 2026-11-02. Thay thế chính sách lỗi theo từng phím trong delta cuối spec09 trước đó. Nguồn: [event_driver](../../native/macos_background/event_driver.swift), [context_guard](../../native/macos_background/context_guard.swift), [stream_window](../../native/macos_background/stream_window.swift).
 
 ## Quy tắc hiện hành

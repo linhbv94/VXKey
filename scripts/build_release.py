@@ -16,8 +16,9 @@ run(['python3','scripts/write_native_info.py',str(app/'Contents/Info.plist')])
 p=app/'Contents/Info.plist';info=plistlib.loads(p.read_bytes());info['CFBundleShortVersionString']=identity['version'];info['CFBundleVersion']=identity['version'];p.write_bytes(plistlib.dumps(info))
 sdk=subprocess.check_output(['xcrun','--show-sdk-path'],text=True).strip();cache=root/'build/release_swift_cache';cache.mkdir(exist_ok=True)
 sources=sorted(str(x) for x in (root/'native/macos_background').glob('*.swift'))
+sources += sorted(str(x) for x in (root/'native/macos_session').glob('*.swift'))
 sources += [str(root/x) for x in ['platforms/macos/Funput/Model/InputMethod.swift','platforms/macos/Funput/ExtraOnsets/ExtraOnsetLetters.swift','platforms/macos/Funput/IME/FunputComposer.swift','platforms/macos/Funput/IME/ComposerConfiguration.swift','platforms/macos/Funput/IME/FunputComposer+Text.swift']]
-run(['swiftc','-O','-sdk',sdk,'-target','arm64-apple-macos26.0','-module-cache-path',str(cache),'-import-objc-header','native/macos/bridging_vxkey.h','-I','crates/funput-ffi/include',*sources,'target/release/libfunput_ffi.a','-framework','AppKit','-framework','Carbon','-o',str(app/'Contents/MacOS/VXKeyEngine')])
+run(['swiftc','-O','-sdk',sdk,'-target','arm64-apple-macos26.0','-module-cache-path',str(cache),'-D','VXKEY_SESSION_ADAPTER','-import-objc-header','native/macos/bridging_vxkey.h','-I','crates/funput-ffi/include',*sources,'target/release/libfunput_ffi.a','-framework','AppKit','-framework','Carbon','-o',str(app/'Contents/MacOS/VXKeyEngine')])
 if '--compile-only' in sys.argv:
  print('Helper compiled only; not a signed or installable release candidate');sys.exit(0)
 run(['codesign','--force','--sign',identity['certificate_sha1'],'--options','runtime','--timestamp=none',str(app)])

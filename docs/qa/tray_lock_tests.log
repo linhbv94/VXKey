@@ -1,0 +1,30 @@
+   Compiling objc2-exception-helper v0.1.1
+   Compiling objc2 v0.6.5
+   Compiling objc2-foundation v0.3.2
+   Compiling wry v0.57.1
+   Compiling objc2-core-foundation v0.3.2
+   Compiling block2 v0.6.2
+   Compiling dispatch2 v0.3.1
+   Compiling objc2-core-graphics v0.3.2
+   Compiling objc2-quartz-core v0.3.2
+   Compiling objc2-app-kit v0.3.2
+   Compiling objc2-web-kit v0.3.2
+   Compiling tao v0.37.2
+   Compiling muda v0.20.0
+   Compiling window-vibrancy v0.8.1
+   Compiling tauri-runtime v2.12.2
+   Compiling tray-icon v0.25.1
+   Compiling tauri-runtime-wry v2.12.3
+   Compiling tauri v2.12.5
+   Compiling vxkey-desktop-backend v0.1.0 (/Users/vic/_Work/VXUtilities/vxkey/desktop/src-tauri)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 34.74s
+     Running unittests src/lib.rs (desktop/src-tauri/target/debug/deps/vxkey_desktop_backend-0ebcd7d619f9f99b)
+
+running 4 tests
+test tray_state::tests::disconnected_preserves_selected_svg_and_cannot_look_live ... ok
+test tray_state::tests::busy_icon_cache_skips_without_waiting ... ok
+test tray_state::tests::busy_runtime_never_blocks_ui ... ok
+test tray_state::tests::renderer_can_reenter_both_mutexes ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

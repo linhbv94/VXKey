@@ -1,0 +1,16 @@
+{
+  "status": "pass",
+  "scope": "real Swift AppSettings/main timer and Rust FFI composer; stub controller only, no IMK/document edits",
+  "checks": [
+    "real Swift AppSettings connects, maps strict native cache and acknowledges revision",
+    "real Rust composer buffer delays Swift config/macro apply until boundary; then VNI and revision agree",
+    "blocking actual Swift main RunLoop stops health progress while bridge worker remains alive; transforms remain suspended after reconnect",
+    "explicit same-session Resume requires real Swift main-loop ACK before removing durable marker"
+  ],
+  "host_cdhash": "8214178340cfb21cda1b94227edc6c1b96928a2a",
+  "client_cdhash": "9ba29ac941e58f0f1846d9be584ab32069c9955c",
+  "swift_sha256": "29176048cda9e8405dc7ac1dd6b15e3a81c65cb0bc3740c49d2c57513cc008eb",
+  "ime_installed": false,
+  "ime_activated": false,
+  "native_document_typing_tested": false
+}

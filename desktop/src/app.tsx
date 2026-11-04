@@ -1,9 +1,11 @@
+import { nativePermissions } from './services/native_permissions';
 import { useState, useLayoutEffect, useEffect, useCallback, useRef } from 'react';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { initialSurface } from './services/window_surface';
 import type { Snapshot, SurfaceType } from './types';
 import { invoke } from '@tauri-apps/api/core';
 import { sendCommand } from './services/api';
+import { PermissionSetup } from './components/permission_setup';
 import { SettingsView } from './components/settings_view';
 import { TrayPanel } from './components/tray_panel';
 import { HistoryPanel } from './components/history_panel';
@@ -35,8 +37,12 @@ export function App() {
   const [surface, setSurface] = useState<SurfaceType>(initialSurface);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [loading, setLoading] = useState(true);
+  const [permissionSetup, setPermissionSetup] = useState(false);
+  const [permissionDeferred, setPermissionDeferred] = useState(false);
+  const [requestedSettingsTab, setRequestedSettingsTab] = useState<string | null>(null);
   const [navigationError, setNavigationError] = useState<string | null>(null);
   const snapshotGeneration = useRef(0);
+  const hadPermissionsRef = useRef(false);
   const native = '__TAURI_INTERNALS__' in window;
 
   useLayoutEffect(() => {
@@ -75,6 +81,38 @@ export function App() {
       snapshotGeneration.current += 1;
     };
   }, [loadSnapshot]);
+
+  useEffect(() => {
+    if (!native || surface !== 'settings' || !snapshot || snapshot.platform !== 'macos') return;
+    const { missing: permissionsMissing, ready: permissionsReady } = nativePermissions(snapshot);
+
+    if (permissionsReady) {
+      hadPermissionsRef.current = true;
+    } else if (permissionsMissing && hadPermissionsRef.current) {
+      hadPermissionsRef.current = false;
+      setPermissionDeferred(false);
+      setPermissionSetup(true);
+      return;
+    }
+
+    if (permissionDeferred) return;
+
+    let pendingResume = false;
+    let setupCompleted = false;
+    try {
+      pendingResume = localStorage.getItem('vxkey_setup_pending_resume') === '1';
+      setupCompleted = localStorage.getItem('vxkey_setup_completed_v1') === '1';
+    } catch {}
+
+    if (
+      permissionsMissing ||
+      (permissionsReady &&
+        snapshot.runtime.effective_mode === 'suspended' &&
+        (pendingResume || !setupCompleted))
+    ) {
+      setPermissionSetup(true);
+    }
+  }, [native, surface, permissionDeferred, snapshot]);
 
   // Sync theme class and listen to system changes
   const currentTheme = snapshot?.config.ui.theme;
@@ -160,9 +198,44 @@ export function App() {
         </div>
       )}
 
+      {/* Permission setup occupies the native Settings window; no nested dialog. */}
+      {surface === 'settings' && permissionSetup && (
+        <PermissionSetup
+          snapshot={snapshot}
+          onRefresh={loadSnapshot}
+          onLater={() => {
+            setPermissionDeferred(true);
+            setPermissionSetup(false);
+            setRequestedSettingsTab('typing');
+          }}
+          onOpenFullSettings={() => {
+            setPermissionDeferred(true);
+            setPermissionSetup(false);
+            setRequestedSettingsTab('typing');
+          }}
+          onFinishToMenubar={() => {
+            setPermissionDeferred(true);
+            setPermissionSetup(false);
+            void handleClose('settings');
+          }}
+        />
+      )}
       {/* Surface Router */}
       {surface === 'settings' && (
-        <SettingsView snapshot={snapshot} onRefresh={loadSnapshot} onClose={() => void handleClose('settings')} />
+        <div hidden={permissionSetup} className="h-full">
+          <SettingsView
+            snapshot={snapshot}
+            onRefresh={loadSnapshot}
+            onClose={() => void handleClose('settings')}
+            onPermissionSetup={() => {
+              setPermissionDeferred(false);
+              setPermissionSetup(true);
+            }}
+            onRevealSettings={() => { setPermissionDeferred(true); setPermissionSetup(false); }}
+            requestedTab={requestedSettingsTab}
+            onTabConsumed={() => setRequestedSettingsTab(null)}
+          />
+        </div>
       )}
 
       {surface === 'tray' && (

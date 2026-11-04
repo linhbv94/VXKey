@@ -1,0 +1,551 @@
+{
+  "date": "2026-11-03",
+  "status": "P1_native_pass_basic_P2_pass_spike_quit_integration_pending",
+  "candidate": "build/session_spike_candidate_v6/vxkey_session_spike.app",
+  "identifier": "com.vxkey.spike.session",
+  "scope": "P0/P1 isolated Telex session tap harness",
+  "fixture_checks": 484,
+  "fixture_pass": true,
+  "sdk": "27.0",
+  "build_pass": true,
+  "strict_codesign_pass": true,
+  "production_executable_unchanged": true,
+  "old_test_executable_unchanged": true,
+  "production_baseline_verify": "CSSMERR_TP_NOT_TRUSTED before and after; not changed in this task",
+  "permission_action": "User approved same isolated test app/keyboard scope; only vxkey_session_spike entry updated to exact v6. AX true, post/listen false; no new services requested; production entries preserved.",
+  "input_monitoring_requested": false,
+  "input_monitoring_granted_by_agent": false,
+  "native_process_launched": true,
+  "startup_paused_verified": true,
+  "native_typing_accepted": true,
+  "physical_probe_result": {
+    "source": "user physical typing confirmation",
+    "TextEdit": "aX",
+    "Figma_canvas": "aX",
+    "keys": "azx",
+    "pass": true
+  },
+  "next_gate": "P2 remaining matrix and parity/restore/large output; P3 lifecycle; P4 authenticated config/exclusions/permission UI integration before default or release",
+  "known_ui_automation_gap": "Windowless CUA limitation applies to v1/MKey; v2-v6 native control windows were accessible. Automated targeted TextEdit keys bypass session tap, so physical native QA used.",
+  "windows_execution_authorized": false,
+  "production_promoted": false,
+  "release_authorized": false,
+  "agent_delegation_invoked": false,
+  "report": "docs/qa/session_spike_review.md",
+  "permission_gate_diagnosis": "v1 incorrect post preflight gate confirmed; v2 active filtering physically works with AX true/post false/listen false",
+  "revision": "0.1.5 (6)",
+  "previous_trial": {
+    "candidate": "build/session_spike_candidate/vxkey_session_spike.app",
+    "user_report": "probe disabled; AX=true, post=false",
+    "cause": "harness incorrectly gated filter probe on PostEvent preflight",
+    "process_quit": true,
+    "bytes_preserved": true
+  },
+  "gate_correction": "AX preflight permits tap creation attempt; post/listen observed only; physical proxy-posting still needs QA",
+  "control_window_verified": true,
+  "runtime_status": {
+    "accessibility": true,
+    "callback_samples": 618,
+    "callback_us_p50": 9.542,
+    "callback_us_p95": 60.875,
+    "callback_us_p99": 100.5,
+    "delivery": "return_original",
+    "document_verified": false,
+    "engine_fixture_abort": null,
+    "engine_fixture_index": 8,
+    "engine_fixture_oracle": [
+      {
+        "action": 0,
+        "backspaces": 0,
+        "callback_output_class": "empty",
+        "callback_utf8_count": 0,
+        "callback_utf16_count": 0,
+        "inline_count": 0,
+        "inline_output_class": "empty"
+      },
+      {
+        "action": 1,
+        "backspaces": 1,
+        "callback_output_class": "acute_a",
+        "callback_utf8_count": 2,
+        "callback_utf16_count": 1,
+        "inline_count": 1,
+        "inline_output_class": "acute_a"
+      },
+      {
+        "action": 0,
+        "backspaces": 0,
+        "callback_output_class": "empty",
+        "callback_utf8_count": 0,
+        "callback_utf16_count": 0,
+        "inline_count": 0,
+        "inline_output_class": "empty"
+      },
+      {
+        "action": 0,
+        "backspaces": 0,
+        "callback_output_class": "empty",
+        "callback_utf8_count": 0,
+        "callback_utf16_count": 0,
+        "inline_count": 0,
+        "inline_output_class": "empty"
+      },
+      {
+        "action": 1,
+        "backspaces": 1,
+        "callback_output_class": "grave_a",
+        "callback_utf8_count": 2,
+        "callback_utf16_count": 1,
+        "inline_count": 1,
+        "inline_output_class": "grave_a"
+      },
+      {
+        "action": 0,
+        "backspaces": 0,
+        "callback_output_class": "empty",
+        "callback_utf8_count": 0,
+        "callback_utf16_count": 0,
+        "inline_count": 0,
+        "inline_output_class": "empty"
+      },
+      {
+        "action": 0,
+        "backspaces": 0,
+        "callback_output_class": "empty",
+        "callback_utf8_count": 0,
+        "callback_utf16_count": 0,
+        "inline_count": 0,
+        "inline_output_class": "empty"
+      },
+      {
+        "action": 1,
+        "backspaces": 1,
+        "callback_output_class": "circumflex_a",
+        "callback_utf8_count": 2,
+        "callback_utf16_count": 1,
+        "inline_count": 1,
+        "inline_output_class": "circumflex_a"
+      }
+    ],
+    "engine_fixture_records": [
+      {
+        "action": 0,
+        "backspaces": 0,
+        "callback_output_class": "empty",
+        "callback_utf8_count": 0,
+        "callback_utf16_count": 0,
+        "fixture_index": 0,
+        "flags": 256,
+        "inline_count": 0,
+        "inline_output_class": "empty",
+        "key_code": 0
+      },
+      {
+        "action": 1,
+        "backspaces": 1,
+        "callback_output_class": "acute_a",
+        "callback_utf8_count": 2,
+        "callback_utf16_count": 1,
+        "fixture_index": 1,
+        "flags": 256,
+        "inline_count": 1,
+        "inline_output_class": "acute_a",
+        "key_code": 1
+      },
+      {
+        "action": 0,
+        "backspaces": 0,
+        "callback_output_class": "empty",
+        "callback_utf8_count": 0,
+        "callback_utf16_count": 0,
+        "fixture_index": 2,
+        "flags": 256,
+        "inline_count": 0,
+        "inline_output_class": "empty",
+        "key_code": 49
+      },
+      {
+        "action": 0,
+        "backspaces": 0,
+        "callback_output_class": "empty",
+        "callback_utf8_count": 0,
+        "callback_utf16_count": 0,
+        "fixture_index": 3,
+        "flags": 256,
+        "inline_count": 0,
+        "inline_output_class": "empty",
+        "key_code": 0
+      },
+      {
+        "action": 1,
+        "backspaces": 1,
+        "callback_output_class": "grave_a",
+        "callback_utf8_count": 2,
+        "callback_utf16_count": 1,
+        "fixture_index": 4,
+        "flags": 256,
+        "inline_count": 1,
+        "inline_output_class": "grave_a",
+        "key_code": 3
+      },
+      {
+        "action": 0,
+        "backspaces": 0,
+        "callback_output_class": "empty",
+        "callback_utf8_count": 0,
+        "callback_utf16_count": 0,
+        "fixture_index": 5,
+        "flags": 256,
+        "inline_count": 0,
+        "inline_output_class": "empty",
+        "key_code": 49
+      },
+      {
+        "action": 0,
+        "backspaces": 0,
+        "callback_output_class": "empty",
+        "callback_utf8_count": 0,
+        "callback_utf16_count": 0,
+        "fixture_index": 6,
+        "flags": 256,
+        "inline_count": 0,
+        "inline_output_class": "empty",
+        "key_code": 0
+      },
+      {
+        "action": 1,
+        "backspaces": 1,
+        "callback_output_class": "circumflex_a",
+        "callback_utf8_count": 2,
+        "callback_utf16_count": 1,
+        "fixture_index": 7,
+        "flags": 256,
+        "inline_count": 1,
+        "inline_output_class": "circumflex_a",
+        "key_code": 0
+      }
+    ],
+    "fixed_probe_steps": 0,
+    "fixed_transport_trace": {
+      "attached": false,
+      "disabled": false,
+      "expected": [
+        {
+          "appkit_payload_class": "other_not_recorded",
+          "flags": 0,
+          "key_code": 51,
+          "own_pid": true,
+          "payload_class": "backspace",
+          "type": "down"
+        },
+        {
+          "appkit_payload_class": "other_not_recorded",
+          "flags": 0,
+          "key_code": 51,
+          "own_pid": true,
+          "payload_class": "backspace",
+          "type": "up"
+        },
+        {
+          "appkit_payload_class": "fixed_acute_a",
+          "flags": 256,
+          "key_code": 1,
+          "own_pid": false,
+          "payload_class": "fixed_acute_a",
+          "type": "down"
+        },
+        {
+          "appkit_payload_class": "other_not_recorded",
+          "flags": 0,
+          "key_code": 51,
+          "own_pid": true,
+          "payload_class": "backspace",
+          "type": "down"
+        },
+        {
+          "appkit_payload_class": "other_not_recorded",
+          "flags": 0,
+          "key_code": 51,
+          "own_pid": true,
+          "payload_class": "backspace",
+          "type": "up"
+        },
+        {
+          "appkit_payload_class": "other_not_recorded",
+          "flags": 256,
+          "key_code": 3,
+          "own_pid": false,
+          "payload_class": "other_not_recorded",
+          "type": "down"
+        },
+        {
+          "appkit_payload_class": "other_not_recorded",
+          "flags": 0,
+          "key_code": 51,
+          "own_pid": true,
+          "payload_class": "backspace",
+          "type": "down"
+        },
+        {
+          "appkit_payload_class": "other_not_recorded",
+          "flags": 0,
+          "key_code": 51,
+          "own_pid": true,
+          "payload_class": "backspace",
+          "type": "up"
+        },
+        {
+          "appkit_payload_class": "other_not_recorded",
+          "flags": 256,
+          "key_code": 0,
+          "own_pid": false,
+          "payload_class": "other_not_recorded",
+          "type": "down"
+        }
+      ],
+      "observed": [
+        {
+          "appkit_payload_class": "other_not_recorded",
+          "flags": 0,
+          "key_code": 51,
+          "own_pid": true,
+          "payload_class": "backspace",
+          "type": "down"
+        },
+        {
+          "appkit_payload_class": "other_not_recorded",
+          "flags": 0,
+          "key_code": 51,
+          "own_pid": true,
+          "payload_class": "backspace",
+          "type": "up"
+        },
+        {
+          "appkit_payload_class": "fixed_acute_a",
+          "flags": 256,
+          "key_code": 1,
+          "own_pid": false,
+          "payload_class": "fixed_acute_a",
+          "type": "down"
+        },
+        {
+          "appkit_payload_class": "other_not_recorded",
+          "flags": 0,
+          "key_code": 51,
+          "own_pid": true,
+          "payload_class": "backspace",
+          "type": "down"
+        },
+        {
+          "appkit_payload_class": "other_not_recorded",
+          "flags": 0,
+          "key_code": 51,
+          "own_pid": true,
+          "payload_class": "backspace",
+          "type": "up"
+        },
+        {
+          "appkit_payload_class": "other_not_recorded",
+          "flags": 256,
+          "key_code": 3,
+          "own_pid": false,
+          "payload_class": "other_not_recorded",
+          "type": "down"
+        },
+        {
+          "appkit_payload_class": "other_not_recorded",
+          "flags": 0,
+          "key_code": 51,
+          "own_pid": true,
+          "payload_class": "backspace",
+          "type": "down"
+        },
+        {
+          "appkit_payload_class": "other_not_recorded",
+          "flags": 0,
+          "key_code": 51,
+          "own_pid": true,
+          "payload_class": "backspace",
+          "type": "up"
+        },
+        {
+          "appkit_payload_class": "other_not_recorded",
+          "flags": 256,
+          "key_code": 0,
+          "own_pid": false,
+          "payload_class": "other_not_recorded",
+          "type": "down"
+        }
+      ],
+      "scope": "constant acute-a probes or prescribed as af aa fixture only; unknown payload contents are not recorded"
+    },
+    "listen_observed": false,
+    "mode": "compose",
+    "permission_observation_age_s": 0.6721478335093707,
+    "post": false,
+    "reason": "quit",
+    "replacements": 43,
+    "running": false,
+    "seen": 212,
+    "suppressed": 0,
+    "synthetic_source": "private",
+    "tap_attached": false
+  },
+  "artifacts": "docs/qa/session_spike_v6_artifacts.json",
+  "build_log": "docs/qa/session_spike_v6_build.log",
+  "fixture_log": "docs/qa/session_spike_v6_fixture.log",
+  "filter_runtime_status": {
+    "accessibility": true,
+    "callback_samples": 153,
+    "callback_us_p50": 9.167,
+    "callback_us_p95": 17.416,
+    "callback_us_p99": 57.375,
+    "document_verified": false,
+    "listen_observed": false,
+    "mode": "filter",
+    "permission_observation_age_s": 0.3850060834083706,
+    "post": false,
+    "reason": "running",
+    "replacements": 0,
+    "running": true,
+    "seen": 29,
+    "suppressed": 12,
+    "tap_attached": true
+  },
+  "physical_composer_result": {
+    "source": "user physical typing confirmation",
+    "keys": "aa ngaan ngaan hangf ddwojwc casch cachs w",
+    "actual": "â ngân ngân hng được cch cch ư",
+    "expected": "â ngân ngân hàng được cách cách ư",
+    "clients": [
+      "TextEdit",
+      "Figma canvas scratch"
+    ],
+    "pass": false
+  },
+  "composer_runtime_status": {
+    "accessibility": true,
+    "callback_samples": 387,
+    "callback_us_p50": 9.625,
+    "callback_us_p95": 64.875,
+    "callback_us_p99": 293.083,
+    "document_verified": false,
+    "listen_observed": false,
+    "mode": "compose",
+    "permission_observation_age_s": 0.8454830832779408,
+    "post": false,
+    "reason": "quit",
+    "replacements": 22,
+    "running": false,
+    "seen": 119,
+    "suppressed": 56,
+    "tap_attached": false
+  },
+  "v2_process": "Quit via own control window; bytes unchanged",
+  "automatic_typing_attempt": {
+    "scope": "fresh TextEdit Untitled 7 only",
+    "keys": "as",
+    "actual": "as",
+    "tap_seen_delta": 0,
+    "conclusion": "CUA targeted keys did not traverse session tap; not native typing evidence"
+  },
+  "v3_hypothesis": "Independent CGEventSource state vs nil/default source; same core/edit/batch order. A/B selector only when paused; not a proven cause.",
+  "v3_fixture_environment": "Initial sandbox run could not create private CGEventSource (hiservices XPC invalid, fixture trap); rerun with WindowServer access passed, no tap or event posting",
+  "v3_fixture_log": "docs/qa/session_spike_v3_fixture.log",
+  "v3_physical_composer_result": {
+    "source": "user physical typing confirmation",
+    "app": "TextEdit scratch",
+    "keys_requested": "as af aa ngaan hangf casch cachs ddwojwc",
+    "exact_output": "not supplied",
+    "user_report": "Vẫn mất á/à như trước",
+    "pass": false
+  },
+  "v3_hypothesis_result": "Private event source trial still lost acute/grave vowels; not a sufficient fix",
+  "v3_runtime_after_failure": {
+    "accessibility": true,
+    "callback_samples": 296,
+    "callback_us_p50": 10.459,
+    "callback_us_p95": 83.458,
+    "callback_us_p99": 158.458,
+    "document_verified": false,
+    "listen_observed": false,
+    "mode": "compose",
+    "permission_observation_age_s": 0.8778575416654348,
+    "post": false,
+    "reason": "paused",
+    "replacements": 24,
+    "running": false,
+    "seen": 91,
+    "suppressed": 48,
+    "synthetic_source": "private",
+    "tap_attached": false
+  },
+  "v4_fixed_transport_result": {
+    "source": "user physical typing confirmation",
+    "keys": "x x ax",
+    "actual": "á á á",
+    "pass": true,
+    "client": "TextEdit scratch",
+    "no_engine_used": true,
+    "downstream_event_metadata_matches_expected": true
+  },
+  "v4_fixed_transport_trace": "docs/qa/session_spike_v4_fixed_transport_trace.json",
+  "v5_known_engine_result": {
+    "source": "user physical typing confirmation",
+    "keys": "as af aa",
+    "user_report": "Vẫn mất á/à",
+    "exact_output": "not supplied",
+    "pass": false,
+    "fixture_index": 8,
+    "fixture_abort": null,
+    "downstream_matches_expected": true,
+    "core_vs_gui_oracle_match": true
+  },
+  "v5_known_engine_trace": "docs/qa/session_spike_v5_known_engine_trace.json",
+  "v6_fixture_result": {
+    "source": "user physical typing confirmation",
+    "client": "TextEdit scratch",
+    "keys": "as af aa",
+    "actual": "á à â",
+    "pass": true,
+    "additional_user_report": "enter xong thi lai thanh as af aa",
+    "interpretation": "fixture consumes exactly 8 prescribed keys then bypasses; Enter follow-up must be retested in continuous compose mode, not marked fixed/failed from this report"
+  },
+  "acceptance_scope": "Isolated P1 Telex pilot and basic P2 boundaries/sentinels only; production/full parity/long-term acceptance remain open",
+  "production_native_accepted": false,
+  "daily_use_accepted": false,
+  "continuous_typing_result": {
+    "source": "user physical typing confirmation",
+    "pass": true,
+    "clients": [
+      "TextEdit scratch",
+      "Figma canvas scratch"
+    ],
+    "tests": [
+      "as af aa ngaan hangf casch cachs ddwojwc w",
+      "Enter -> ddwojwc casi",
+      "Shift+Enter -> ddwojwc mwojwt",
+      "Cmd+A -> delete -> ddwojwc casi",
+      "Figma ngaan hangf casch cachs"
+    ],
+    "user_report": "Cả hai app và các lần xuống dòng/xóa đều đúng"
+  },
+  "basic_sentinel_selection_result": {
+    "source": "user physical typing confirmation",
+    "pass": true,
+    "client": "TextEdit scratch",
+    "seed": "PRE 🧪  SUF",
+    "after_cachs": "PRE 🧪 cách SUF",
+    "after_mouse_select_word_and_ddwojwc": "PRE 🧪 được SUF",
+    "user_report": "Cả hai đúng, PRE/emoji/SUF giữ nguyên"
+  },
+  "cleanup": {
+    "spike_paused_then_quit": true,
+    "hook_attached_at_final_export": false,
+    "mkey_reopened_via_CUA": true,
+    "mkey_mode_not_changed_or_verified": true,
+    "mkey_CUA_windowless_timeout": "launch call timed out but ps confirmed running; not treating timeout as launch failure",
+    "production_vxkey_not_launched": true
+  },
+  "v6_return_trace": "docs/qa/session_spike_v6_return_original_trace.json"
+}

@@ -152,7 +152,7 @@ dto!(NativeStatus { diagnostics: Option<DriverDiagnostics>, driver: DriverStatus
 impl NativeStatus {
     pub fn validate(&self) -> Result<(), String> {
         if self.driver.attached
-            && (!self.driver.accessibility || !self.driver.post_access || self.suspended)
+            && (!self.driver.accessibility || self.suspended)
         {
             return Err("invalid_driver_status".into());
         }
@@ -294,6 +294,9 @@ pub fn fresh_id() -> Result<String, String> {
 }
 pub struct Wire {
     pub session: String,
+    /// Set only by the version-checked engine handshake, after peer authentication
+    /// at the socket boundary. Legacy sessions retain their old fault policy.
+    pub independent_typing: bool,
     sent: u64,
     received: u64,
 }
@@ -304,6 +307,7 @@ impl Wire {
         }
         Ok(Self {
             session,
+            independent_typing: false,
             sent: 0,
             received: 0,
         })
@@ -340,16 +344,15 @@ impl Wire {
     /// Listener accepts exactly one sequence-1 IME handshake before reading data.
     pub fn accept(stream: &mut impl Read) -> Result<Self, String> {
         let frame = read_frame(stream)?;
-        if frame.sequence != "1"
-            || frame.message
-                != Message::Handshake(Handshake {
-                    component: "engine".into(),
-                    app_version: env!("CARGO_PKG_VERSION").into(),
-                })
-        {
+        let Message::Handshake(hello) = frame.message else {
+            return Err("incompatible_protocol".into());
+        };
+        if frame.sequence != "1" || hello.app_version != env!("CARGO_PKG_VERSION")
+            || !["engine", "engine_stream"].contains(&hello.component.as_str()) {
             return Err("incompatible_protocol".into());
         }
         let mut wire = Self::new(frame.session_id)?;
+        wire.independent_typing = hello.component == "engine_stream";
         wire.received = 1;
         Ok(wire)
     }

@@ -30,6 +30,11 @@ impl Trust {
         };
         #[cfg(any(debug_assertions, feature = "development-bridge"))]
         if std::env::var("VXKEY_BRIDGE_DEV_TRUST").as_deref() == Ok("1") {
+            // Separate test identity exists only inside the pinned development path.
+            let (own, peer) = if std::env::var("VXKEY_BRIDGE_TEST_IDENTITY").as_deref() == Ok("1") {
+                if companion { ("com.vxkey.test.desktop", "com.vxkey.test.engine") }
+                else { ("com.vxkey.test.engine", "com.vxkey.test.desktop") }
+            } else { (own, peer) };
             #[derive(Deserialize)]
             #[serde(deny_unknown_fields)]
             struct Pair {

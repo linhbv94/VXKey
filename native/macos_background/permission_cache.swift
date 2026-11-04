@@ -15,8 +15,11 @@ final class PermissionCache {
     private var updatedAt:TimeInterval?
     private let reader:()->Value
     private let now:()->TimeInterval
-    init(reader:@escaping ()->Value = { Value(accessibility:AXIsProcessTrusted(),listen:CGPreflightListenEventAccess(),post:CGPreflightPostEventAccess()) }, now:@escaping ()->TimeInterval = { ProcessInfo.processInfo.systemUptime }) {
-        self.reader=reader; self.now=now
+    private let requirePost: Bool
+    private let expireObservation: Bool
+    init(requirePost: Bool = true, expireObservation: Bool = true,
+         reader:@escaping ()->Value = { Value(accessibility:AXIsProcessTrusted(),listen:CGPreflightListenEventAccess(),post:CGPreflightPostEventAccess()) }, now:@escaping ()->TimeInterval = { ProcessInfo.processInfo.systemUptime }) {
+        self.reader=reader; self.now=now; self.requirePost=requirePost; self.expireObservation=expireObservation
         let timer=DispatchSource.makeTimerSource(queue:.main)
         timer.schedule(deadline:.now(),repeating:.seconds(1))
         timer.setEventHandler { [weak self] in self?.refresh() }
@@ -39,10 +42,14 @@ final class PermissionCache {
     }
     var current:Value {
         precondition(Thread.isMainThread)
-        guard let updatedAt,now()>=updatedAt,now()-updatedAt<2.5 else {
+        guard let updatedAt,now()>=updatedAt,(!expireObservation || now()-updatedAt<2.5) else {
             return Value(accessibility:false,listen:false,post:false)
         }
         return value
     }
-    var ready:Bool { let v=current;return v.accessibility && v.post }
+    // Unknown at startup is not evidence of a denied/revoked grant. Keep the
+    // driver stopped via ready=false, but do not create a durable fault yet.
+    var observed:Bool { precondition(Thread.isMainThread); return updatedAt != nil }
+    var denied:Bool { observed && !ready }
+    var ready:Bool { let v=current;return v.accessibility && (!requirePost || v.post) }
 }

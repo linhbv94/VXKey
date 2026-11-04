@@ -1,0 +1,141 @@
+{
+  "accessibility": true,
+  "callback_samples": 18,
+  "callback_us_p50": 8.417,
+  "callback_us_p95": 1000.75,
+  "callback_us_p99": 1000.75,
+  "document_verified": false,
+  "fixed_probe_steps": 3,
+  "fixed_transport_trace": {
+    "attached": true,
+    "disabled": false,
+    "expected": [
+      {
+        "appkit_payload_class": "fixed_acute_a",
+        "flags": 256,
+        "key_code": 7,
+        "own_pid": false,
+        "payload_class": "fixed_acute_a",
+        "type": "down"
+      },
+      {
+        "appkit_payload_class": "fixed_acute_a",
+        "flags": 0,
+        "key_code": 0,
+        "own_pid": true,
+        "payload_class": "fixed_acute_a",
+        "type": "down"
+      },
+      {
+        "appkit_payload_class": "plain_a",
+        "flags": 0,
+        "key_code": 0,
+        "own_pid": true,
+        "payload_class": "fixed_acute_a",
+        "type": "up"
+      },
+      {
+        "appkit_payload_class": "other_not_recorded",
+        "flags": 0,
+        "key_code": 51,
+        "own_pid": true,
+        "payload_class": "backspace",
+        "type": "down"
+      },
+      {
+        "appkit_payload_class": "other_not_recorded",
+        "flags": 0,
+        "key_code": 51,
+        "own_pid": true,
+        "payload_class": "backspace",
+        "type": "up"
+      },
+      {
+        "appkit_payload_class": "fixed_acute_a",
+        "flags": 0,
+        "key_code": 0,
+        "own_pid": true,
+        "payload_class": "fixed_acute_a",
+        "type": "down"
+      },
+      {
+        "appkit_payload_class": "plain_a",
+        "flags": 0,
+        "key_code": 0,
+        "own_pid": true,
+        "payload_class": "fixed_acute_a",
+        "type": "up"
+      }
+    ],
+    "observed": [
+      {
+        "appkit_payload_class": "fixed_acute_a",
+        "flags": 256,
+        "key_code": 7,
+        "own_pid": false,
+        "payload_class": "fixed_acute_a",
+        "type": "down"
+      },
+      {
+        "appkit_payload_class": "fixed_acute_a",
+        "flags": 0,
+        "key_code": 0,
+        "own_pid": true,
+        "payload_class": "fixed_acute_a",
+        "type": "down"
+      },
+      {
+        "appkit_payload_class": "plain_a",
+        "flags": 0,
+        "key_code": 0,
+        "own_pid": true,
+        "payload_class": "fixed_acute_a",
+        "type": "up"
+      },
+      {
+        "appkit_payload_class": "other_not_recorded",
+        "flags": 0,
+        "key_code": 51,
+        "own_pid": true,
+        "payload_class": "backspace",
+        "type": "down"
+      },
+      {
+        "appkit_payload_class": "other_not_recorded",
+        "flags": 0,
+        "key_code": 51,
+        "own_pid": true,
+        "payload_class": "backspace",
+        "type": "up"
+      },
+      {
+        "appkit_payload_class": "fixed_acute_a",
+        "flags": 0,
+        "key_code": 0,
+        "own_pid": true,
+        "payload_class": "fixed_acute_a",
+        "type": "down"
+      },
+      {
+        "appkit_payload_class": "plain_a",
+        "flags": 0,
+        "key_code": 0,
+        "own_pid": true,
+        "payload_class": "fixed_acute_a",
+        "type": "up"
+      }
+    ],
+    "scope": "fixed acute-a probes only; unknown payload contents are not recorded"
+  },
+  "listen_observed": false,
+  "mode": "transportMatrix",
+  "permission_observation_age_s": 0.4067771665286273,
+  "post": false,
+  "reason": "running",
+  "replacements": 2,
+  "running": true,
+  "seen": 7,
+  "suppressed": 4,
+  "synthetic_source": "private",
+  "tap_attached": true
+}

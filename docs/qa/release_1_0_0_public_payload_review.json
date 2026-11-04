@@ -1,0 +1,847 @@
+{
+  "staged_files": 168,
+  "inventory": [
+    {
+      "path": ".github/upstream_workflows/arch-recipe.yml",
+      "bytes": 3694,
+      "class": "workflow"
+    },
+    {
+      "path": ".github/upstream_workflows/audit.yml",
+      "bytes": 2031,
+      "class": "workflow"
+    },
+    {
+      "path": ".github/upstream_workflows/build-linux.yml",
+      "bytes": 12114,
+      "class": "workflow"
+    },
+    {
+      "path": ".github/upstream_workflows/build-macos.yml",
+      "bytes": 5880,
+      "class": "workflow"
+    },
+    {
+      "path": ".github/upstream_workflows/build-windows.yml",
+      "bytes": 7779,
+      "class": "workflow"
+    },
+    {
+      "path": ".github/upstream_workflows/ci.yml",
+      "bytes": 31362,
+      "class": "workflow"
+    },
+    {
+      "path": ".github/upstream_workflows/deploy-android.yml",
+      "bytes": 21166,
+      "class": "workflow"
+    },
+    {
+      "path": ".github/upstream_workflows/deploy-ios.yml",
+      "bytes": 14648,
+      "class": "workflow"
+    },
+    {
+      "path": ".github/upstream_workflows/deploy-windows-store.yml",
+      "bytes": 10572,
+      "class": "workflow"
+    },
+    {
+      "path": ".github/upstream_workflows/publish-repo.yml",
+      "bytes": 14806,
+      "class": "workflow"
+    },
+    {
+      "path": ".github/upstream_workflows/release.yml",
+      "bytes": 12750,
+      "class": "workflow"
+    },
+    {
+      "path": ".github/workflows/release.yml",
+      "bytes": 1793,
+      "class": "workflow"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 1817,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 3209,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 45110,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2455,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "crates/funput-core/src/composition/transform/action.rs",
+      "bytes": 4697,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-core/src/composition/transform/mod.rs",
+      "bytes": 1398,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-core/src/composition/uo_horn/continuation.rs",
+      "bytes": 5020,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-core/src/composition/uo_horn/mod.rs",
+      "bytes": 484,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-core/src/input_method/telex/advanced.rs",
+      "bytes": 4981,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-core/src/input_method/telex/mod.rs",
+      "bytes": 1466,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-core/tests/spellcheck_corpus.rs",
+      "bytes": 13036,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-core/tests/telex/advanced.rs",
+      "bytes": 8412,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-core/tests/telex/basic.rs",
+      "bytes": 8193,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-core/tests/telex/data/telex_corpus.tsv",
+      "bytes": 3454,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-core/tests/telex/multi_intent_spec.rs",
+      "bytes": 2693,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-core/tests/telex/stroke_collisions.rs",
+      "bytes": 714,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-core/tests/telex/w_collisions.rs",
+      "bytes": 1053,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-core/tests/telex/w_permutations.rs",
+      "bytes": 3922,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-engine/tests/alloc_budget/pairs.rs",
+      "bytes": 2509,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-engine/tests/correction/edits.rs",
+      "bytes": 6563,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-engine/tests/methods/telex_advanced.rs",
+      "bytes": 4947,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-engine/tests/methods/telex_deferred_w.rs",
+      "bytes": 2791,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-engine/tests/methods/telex_multi_intent_spec.rs",
+      "bytes": 2235,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-engine/tests/restore/extra_onsets.rs",
+      "bytes": 3421,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-ffi/Cargo.toml",
+      "bytes": 1722,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-ffi/src/abi/guard.rs",
+      "bytes": 2738,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-ffi/src/abi/mod.rs",
+      "bytes": 775,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-ffi/src/lib.rs",
+      "bytes": 5450,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-ffi/src/vxkey_native.rs",
+      "bytes": 3045,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/funput-ffi/tests/advanced_telex.rs",
+      "bytes": 3450,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/vxkey-runtime/Cargo.toml",
+      "bytes": 511,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/vxkey-runtime/build.rs",
+      "bytes": 1457,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/vxkey-runtime/native/macos_trust.c",
+      "bytes": 2728,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/vxkey-runtime/src/bin/vxkey_bridge_fixture.rs",
+      "bytes": 2926,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/vxkey-runtime/src/bridge.rs",
+      "bytes": 13665,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/vxkey-runtime/src/bridge/local.rs",
+      "bytes": 23850,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/vxkey-runtime/src/bridge/trust.rs",
+      "bytes": 5174,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/vxkey-runtime/src/lib.rs",
+      "bytes": 346,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/vxkey-runtime/src/paths.rs",
+      "bytes": 1065,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/vxkey-runtime/src/service.rs",
+      "bytes": 29418,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/vxkey-runtime/src/storage.rs",
+      "bytes": 4180,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/vxkey-runtime/tests/bridge.rs",
+      "bytes": 9743,
+      "class": "source_or_test"
+    },
+    {
+      "path": "crates/vxkey-runtime/tests/policies.rs",
+      "bytes": 21773,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/index.html",
+      "bytes": 446,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/package-lock.json",
+      "bytes": 73861,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/package.json",
+      "bytes": 778,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src-tauri/Cargo.lock",
+      "bytes": 115885,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src-tauri/Cargo.toml",
+      "bytes": 1087,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src-tauri/assets/menubar_playful_en.rgba",
+      "bytes": 5184,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src-tauri/assets/menubar_playful_vi.rgba",
+      "bytes": 5184,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src-tauri/assets/menubar_serious_en.rgba",
+      "bytes": 5184,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src-tauri/assets/menubar_serious_vi.rgba",
+      "bytes": 5184,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src-tauri/assets/tray_asset_manifest.json",
+      "bytes": 967,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src-tauri/build.rs",
+      "bytes": 39,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src-tauri/capabilities/default.json",
+      "bytes": 378,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src-tauri/capabilities/updater.json",
+      "bytes": 139,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src-tauri/src/about.rs",
+      "bytes": 3549,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src-tauri/src/clipboard.rs",
+      "bytes": 906,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src-tauri/src/lib.rs",
+      "bytes": 31624,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src-tauri/src/main.rs",
+      "bytes": 2843,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src-tauri/src/tray_state.rs",
+      "bytes": 5851,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src-tauri/tauri.conf.json",
+      "bytes": 3080,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/app.tsx",
+      "bytes": 7351,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/components/apps_tab.tsx",
+      "bytes": 7624,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/components/clipboard_tab.tsx",
+      "bytes": 2445,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/components/conversion_view.tsx",
+      "bytes": 12378,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/components/history_panel.tsx",
+      "bytes": 11755,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/components/macros_tab.tsx",
+      "bytes": 12644,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/components/onboarding_view.tsx",
+      "bytes": 3738,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/components/settings_view.tsx",
+      "bytes": 18917,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/components/shortcuts_tab.tsx",
+      "bytes": 3204,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/components/system_tab.tsx",
+      "bytes": 9226,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/components/tray_panel.tsx",
+      "bytes": 11443,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/components/typing_tab.tsx",
+      "bytes": 9264,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/index.css",
+      "bytes": 7208,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/main.tsx",
+      "bytes": 375,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/services/api.ts",
+      "bytes": 7223,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/services/app_updater.ts",
+      "bytes": 1350,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/services/copy.ts",
+      "bytes": 15445,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/services/macro_loader.ts",
+      "bytes": 1081,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/services/update_controller.ts",
+      "bytes": 6409,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/services/update_handle.ts",
+      "bytes": 409,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/services/window_surface.ts",
+      "bytes": 503,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/types.ts",
+      "bytes": 3540,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/src/vite-env.d.ts",
+      "bytes": 38,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/tests/macro_loader.test.ts",
+      "bytes": 1194,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/tests/update_handle.test.mjs",
+      "bytes": 772,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/tsconfig.json",
+      "bytes": 468,
+      "class": "source_or_test"
+    },
+    {
+      "path": "desktop/vite.config.ts",
+      "bytes": 412,
+      "class": "source_or_test"
+    },
+    {
+      "path": "docs/desktop_release.md",
+      "bytes": 1951,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "docs/index.md",
+      "bytes": 6088,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "docs/qa/release_1_0_0_review.md",
+      "bytes": 689,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "docs/release_notes/1.0.0.md",
+      "bytes": 890,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "docs/spec/00_system_overview.md",
+      "bytes": 16532,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "docs/spec/01_business_process.md",
+      "bytes": 9656,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "docs/spec/02_feature_flow.md",
+      "bytes": 24826,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "docs/spec/03_ui_wireframe.md",
+      "bytes": 34179,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "docs/spec/04_api_data.md",
+      "bytes": 44704,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "docs/spec/05_qa_acceptance.md",
+      "bytes": 31734,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "docs/spec/06_demo_presentation.md",
+      "bytes": 9066,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "docs/spec/07_implementation_contract.md",
+      "bytes": 15672,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "docs/spec/08_keyboard_resilience.md",
+      "bytes": 3565,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "docs/spec/09_background_driver.md",
+      "bytes": 8508,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "docs/spec/10_checkpoint_pipeline.md",
+      "bytes": 4467,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "docs/spec/command_schema.json",
+      "bytes": 27683,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "maintenance_track.md",
+      "bytes": 7023,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "menubar_playful_en.svg",
+      "bytes": 423,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "menubar_playful_vi.svg",
+      "bytes": 433,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "menubar_serious_en.svg",
+      "bytes": 412,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "menubar_serious_vi.svg",
+      "bytes": 354,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "native/macos/bridging_vxkey.h",
+      "bytes": 77,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/macos/controller_composition.swift",
+      "bytes": 3452,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/macos/controller_english.swift",
+      "bytes": 3055,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/macos/controller_settings.swift",
+      "bytes": 2159,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/macos/input_controller.swift",
+      "bytes": 7916,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/macos/legacy_readme.md",
+      "bytes": 415,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/macos/runtime_settings.swift",
+      "bytes": 14424,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/macos/vxkey_bridge.h",
+      "bytes": 187,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/macos_background/context_guard.swift",
+      "bytes": 11489,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/macos_background/edit_plan.swift",
+      "bytes": 1342,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/macos_background/event_driver.swift",
+      "bytes": 16397,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/macos_background/main.swift",
+      "bytes": 957,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/macos_background/permission_cache.swift",
+      "bytes": 1927,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/macos_background/runtime_settings.swift",
+      "bytes": 16454,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/macos_background/stream_window.swift",
+      "bytes": 966,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/tests/background_bridge/fake_driver.swift",
+      "bytes": 1022,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/tests/background_bridge/main.swift",
+      "bytes": 657,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/tests/background_driver/main.swift",
+      "bytes": 18204,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/tests/bridge_adapter/main.swift",
+      "bytes": 1611,
+      "class": "source_or_test"
+    },
+    {
+      "path": "native/tools/source_control/main.swift",
+      "bytes": 4917,
+      "class": "source_or_test"
+    },
+    {
+      "path": "platforms/macos/Funput/IME/FunputComposer.swift",
+      "bytes": 6285,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "scripts/build_bridge_adapter_fixture.sh",
+      "bytes": 999,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/build_bridge_candidate.sh",
+      "bytes": 362,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/build_desktop_candidate.sh",
+      "bytes": 1542,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/build_native_candidate.sh",
+      "bytes": 1412,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/build_release.py",
+      "bytes": 2780,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/check_release_signature.mjs",
+      "bytes": 832,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/ci_macos_signer.py",
+      "bytes": 4138,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/finalize_release.py",
+      "bytes": 2697,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/install_native_test.py",
+      "bytes": 3390,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/macos_sdk_gate.mjs",
+      "bytes": 2525,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/prepare_bridge_candidate.py",
+      "bytes": 2257,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/register_native_test.py",
+      "bytes": 1641,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/release_identity.json",
+      "bytes": 158,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/render_tray_assets.py",
+      "bytes": 2173,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/smoke_backend.py",
+      "bytes": 2922,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/test_background_bridge.py",
+      "bytes": 3873,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/test_background_driver.sh",
+      "bytes": 1344,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/test_engine.sh",
+      "bytes": 473,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/test_native_bridge.py",
+      "bytes": 11161,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/test_swift_bridge_adapter.py",
+      "bytes": 5017,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/verify_signature.mjs",
+      "bytes": 2037,
+      "class": "source_or_test"
+    },
+    {
+      "path": "scripts/write_native_info.py",
+      "bytes": 726,
+      "class": "source_or_test"
+    },
+    {
+      "path": "typing_issue_log.md",
+      "bytes": 19865,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "upstream_provenance.md",
+      "bytes": 1751,
+      "class": "documentation_or_asset"
+    },
+    {
+      "path": "windows_adaptation_plan.md",
+      "bytes": 16094,
+      "class": "documentation_or_asset"
+    }
+  ],
+  "pattern_findings_paths_only": [],
+  "secret_values_printed": false
+}

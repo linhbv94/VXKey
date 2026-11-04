@@ -8,7 +8,8 @@
     "real charset converter",
     "native action unsupported",
     "unknown fields rejected",
-    "autostart remains off"
+    "autostart remains off",
+    "competing process writer rejected"
   ],
   "native_activation": false
 }

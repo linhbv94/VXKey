@@ -1,3 +1,5 @@
+> Checkpoint mới: [integration review](../qa/integration_review.md). Tài liệu bên dưới là bàn giao/báo cáo tại thời điểm trước; không dùng trạng thái cũ thay kết quả kiểm chứng mới.
+
 # Prompt giao Anti làm UI VXKey
 
 User tự dùng prompt này khi muốn tiếp tục. Codex chưa khởi chạy lượt mới.

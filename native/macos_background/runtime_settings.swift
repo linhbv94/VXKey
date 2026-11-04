@@ -88,11 +88,18 @@ final class AppSettings {
     private var linkFault = false
     private var latched = true
     private var leaseDeadline: TimeInterval = 0
+    #if VXKEY_SESSION_ADAPTER
+    private var streamPolicy = StreamRunPolicy()
+    #endif
     var driver: EventDriver?
     var ready: Bool { driver?.permissionsReady == true }
     var targetPIDValue: Int32? { targetPID }
     var targetIDValue: String? { targetID }
+    #if VXKEY_SESSION_ADAPTER
+    var composing: Bool { driver?.hasComposition == true }
+    #else
     var composing: Bool { driver?.hasUnverifiedEvents == true || !(driver?.composer.buffer().isEmpty ?? true) }
+    #endif
     var dataRoot: URL {
         if let path = ProcessInfo.processInfo.environment["VXKEY_DATA_DIR"], path.hasPrefix("/") {
             return URL(fileURLWithPath: path)
@@ -101,7 +108,11 @@ final class AppSettings {
             .appendingPathComponent("VXKey", isDirectory: true)
     }
     func start() {
+        #if VXKEY_SESSION_ADAPTER
+        guard dataRoot.path.withCString({ vxkey_native_start_session($0) }) else { return }
+        #else
         guard dataRoot.path.withCString({ vxkey_native_start($0) }) else { return }
+        #endif
         focusObserver=NSWorkspace.shared.notificationCenter.addObserver(forName:NSWorkspace.didActivateApplicationNotification,object:nil,queue:.main){[weak self] _ in self?.refreshTarget()}
         tick()
         let timer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in self?.tick() }
@@ -141,7 +152,11 @@ final class AppSettings {
         let faulted = vxkey_native_engine_faulted()
         let composing = !faulted && self.composing
         let active = target() != nil
+        #if VXKEY_SESSION_ADAPTER
+        let faultCode: String? = faulted ? "engine_fault" : (driver?.failed == true ? "driver_fault" : (driver?.permissionDenied == true ? "permission_required" : nil))
+        #else
         let faultCode: String? = faulted ? "engine_fault" : (driver?.failed == true ? "driver_fault" : (!ready ? "permission_required" : (linkFault ? "bridge_stale" : nil)))
+        #endif
         let status: [String: Any] = ["diagnostics": ProcessInfo.processInfo.environment["VXKEY_BRIDGE_DEV_TRUST"] == "1" ? driver?.diagnostics as Any? ?? NSNull() : NSNull(), "driver": driver?.permissionStatus ?? ["accessibility": false, "listen_access": false, "post_access": false, "attached": false], "engine_session_id": engineSession,
             "loop_sequence": String(sequence), "active": active, "target": target() as Any? ?? NSNull(),
             "composing": composing, "mode": vietnameseEnabled ? "vi" : "en", "suspended": suspended,
@@ -151,25 +166,36 @@ final class AppSettings {
         guard let bytes = try? JSONSerialization.data(withJSONObject: status),
               let text = String(data: bytes, encoding: .utf8),
               let pointer = text.withCString({ vxkey_native_tick($0) }) else {
+            #if VXKEY_SESSION_ADAPTER
+            streamPolicy.fault()
+            #endif
             linkFault=true; suspended = true; connected = false; driver?.setRunning(false); return
         }
         defer { vxkey_native_free(pointer) }
         let data = Data(bytes: pointer, count: strlen(pointer))
         guard let delivery = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] else {
+            #if VXKEY_SESSION_ADAPTER
+            streamPolicy.fault()
+            #endif
             linkFault=true; suspended = true; connected = false; driver?.setRunning(false); return
         }
         if delivery["busy"] as? Bool == true {
             // A try-lock miss is not a disconnect. Keep only the already-issued
             // short lease; sustained contention still expires to safe bypass.
+            #if !VXKEY_SESSION_ADAPTER
             if !suspended && ProcessInfo.processInfo.systemUptime >= leaseDeadline {
                 linkFault=true; suspended=true; driver?.setRunning(false)
             }
+            #endif
             return
         }
         let freshConnection = delivery["connected"] as? Bool ?? false
         if connected && !freshConnection { linkFault = true }
         connected = freshConnection
         latched = delivery["latched"] as? Bool ?? true
+        #if VXKEY_SESSION_ADAPTER
+        streamPolicy.observe(connected:connected,latched:latched)
+        #endif
         if let config = delivery["config"] as? [String: Any] { pendingConfig = config }
         // Safe-boundary apply includes macro table and per-app policies in one tick.
         // An ACK is published only after the active engine has consumed that cache.
@@ -178,26 +204,55 @@ final class AppSettings {
             if config["revision"] as? String != revision { apply(config) }
             driver?.syncSettings()
         }
+        #if VXKEY_SESSION_ADAPTER
+        suspended = !streamPolicy.canRun(configured:revision != "0",permission:ready,
+            driverFault:driver?.failed == true,engineFault:vxkey_native_engine_faulted())
+        #else
         suspended = linkFault || !connected || latched || revision == "0" || !ready || driver?.failed == true || vxkey_native_engine_faulted()
         leaseDeadline = suspended ? 0 : ProcessInfo.processInfo.systemUptime + 0.5
+        #endif
         if let control = delivery["control"] as? [String: Any], let id = control["id"] as? String {
             var outcome = "unavailable"
             if control["action"] as? String == "request_permissions", control["engine_session_id"] as? String == engineSession {
                 let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary
-                _ = AXIsProcessTrustedWithOptions(options)
-                // PostEvent is a separate TCC service. Request only from this
+                let axTrusted = AXIsProcessTrustedWithOptions(options)
+                #if VXKEY_SESSION_ADAPTER
+                _ = axTrusted
+                if let url = URL(string:"x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") {
+                    NSWorkspace.shared.open(url)
+                }
+                #else
+                let targetURL = axTrusted && (!CGPreflightListenEventAccess() || !CGPreflightPostEventAccess())
+                    ? "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent"
+                    : "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
+                if let url = URL(string: targetURL) {
+                    NSWorkspace.shared.open(url)
+                }
+                // ListenEvent and PostEvent are separate TCC services. Request only from this
                 // explicit action and keep any OS prompt off the input run loop.
                 DispatchQueue.global(qos: .userInitiated).async {
+                    if !CGPreflightListenEventAccess() { _ = CGRequestListenEventAccess() }
                     if !CGPreflightPostEventAccess() { _ = CGRequestPostEventAccess() }
                 }
+                #endif
                 outcome = "applied" // request delivered, not permission granted
             } else if control["action"] as? String == "suspend",
                control["engine_session_id"] as? String == engineSession,
                let requested = control["suspended"] as? Bool {
                 // Resume is readiness ACK only; durable latch must clear on host
                 // before a following authenticated tick can enable transformations.
-                if requested { suspended = true; driver?.setRunning(false); outcome = "applied" }
-                else if connected && !composing && revision != "0" && !vxkey_native_engine_faulted(), driver?.prepare() == true { linkFault = false; outcome = "applied" }
+                if requested {
+                    #if VXKEY_SESSION_ADAPTER
+                    streamPolicy.pause()
+                    #endif
+                    suspended = true; driver?.setRunning(false); outcome = "applied"
+                }
+                else if connected && !composing && revision != "0" && !vxkey_native_engine_faulted(), driver?.prepare() == true {
+                    #if VXKEY_SESSION_ADAPTER
+                    streamPolicy.preparedResume()
+                    #endif
+                    linkFault = false; outcome = "applied"
+                }
             } else if control["action"] as? String == "set_language" {
                 outcome = "stale_target"
                 if active, !suspended, !composing,
@@ -251,11 +306,21 @@ final class AppSettings {
         if let mode = resolveVietnamese(for: targetID) { vietnameseEnabled = mode }
     }
     func shouldBypass() -> Bool {
-        return vxkey_native_engine_faulted() || suspended || ProcessInfo.processInfo.systemUptime >= leaseDeadline || IsSecureEventInputEnabled() || targetID == nil ||
+        #if VXKEY_SESSION_ADAPTER
+        let expired = false
+        #else
+        let expired = ProcessInfo.processInfo.systemUptime >= leaseDeadline
+        #endif
+        return vxkey_native_engine_faulted() || suspended || expired || IsSecureEventInputEnabled() || targetID == nil ||
             !foregroundMatches ||
             (targetID?.hasPrefix("com.vxkey.") ?? true) || (targetID.flatMap { policies[$0] } ?? false)
     }
-    func driverFailed() { suspended = true; driver?.setRunning(false) }
+    func driverFailed() {
+        #if VXKEY_SESSION_ADAPTER
+        streamPolicy.fault()
+        #endif
+        suspended = true; driver?.setRunning(false)
+    }
     func resolveVietnamese(for id: String?) -> Bool? {
         guard let id, !id.hasPrefix("com.vxkey."), remember else { return nil }
         return localMemory[id] ?? memory[id]

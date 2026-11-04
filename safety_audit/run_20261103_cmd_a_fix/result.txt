@@ -1,0 +1,1 @@
+PASS: same empty-proof pending-d scenario is rejected by production rewrite gate; no OS input posted.

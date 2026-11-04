@@ -9,6 +9,18 @@ static CLIENT: OnceLock<Client> = OnceLock::new();
 /// root must point to a valid NUL-terminated UTF-8 string for this call.
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn vxkey_native_start(root: *const c_char) -> bool {
+    // SAFETY: forwarded with the caller's path lifetime/termination contract.
+    unsafe { start(root, false) }
+}
+/// # Safety
+/// Same path contract as vxkey_native_start; only the session-stream helper uses
+/// this entry. Peer trust, config validation and durable real-fault checks remain.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn vxkey_native_start_session(root: *const c_char) -> bool {
+    // SAFETY: forwarded with the caller's path lifetime/termination contract.
+    unsafe { start(root, true) }
+}
+unsafe fn start(root: *const c_char, independent_typing: bool) -> bool {
     std::panic::catch_unwind(|| {
         // This dedicated native process must not print a panic payload that could
         // include input text. Recovery uses typed metadata, never the panic body.
@@ -21,7 +33,9 @@ pub unsafe extern "C" fn vxkey_native_start(root: *const c_char) -> bool {
         let Ok(path) = unsafe { CStr::from_ptr(root) }.to_str() else {
             return false;
         };
-        let Ok(client) = Client::start(std::path::Path::new(path)) else {
+        let client = if independent_typing { Client::start_session_stream(std::path::Path::new(path)) }
+            else { Client::start(std::path::Path::new(path)) };
+        let Ok(client) = client else {
             return false;
         };
         CLIENT.set(client).is_ok()

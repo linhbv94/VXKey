@@ -1,0 +1,16 @@
+   Compiling vxkey-runtime v0.1.0 (/Users/vic/_Work/VXUtilities/vxkey/crates/vxkey-runtime)
+   Compiling funput-ffi v0.1.0 (/Users/vic/_Work/VXUtilities/vxkey/crates/funput-ffi)
+    Finished `release` profile [optimized] target(s) in 30.41s
+{
+  "baseline_sdk": "27.0",
+  "checks": [
+    {
+      "binary": "/Users/vic/_Work/VXUtilities/vxkey/build/native_candidate/VXKeyEngine.app/Contents/MacOS/VXKeyEngine",
+      "sdk_slices": [
+        "27.0"
+      ],
+      "pass": true
+    }
+  ]
+}
+Candidate: /Users/vic/_Work/VXUtilities/vxkey/build/native_candidate/VXKeyEngine.app (not installed or activated)

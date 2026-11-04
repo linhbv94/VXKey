@@ -1,0 +1,15 @@
+{
+  "scope": "real Rust C ABI only; no native hook or timing acceptance",
+  "cases": [
+    {
+      "input": "casch",
+      "output": "cách",
+      "pass": true
+    },
+    {
+      "input": "cachs",
+      "output": "cách",
+      "pass": true
+    }
+  ]
+}

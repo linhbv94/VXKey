@@ -2,6 +2,8 @@
 
 > 2026-11-02: [checkpoint pipeline](10_checkpoint_pipeline.md) supersedes per-key verification fault policy; native acceptance pending.
 
+> Review và pilot: [kế hoạch adapter mới](11_mac_driver_replan.md) có source/native trial v6 riêng, P1/basicP2 PASS. Chưa tích hợp hoặc thay contract production hiện tại; không tự bỏ proof/latch ở driver này chỉ từ pilot PASS.
+
 Version: 0.8.0 — Ngày cập nhật: 2026-11-02
 Skill: `_spec0_system`, `_spec4_api_data`, `_spec5_qa_acceptance`.
 Trạng thái: quyết định kiến trúc của user; chưa phải nghiệm thu runtime hoặc specs ready.

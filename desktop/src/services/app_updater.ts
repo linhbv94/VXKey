@@ -9,7 +9,7 @@ import packageInfo from '../../package.json';
 
 export const appVersion = packageInfo.version;
 const controller = createUpdateController({
-  enabled: isTauri() && !import.meta.env.DEV && getCurrentWindow().label === 'settings',
+  enabled: isTauri() && import.meta.env.VITE_VXKEY_TEST_APP !== '1' && !import.meta.env.DEV && getCurrentWindow().label === 'settings',
   currentVersion: appVersion,
   check: async (options) => {
     const update = await check(options);

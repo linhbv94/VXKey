@@ -1,0 +1,15 @@
+    Finished `release` profile [optimized] target(s) in 0.21s
+/Users/vic/_Work/VXUtilities/vxkey/build/session_spike_candidate_v2/vxkey_session_spike.app: replacing existing signature
+{
+  "baseline_sdk": "27.0",
+  "checks": [
+    {
+      "binary": "/Users/vic/_Work/VXUtilities/vxkey/build/session_spike_candidate_v2/vxkey_session_spike.app/Contents/MacOS/vxkey_session_spike",
+      "sdk_slices": [
+        "27.0"
+      ],
+      "pass": true
+    }
+  ]
+}
+/Users/vic/_Work/VXUtilities/vxkey/build/session_spike_candidate_v2/vxkey_session_spike.app

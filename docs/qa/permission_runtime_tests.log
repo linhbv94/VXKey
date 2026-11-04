@@ -1,0 +1,88 @@
+   Compiling vxkey-runtime v0.1.0 (/Users/vic/_Work/VXUtilities/vxkey/crates/vxkey-runtime)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.31s
+     Running unittests src/lib.rs (target/debug/deps/vxkey_runtime-54157937fda8239c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/vxkey_backend.rs (target/debug/deps/vxkey_backend-5e3caa9b24e6eefb)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/vxkey_bridge_fixture.rs (target/debug/deps/vxkey_bridge_fixture-5872703d47b16b9b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/bridge.rs (target/debug/deps/bridge-60b601110681d97a)
+
+running 12 tests
+test progress_requires_actual_increasing_main_loop_sequence ... ok
+test background_driver_permission_and_attachment_invariants ... ok
+test session_binding_and_counter_canonicality ... ok
+test framed_handshake_roundtrip_and_replay_rejected ... ok
+test frame_bounds_truncation_and_unknown_fields ... ok
+test native_projection_rejects_unknown_physical_key_instead_of_false_apply_ack ... ok
+test projection_does_not_include_ui_clipboard_or_history_shortcut ... ok
+test stale_runtime_cannot_publish_live_mode_or_accept_bypass ... ok
+test unsafe_directory_and_marker_symlink_fail_closed ... ok
+test memory_delta_requires_exact_active_app_and_current_config_revision ... ok
+test latch_survives_restart_and_rejects_changed_incident ... ok
+test target_token_binds_focus_session_and_preserves_clipboard_policy ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/policies.rs (target/debug/deps/policies-8aa8851c08e025e6)
+
+running 38 tests
+test actual_loop_heartbeat ... ok
+test counter_precision ... ok
+test filter_before_payload ... ok
+test extra_modifier_cancels ... ok
+test hard_bypass_english_macros ... ok
+test config_is_deferred_until_boundary ... ok
+test history_unicode_quota_expiry_delete ... ok
+test defaults ... ok
+test invalid_config ... ok
+test actual_engine_parity ... ok
+test corrupt_not_overwritten ... ok
+test converter_uses_real_core_and_order ... ok
+test modifier_orders ... ok
+test macro_case_collision ... ok
+test native_period_lock ... ok
+test partial_injection_suspend ... ok
+test oversized_history ... ok
+test pause_baseline ... ok
+test period_stale_context ... ok
+test pending_config_applies_after_cancel_and_backspace ... ok
+test physical_sides ... ok
+test race_after_payload ... ok
+test secure_and_suspended ... ok
+test io_failure_does_not_advance_config ... ok
+test service_native_failure_is_not_reported_success ... ok
+test native_period_interlock_preserves_saved_preference ... ok
+test settings_cannot_read_history_bodies ... ok
+test shortcut_collision_ignores_modifier_order ... ok
+test shortcut_validation ... ok
+test target_and_memory ... ok
+test removing_policy_keeps_independent_language_memory ... ok
+test third_key_cancels ... ok
+test two_spaces ... ok
+test unicode_byte_cap ... ok
+test atomic_config ... ok
+test service_persist_readback_and_surface_authority ... ok
+test reset_requires_fresh_confirmation_and_preserves_non_typing_data ... ok
+test validation_keeps_revision ... ok
+
+test result: ok. 38 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+   Doc-tests vxkey_runtime
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

@@ -1,0 +1,77 @@
+{
+  "recorded_at_utc": "2026-11-03T16:02:20.086240+00:00",
+  "head": "ab0f2b728515134df8cee14e44a1a0f14379a880",
+  "source_fingerprint": "cc998d9c4b5e0eb73fbff40ad850c2a108ac7b4b770c05c6005bbaa0c349d6b6",
+  "source_files_hashed": 701,
+  "fingerprint_scope": "native/crates/platforms_macos/scripts source; includes dirty/untracked source",
+  "dirty_entry_count": 221,
+  "os": {
+    "exit_code": 0,
+    "stdout": "ProductName:\t\tmacOS\nProductVersion:\t\t26.7\nBuildVersion:\t\t25G229",
+    "stderr": ""
+  },
+  "architecture": "arm64",
+  "sdk": {
+    "exit_code": 0,
+    "stdout": "27.0",
+    "stderr": ""
+  },
+  "artifacts": [
+    {
+      "path": "/Applications/VXKey.app",
+      "exists": true,
+      "identifier": "com.vxkey.desktop",
+      "version": "1.0.0",
+      "executable_sha256": "f4afe05152f3ac90792a5587a2b96b2578a968031848d2699020b45a6057df0a",
+      "info_sha256": "3d6033a330f2bcb42063c2a97b507333058834929509e8d48e4fb49abeaaf36f",
+      "identity": {
+        "exit_code": 0,
+        "stdout": "designated => identifier \"com.vxkey.desktop\" and certificate leaf = H\"8bc168b5456de7ac899f77ed81fa4ae98d5ce15d\"",
+        "stderr": "Executable=/Applications/VXKey.app/Contents/MacOS/vxkey-desktop\nIdentifier=com.vxkey.desktop\nFormat=app bundle with Mach-O thin (arm64)\nCodeDirectory v=20500 size=34418 flags=0x10000(runtime) hashes=1069+3 location=embedded\nSignature size=2043\nAuthority=(unavailable)\nInfo.plist=not bound\nTeamIdentifier=not set\nRuntime Version=27.0.0\nSealed Resources version=2 rules=13 files=6"
+      },
+      "strict_verify": {
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "/Applications/VXKey.app: CSSMERR_TP_NOT_TRUSTED\nIn architecture: arm64"
+      }
+    },
+    {
+      "path": "/Users/vic/_Work/VXUtilities/vxkey/build/compatibility_test_candidate/desktop_candidate/VXKey.app",
+      "exists": true,
+      "identifier": "com.vxkey.test.desktop",
+      "version": "0.1.0",
+      "executable_sha256": "f3f06a8f949972666c158696cc35cb20071253190465466180a5f53358d2d307",
+      "info_sha256": "edfba190f902c65ac7c40b2f91cb1bc25fed345d4bf3a869ddf75b7ad15b0de9",
+      "identity": {
+        "exit_code": 0,
+        "stdout": "# designated => cdhash H\"4bd7bcf4c7b66eaa5f39bbe313953bffb16ef001\"",
+        "stderr": "Executable=/Users/vic/_Work/VXUtilities/vxkey/build/compatibility_test_candidate/desktop_candidate/VXKey.app/Contents/MacOS/VXKey\nIdentifier=com.vxkey.test.desktop\nFormat=app bundle with Mach-O thin (arm64)\nCodeDirectory v=20400 size=99151 flags=0x2(adhoc) hashes=3092+3 location=embedded\nSignature=adhoc\nInfo.plist entries=11\nTeamIdentifier=not set\nSealed Resources version=2 rules=13 files=7"
+      },
+      "strict_verify": {
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "path": "/Users/vic/_Work/VXUtilities/vxkey/build/session_spike_candidate/vxkey_session_spike.app",
+      "exists": true,
+      "identifier": "com.vxkey.spike.session",
+      "version": "0.1.0",
+      "executable_sha256": "5ca5ebef1b14be9c5b426908cdea62ee7a34f73f6c0fbd09b32c2609801cc2ef",
+      "info_sha256": "7e8b1f183d32b0ca16bb73f5728ee6f162ad38e69691c8c09361d2e9438d0df7",
+      "identity": {
+        "exit_code": 0,
+        "stdout": "# designated => cdhash H\"923200470cf3fc85a60673ac5e76746458f0111a\"",
+        "stderr": "Executable=/Users/vic/_Work/VXUtilities/vxkey/build/session_spike_candidate/vxkey_session_spike.app/Contents/MacOS/vxkey_session_spike\nIdentifier=com.vxkey.spike.session\nFormat=app bundle with Mach-O thin (arm64)\nCodeDirectory v=20400 size=6896 flags=0x2(adhoc) hashes=209+3 location=embedded\nSignature=adhoc\nInfo.plist entries=11\nTeamIdentifier=not set\nSealed Resources version=2 rules=13 files=1"
+      },
+      "strict_verify": {
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    }
+  ],
+  "permission_retention_tested": false,
+  "native_typing_accepted": false
+}

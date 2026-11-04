@@ -1,0 +1,10 @@
+✔ loading beyond first page retains all macros for whole-list save (1.618625ms)
+✔ failed page or changed revision never yields partial dictionary (0.360167ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 135.779541

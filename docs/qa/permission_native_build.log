@@ -1,0 +1,14 @@
+    Finished `release` profile [optimized] target(s) in 0.22s
+{
+  "baseline_sdk": "27.0",
+  "checks": [
+    {
+      "binary": "/Users/vic/_Work/VXUtilities/vxkey/build/permission_candidate/native_candidate/VXKeyEngine.app/Contents/MacOS/VXKeyEngine",
+      "sdk_slices": [
+        "27.0"
+      ],
+      "pass": true
+    }
+  ]
+}
+Candidate: /Users/vic/_Work/VXUtilities/vxkey/build/permission_candidate/native_candidate/VXKeyEngine.app (not installed or activated)

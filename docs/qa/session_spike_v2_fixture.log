@@ -1,0 +1,11 @@
+    Finished `release` profile [optimized] target(s) in 0.33s
+2026-11-03 23:13:35.671 session_spike_fixture[33702:25076946] Error received in message reply handler: Connection invalid
+2026-11-03 23:13:35.671 session_spike_fixture[33702:25076957] Connection Invalid error for service com.apple.hiservices-xpcservice.
+{
+  "checks" : 476,
+  "document_verified" : false,
+  "event_posting_performed" : false,
+  "native_event_tap_tested" : false,
+  "scope" : "P1 real core, stream state, bounded edit and event construction fixtures",
+  "status" : "pass"
+}

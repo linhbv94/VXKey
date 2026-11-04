@@ -1,0 +1,13 @@
+{
+  "status": "pass",
+  "checks": [
+    "real Swift cache timer applies native revision",
+    "pending startup permission I/O does not latch; observed grant starts the authenticated helper",
+    "three real cache Resume/Pause transactions acknowledged and reflected",
+    "authorized helper stays attached after control host exits beyond old lease; no synthetic disconnect fault",
+    "same authenticated helper reconnects without spawning or requiring Resume",
+    "explicit Pause remains detached after control disconnect"
+  ],
+  "os_hook_mocked": true,
+  "native_typing_tested": false
+}

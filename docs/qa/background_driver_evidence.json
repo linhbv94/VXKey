@@ -1,0 +1,77 @@
+{
+  "status": "implementation_and_fixture_subset_verified_permission_gate_open",
+  "date": "2026-11-02",
+  "spec": "../spec/09_background_driver.md",
+  "cargo_passed": 1197,
+  "runtime_passed": 50,
+  "swift_edit_checks": [
+    "Funput Telex through real edit plans",
+    "Uppercase Vietnamese",
+    "Full macro output beyond inline 64 scalars",
+    "Reject surrogate ownership",
+    "Reject combining ownership",
+    "Reject deletion before owned region",
+    "Unicode output preserves owned prefix",
+    "Bound batch size",
+    "Sentinels remain outside edit plan",
+    "Seed owned word for backspace",
+    "Backspace passes once and resynchronizes engine",
+    "Retone only inside owned word",
+    "Adopt previously owned word after deleting its space",
+    "Retone reopened owned word",
+    "UTF16 chunk cap and exact output",
+    "Never split a surrogate pair",
+    "Standard VNI digit is a tone",
+    "Numpad VNI digit stays literal"
+  ],
+  "frontend_passed": 2,
+  "two_process_bridge_passed": 11,
+  "native_event_tap_typing_tested": false,
+  "accessibility_granted": false,
+  "autostart_enabled": false,
+  "input_source_required": false,
+  "legacy_test_ime_removed": true,
+  "native_observations": [
+    "Companion autolaunched embedded engine as child",
+    "Authenticated connection; applied revision 24/24",
+    "UI reports permission required and suspended, no fake ready",
+    "Quit stopped both owned processes"
+  ],
+  "remaining": [
+    "Native typing/range/secure/focus/Undo/latency/fault matrix after user grants permission",
+    "Custom shortcut recorder/flip/history routing and double-space native edit proof",
+    "Production signing/TCC retention/updater/installer/Intel/Windows"
+  ],
+  "artifact_report": "native_pair_artifacts.json",
+  "artifacts": {
+    "engine": {
+      "app": "build/desktop_candidate/VXKey.app/Contents/Resources/VXKeyEngine.app",
+      "bundle_id": "com.vxkey.engine",
+      "cdhash": "8a5adf97748c709879c0ac4b2baaaf310809fc1a",
+      "binary_sha256": "a34a15ee7e39f29736c996a664b0847c7d36eefce6ce8d3f95db1581212634d6"
+    },
+    "companion": {
+      "app": "build/desktop_candidate/VXKey.app",
+      "bundle_id": "com.vxkey.desktop",
+      "cdhash": "720ea67bfcfe9b5c3563f61e3f9fc77eaad256ef",
+      "binary_sha256": "7972540affcec0bec17a0ebafccc47827a4c8b57d830a6470b4e5476bc8c8be8"
+    }
+  },
+  "source_hashes": {
+    "native/macos_background/context_guard.swift": "c3c91f9d830ee4c3b41be8e36a0d45560323ac189db081fea77b2638fe308e3c",
+    "native/macos_background/edit_plan.swift": "5232da7c16fd622a6ab723005a1785ac68b88eeec61aa8560b5f3de0f423edf4",
+    "native/macos_background/event_driver.swift": "d7449abe9b72c612228ee6a2a85c373a18131fabd01c386e315a13c8d055eb34",
+    "native/macos_background/main.swift": "72e1f8011380d12193baf3e72774c6e75aabf542a9868eb5da2a4c6aec75145c",
+    "native/macos_background/runtime_settings.swift": "93b3396d3305be7b903be27a843802d0196dd9f8a23b096d7d5d6c9c15866fcd"
+  },
+  "permission_request_observed": {
+    "delivered": true,
+    "os_entry": "VXKey",
+    "enabled": false,
+    "agent_granted": false,
+    "settings_page_left_open": "Privacy & Security / Accessibility"
+  },
+  "final_candidate_left_running": true,
+  "native_system_ax": "background_system_ax.txt",
+  "screenshot": "screenshots/background_system.png"
+}

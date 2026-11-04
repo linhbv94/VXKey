@@ -76,7 +76,9 @@ impl Latch {
         }
         let id = fresh_id()?;
         let temp = self.root.join(format!("recovery_tmp_{id}"));
-        let bytes=serde_json::to_vec(&serde_json::json!({"schema_version":1,"suspended":true,"reason_code":reason,"failed_component_version":env!("CARGO_PKG_VERSION"),"incident_id":id})).map_err(|_|"recovery_unavailable")?;
+        let occurred_at_unix_ms = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH).map(|d| d.as_millis()).unwrap_or(0);
+        let bytes=serde_json::to_vec(&serde_json::json!({"schema_version":1,"suspended":true,"reason_code":reason,"failed_component_version":env!("CARGO_PKG_VERSION"),"incident_id":id,"occurred_at_unix_ms":occurred_at_unix_ms})).map_err(|_|"recovery_unavailable")?;
         let result = (|| {
             let mut f = OpenOptions::new()
                 .write(true)
@@ -154,8 +156,8 @@ fn socket_path(root: &Path) -> Result<PathBuf, String> {
 }
 fn deadline(stream: &UnixStream) -> Result<(), String> {
     stream
-        .set_read_timeout(Some(Duration::from_secs(1)))
-        .and_then(|_| stream.set_write_timeout(Some(Duration::from_secs(1))))
+        .set_read_timeout(Some(HEALTH_TIMEOUT))
+        .and_then(|_| stream.set_write_timeout(Some(HEALTH_TIMEOUT)))
         .map_err(|_| "disconnected".into())
 }
 
@@ -212,14 +214,14 @@ impl Host {
                     }
                     let authenticated = host_session(&mut stream, &rx, &service, &worker_latch);
                     // Failed unauthenticated handshakes must not suspend another session.
-                    if authenticated {
-                        let _ = worker_latch.set("bridge_disconnected");
+                    if let Some(independent_typing) = authenticated {
+                        if !independent_typing { let _ = worker_latch.set("bridge_disconnected"); }
                         if let Ok(mut s) = service.lock() {
                             s.native = None;
-                            s.suspended = true;
+                            if !independent_typing { s.suspended = true; }
                         }
-                        // Background driver detaches on its lease expiry. Never select
-                        // another keyboard layout as a recovery mechanism.
+                        // A stream helper still belongs to the live companion PID.
+                        // Losing control telemetry is not a keyboard-engine fault.
                     }
                     while let Ok(p) = rx.try_recv() {
                         let _ = p.reply.try_send(Err("disconnected".into()));
@@ -249,9 +251,9 @@ fn host_session(
     queue: &mpsc::Receiver<Pending>,
     service: &Mutex<crate::service::Service>,
     latch: &Latch,
-) -> bool {
+) -> Option<bool> {
     let Ok(mut wire) = Wire::accept(stream) else {
-        return false;
+        return None;
     };
     if wire
         .send(
@@ -263,7 +265,7 @@ fn host_session(
         )
         .is_err()
     {
-        return false;
+        return None;
     }
     let mut progress = Progress::default();
     let mut revision = String::new();
@@ -365,6 +367,7 @@ fn host_session(
             }
         }
         let Ok(mut s) = service.lock() else { break };
+        s.native_session_stream = wire.independent_typing;
         s.accept_native(status.clone(), wire.session.clone());
         let config = if revision != s.store.config.revision {
             revision = s.store.config.revision.clone();
@@ -443,10 +446,11 @@ fn host_session(
     if let Some((p, _)) = pending {
         let _ = p.reply.try_send(Err("outcome_unknown".into()));
     }
-    true
+    Some(wire.independent_typing)
 }
 #[derive(Default)]
 struct ClientState {
+    independent_typing: bool,
     status: Option<NativeStatus>,
     tick: Option<Instant>,
     connected: bool,
@@ -468,10 +472,19 @@ pub struct Client {
 impl Client {
     #[cfg(target_os = "macos")]
     pub fn start(root: &Path) -> Result<Self, String> {
+        Self::start_with_continuity(root, false)
+    }
+    #[cfg(target_os = "macos")]
+    pub fn start_session_stream(root: &Path) -> Result<Self, String> {
+        Self::start_with_continuity(root, true)
+    }
+    #[cfg(target_os = "macos")]
+    fn start_with_continuity(root: &Path, independent_typing: bool) -> Result<Self, String> {
         let latch = Latch::new(root)?;
         let trust = super::trust::Trust::load(root, false)?;
         let path = socket_path(root)?;
         let state = Arc::new(Mutex::new(ClientState {
+            independent_typing,
             latched: latch.is_set(),
             ..Default::default()
         }));
@@ -498,14 +511,8 @@ impl Client {
                             delay = 1;
                         }
                     }
-                    if ever_connected {
-                        let _ = latch.set("bridge_disconnected");
-                    }
                     if let Ok(mut s) = shared.lock() {
-                        s.connected = false;
-                        s.latched = true;
-                        s.config = None;
-                        s.control = None;
+                        disconnect_client(&mut s, ever_connected, &latch);
                     }
                     thread::sleep(Duration::from_secs(delay));
                     delay = (delay * 2).min(30);
@@ -528,17 +535,31 @@ impl Client {
         })
     }
 }
+fn disconnect_client(state: &mut ClientState, ever_connected: bool, latch: &Latch) {
+    if !state.independent_typing {
+        if ever_connected { let _ = latch.set("bridge_disconnected"); }
+        state.latched = true;
+        state.config = None;
+    } else {
+        // Preserve validated pending config and the last real pause/fault state.
+        // A new/real fault marker still blocks typing. Never replay controls.
+        state.latched |= latch.is_set();
+    }
+    state.connected = false;
+    state.control = None;
+}
 #[cfg(target_os = "macos")]
 fn client_session(stream: &mut UnixStream, shared: &Mutex<ClientState>, latch: &Latch) -> bool {
     let Ok(id) = fresh_id() else { return false };
     let Ok(mut wire) = Wire::new(id) else {
         return false;
     };
+    let independent_typing = shared.lock().map(|s| s.independent_typing).unwrap_or(false);
     if wire
         .send(
             stream,
             Message::Handshake(Handshake {
-                component: "engine".into(),
+                component: if independent_typing { "engine_stream" } else { "engine" }.into(),
                 app_version: env!("CARGO_PKG_VERSION").into(),
             }),
         )
@@ -629,5 +650,58 @@ mod contention_tests {
                 .loop_sequence,
             "1"
         );
+    }
+}
+
+#[cfg(test)]
+mod scheduling_gap_tests {
+    use super::*;
+    #[test]
+    fn short_scheduler_gap_does_not_force_disconnect_before_health_timeout() {
+        let (mut reader, mut writer) = UnixStream::pair().unwrap();
+        deadline(&reader).unwrap();
+        let worker=thread::spawn(move || {
+            thread::sleep(Duration::from_millis(1150));
+            writer.write_all(b"x").unwrap();
+        });
+        let mut byte=[0];
+        reader.read_exact(&mut byte).unwrap();
+        assert_eq!(byte, *b"x");
+        assert_eq!(reader.read_timeout().unwrap(), Some(HEALTH_TIMEOUT));
+        worker.join().unwrap();
+    }
+}
+
+#[cfg(test)]
+mod continuity_tests {
+    use super::*;
+    use crate::config::{Config, Platform};
+    fn latch(root: &Path) -> Latch {
+        use std::os::unix::fs::PermissionsExt;
+        fs::set_permissions(root, fs::Permissions::from_mode(0o700)).unwrap();
+        Latch::new(root).unwrap()
+    }
+    #[test]
+    fn disconnect_preserves_only_authorized_stream_state_and_discards_controls() {
+        for independent_typing in [false, true] {
+            let dir = tempfile::tempdir().unwrap(); let latch = latch(dir.path());
+            let mut state = ClientState { independent_typing, connected:true, latched:false,
+                config:Some(NativeConfig::from_config(&Config::fresh(Platform::Macos))),
+                control:Some(Control::RequestPermissions { id:fresh_id().unwrap(), engine_session_id:fresh_id().unwrap() }),
+                ..ClientState::default() };
+            disconnect_client(&mut state, true, &latch);
+            assert!(!state.connected); assert!(state.control.is_none());
+            assert_eq!(state.config.is_some(), independent_typing);
+            assert_eq!(state.latched, !independent_typing);
+            assert_eq!(latch.is_set(), !independent_typing);
+        }
+    }
+    #[test]
+    fn disconnect_never_clears_a_real_fault_or_pause() {
+        let dir=tempfile::tempdir().unwrap(); let latch=latch(dir.path());
+        let mut state=ClientState { independent_typing:true, latched:true, ..ClientState::default() };
+        disconnect_client(&mut state,true,&latch); assert!(state.latched);
+        state.latched=false; latch.set("driver_exited").unwrap();
+        disconnect_client(&mut state,true,&latch); assert!(state.latched);
     }
 }

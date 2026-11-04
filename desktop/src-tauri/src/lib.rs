@@ -183,6 +183,24 @@ fn vxkey_prepare_update(window: tauri::WebviewWindow, app: tauri::AppHandle) -> 
     app.state::<Backend>().2.store(true, std::sync::atomic::Ordering::Release);
     Ok(())
 }
+#[tauri::command]
+fn vxkey_restart_app(window: tauri::WebviewWindow, app: tauri::AppHandle, confirmed: Option<bool>) -> Result<(), String> {
+    if !matches!(window.label(), "settings" | "tray") {
+        return Err("permission_denied".into());
+    }
+    if confirmed == Some(true) {
+        if window.label() != "settings" { return Err("permission_denied".into()); }
+        stop_owned_engine(&app);
+        app.state::<Backend>().2.store(true, std::sync::atomic::Ordering::Release);
+        app.restart();
+    }
+    // Request only: do not stop the helper until Settings resolves its draft guard.
+    let settings = app.get_webview_window("settings").ok_or("unavailable")?;
+    settings.show().map_err(|_| "unavailable")?;
+    settings.set_focus().map_err(|_| "unavailable")?;
+    settings.emit("request_restart", ()).map_err(|_| "unavailable".into())
+}
+
 fn known_window(label: &str) -> bool {
     matches!(
         label,
@@ -393,6 +411,9 @@ pub fn builder(data_dir: PathBuf) -> Result<tauri::Builder<tauri::Wry>, String> 
         .plugin(tauri_plugin_process::init())
         .manage(state)
         .setup(|app| {
+            // Menu-bar utility: closing Settings must not leave a Dock app behind.
+            #[cfg(target_os = "macos")]
+            app.set_activation_policy(tauri::ActivationPolicy::Accessory);
             #[cfg(target_os = "macos")]
             {
                 let helper = app.path().resource_dir()?.join("VXKeyEngine.app/Contents/MacOS/VXKeyEngine");
@@ -409,7 +430,28 @@ pub fn builder(data_dir: PathBuf) -> Result<tauri::Builder<tauri::Wry>, String> 
                             let began = std::time::Instant::now();
                             loop {
                                 std::thread::sleep(std::time::Duration::from_millis(250));
-                                let healthy = service.lock().map(|s| s.native.as_ref().is_some_and(|n| n.fresh())).unwrap_or(false);
+                                let Ok(state) = service.try_lock() else { continue };
+                                let healthy = state.native.as_ref().is_some_and(|n| n.fresh());
+                                let independent = state.native_session_stream;
+                                drop(state);
+                                if independent {
+                                    // A missing UI/control heartbeat cannot kill a live
+                                    // keyboard owner. Still detect a real child exit;
+                                    // Quit/update remove and reap this exact child below.
+                                    let exited = if let Ok(mut slot) = owned.lock() {
+                                        let Some(child) = slot.as_mut() else { break };
+                                        match child.try_wait() {
+                                            Ok(Some(_)) => { slot.take(); true },
+                                            _ => false,
+                                        }
+                                    } else { false };
+                                    if exited {
+                                        if let Some(latch) = &latch { let _ = latch.set("driver_exited"); }
+                                        if let Ok(mut state) = service.lock() { state.native = None; state.suspended = true; }
+                                        break;
+                                    }
+                                    continue;
+                                }
                                 if healthy { continue; }
                                 if began.elapsed() < std::time::Duration::from_secs(8) { continue; }
                                 if let Some(latch) = &latch { let _ = latch.set("driver_unresponsive"); }
@@ -533,6 +575,7 @@ pub fn builder(data_dir: PathBuf) -> Result<tauri::Builder<tauri::Wry>, String> 
         })
         .invoke_handler(tauri::generate_handler![
             vxkey_prepare_update,
+            vxkey_restart_app,
             vxkey_request_permissions,
             vxkey_command,
             vxkey_prepare_reset,

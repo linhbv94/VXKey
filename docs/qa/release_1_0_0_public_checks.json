@@ -1,0 +1,17 @@
+{
+  "latest.json": {
+    "http": 200,
+    "sha256": "10b3558951f314b987746422231aa5d69b147b8b23f46c9de8cc2bd5b0f2313b",
+    "matches_verified_draft": true
+  },
+  "vxkey_1.0.0_macos_silicon.dmg": {
+    "http": 200,
+    "sha256": "a0dd12e0f308f11633fb728c39803f772b1ccb9016c1a70bdeb9c9b08154ece1",
+    "matches_verified_draft": true
+  },
+  "vxkey_1.0.0_macos_silicon.app.tar.gz": {
+    "http": 200,
+    "sha256": "420f1cb61679f533fd8fd51fa1b18c92295bb8610111c42f9f3224543c94fd1f",
+    "matches_verified_draft": true
+  }
+}

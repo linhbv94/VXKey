@@ -1,9 +1,27 @@
 import AppKit
 import ApplicationServices
+import OSLog
 
 /// Main-thread mailbox; AX work never holds a lock needed by the keyboard path.
 /// One worker RPC chain in flight. New expectations coalesce without being lost.
 final class ContextGuard {
+    private static let probeLogger = Logger(subsystem:"com.vxkey.engine", category:"context_probe")
+    private static let diagnosticLock = NSLock()
+    private static var lastDiagnostic = ""
+    private static var lastDiagnosticTime: TimeInterval = 0
+    /// Only state codes, never text, keys, selection offsets or document contents.
+    private static func diagnose(_ code: String) {
+        diagnosticLock.lock()
+        let now=ProcessInfo.processInfo.systemUptime
+        let changed=lastDiagnostic != code && now-lastDiagnosticTime>=1
+        if changed { lastDiagnostic=code; lastDiagnosticTime=now }
+        diagnosticLock.unlock()
+        if changed { probeLogger.info("ax_state=\(code, privacy:.public)") }
+    }
+    static func allowsSubrole(status: AXError, subrole: String?) -> Bool {
+        guard status == .success || status == .attributeUnsupported || status == .noValue else { return false }
+        return subrole != kAXSecureTextFieldSubrole
+    }
     struct Expected {
         let revision: UInt64
         let text: String
@@ -130,10 +148,13 @@ final class ContextGuard {
         guard input.pid==pid, input.epoch==epoch else { return }
         switch result {
         case .invalid:
+            Self.diagnose("invalid_context")
             revoked=true; snapshot=nil // revoke old proof on focus/selection/secure/AX failure
         case .waiting:
+            Self.diagnose("waiting_for_owned_slice")
             break // in-flight edit may be between deletion and insertion
         case .verified(let s):
+            Self.diagnose(s.text.isEmpty ? "bootstrap" : "owned_slice_verified")
             guard entries.contains(where: { $0.revision==s.revision }),
                   // A late initial empty-field probe must not move the anchor or overwrite non-empty text.
                   !(s.start<0 && (entries.last?.start ?? -1) >= 0),
@@ -193,16 +214,9 @@ final class ContextGuard {
         AXUIElementSetMessagingTimeout(el,0.04)
         var subrole:CFTypeRef?
         let subroleStatus=AXUIElementCopyAttributeValue(el,kAXSubroleAttribute as CFString,&subrole)
-        if subroleStatus == .success, let name=subrole as? String {
-            guard name != kAXSecureTextFieldSubrole else { return .invalid }
-        } else {
-            // Standard multiline editors may have no AXSubrole. Do not treat an
-            // RPC failure or an unidentified single-line field as non-secure.
-            guard subroleStatus == .attributeUnsupported || subroleStatus == .noValue || subroleStatus == .success else { return .invalid }
-            var role:CFTypeRef?
-            guard AXUIElementCopyAttributeValue(el,kAXRoleAttribute as CFString,&role) == .success,
-                  (role as? String) == kAXTextAreaRole else { return .invalid }
-        }
+        // Editor capabilities (selection + exact slice), not role names or app IDs,
+        // determine compatibility. Secure fields and failed authorization still reject.
+        guard allowsSubrole(status:subroleStatus, subrole:subrole as? String) else { return .invalid }
         var selected:CFTypeRef?
         let selectedStatus=AXUIElementCopyAttributeValue(el,kAXSelectedTextRangeAttribute as CFString,&selected)
         guard selectedStatus == .success, let selected, CFGetTypeID(selected)==AXValueGetTypeID() else {
