@@ -5,6 +5,7 @@ root=Path(__file__).resolve().parents[1]
 os.chdir(root)
 identity=json.loads((root/'scripts/release_identity.json').read_text())
 assert json.loads((root/'desktop/src-tauri/tauri.conf.json').read_text())['version']==identity['version']
+assert f'version = "{identity["version"]}"' in (root/'desktop/src-tauri/Cargo.toml').read_text(), 'desktop/src-tauri/Cargo.toml version mismatch'
 if os.environ.get('GITHUB_ACTIONS')=='true':assert os.environ.get('GITHUB_REF_NAME')=='v'+identity['version']
 env=dict(os.environ,VXKEY_SIGNER_SHA1=identity['certificate_sha1'],MACOSX_DEPLOYMENT_TARGET='26.0')
 def run(args,cwd=root):subprocess.run(args,cwd=cwd,env=env,check=True)
