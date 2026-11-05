@@ -80,6 +80,8 @@ export interface Capabilities {
 }
 
 export interface Runtime {
+  launch_at_login?: {state: 'disabled' | 'not_found' | 'enabled' | 'requires_approval' | 'unavailable'};
+  app_names?: Record<string,string>;
   engine_status: 'unavailable' | 'ready' | 'running' | 'degraded' | 'suspended';
   driver_fault?: string | null;
   driver?: {accessibility: boolean; listen_access: boolean; post_access: boolean; attached: boolean};

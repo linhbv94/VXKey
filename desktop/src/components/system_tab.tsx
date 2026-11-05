@@ -404,14 +404,18 @@ export function SystemTab({
           <label className="flex items-center gap-2.5">
             <input
               type="checkbox"
-              checked={sys.launch_companion_at_login}
+              checked={snapshot.runtime.launch_at_login ? ['enabled','requires_approval'].includes(snapshot.runtime.launch_at_login.state) : sys.launch_companion_at_login}
               disabled={disabled || !snapshot.capabilities.autostart}
               onChange={e => onSystemChange({launch_companion_at_login:e.target.checked})}
               className="accent-cyan-500 rounded"
             />
             <span className="text-xs font-medium">{t.launchAtLogin}</span>
           </label>
-          <p className="vx_disabled_hint text-[11px] pl-6 leading-relaxed">{snapshot.platform === 'windows' ? (vi ? 'Mở VXKey cùng Windows. Bộ gõ luôn khởi động ở trạng thái tạm dừng; chọn Bắt đầu khi sẵn sàng.' : 'Open VXKey with Windows. Input always starts paused; choose Start when ready.') : t.launchAtLoginDesc}</p>
+          <p className="vx_disabled_hint text-[11px] pl-6 leading-relaxed">{t.launchAtLoginDesc}</p>
+          {snapshot.runtime.launch_at_login?.state === 'requires_approval' && <div className="pl-6 space-y-1">
+            <p className="text-[11px] text-amber-600 dark:text-amber-300">{t.launchAtLoginApproval}</p>
+            <button type="button" className="text-xs underline" disabled={disabled} onClick={() => void invoke('vxkey_open_login_settings').catch(() => setActionError(t.launchAtLoginOpenError))}>{t.openLoginSettings}</button>
+          </div>}
         </div>
       </section>
     </div>

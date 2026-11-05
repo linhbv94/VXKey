@@ -97,7 +97,10 @@ export const uiCopy = {
       playful: 'Nhây',
       playfulDesc: 'Hiển thị chữ Ư đặc trưng cho Tiếng Việt và W phá cách cho Tiếng Anh.',
       launchAtLogin: 'Khởi động cùng hệ thống',
-      launchAtLoginDesc: 'Tạm thời tắt mặc định trong giai đoạn kiểm thử độ ổn định.',
+      launchAtLoginDesc: 'Mở VXKey trên thanh Menu / Khay hệ thống khi đăng nhập. Bộ gõ luôn bắt đầu tạm dừng; chọn Bắt đầu khi sẵn sàng. Mặc định tắt.',
+      launchAtLoginApproval: 'macOS đang chờ bạn cho phép VXKey trong Mục đăng nhập.',
+      openLoginSettings: 'Mở Mục đăng nhập…',
+      launchAtLoginOpenError: 'Chưa mở được Mục đăng nhập. Hãy mở Cài đặt hệ thống → Cài đặt chung → Mục đăng nhập.',
     },
     tray: {
       title: 'VXKey',
@@ -264,7 +267,10 @@ export const uiCopy = {
       playful: 'Playful',
       playfulDesc: 'Displays iconic Vietnamese Ư and playful W for English.',
       launchAtLogin: 'Launch at login',
-      launchAtLoginDesc: 'Disabled by default while input reliability is being verified.',
+      launchAtLoginDesc: 'Open VXKey in the Menu Bar / System Tray at login. Input always starts paused; choose Start when ready. Off by default.',
+      launchAtLoginApproval: 'macOS is waiting for you to allow VXKey in Login Items.',
+      openLoginSettings: 'Open Login Items…',
+      launchAtLoginOpenError: 'Could not open Login Items. Open System Settings → General → Login Items.',
     },
     tray: {
       title: 'VXKey',

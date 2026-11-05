@@ -1,13 +1,13 @@
 # AGENTS.md — Quy tắc riêng VXKey
 
-Version: 1.6.0
+Version: 1.8.0
 Ngày update: 2026-11-05
 
 Áp dụng cùng quy tắc global và [quy tắc workspace](../.agents/AGENTS.md). Đây là chỉ đạo trực tiếp của user dành riêng VXKey.
 
 ## Track bảo trì dài hạn — chỉ user được đóng
 
-- VXKey có một track bảo trì dài hạn trong [work log tổng](../_summary/work_log.md), được mô tả ở [maintenance_track.md](docs/maintenance_track.md).
+- VXKey có một track bảo trì dài hạn ở [work log riêng](docs/work_log_vxkey.md), được mô tả ở [maintenance_track.md](docs/maintenance_track.md). Work log tổng giữ tham chiếu lịch sử.
 - **Agent không có quyền tự đóng, đánh dấu hoàn tất hoặc loại bỏ track dài hạn này. Chỉ user được đóng bằng yêu cầu rõ ràng.**
 - QA đạt, release thành công, xong subtask, checkpoint, hết lượt chat/limit hoặc chuyển agent không đóng track. Quy tắc đóng turn tự động của workspace không áp dụng cho track dài hạn VXKey.
 - Agent được đánh dấu hoàn thành từng subtask có bằng chứng, ghi checkpoint hoặc tạm dừng theo yêu cầu user; track dài hạn vẫn mở. Không cần giữ process chạy hoặc tự tạo automation để biểu thị track còn mở.
@@ -20,7 +20,8 @@ Track dài hạn **không đồng nghĩa effort cao**. Chọn effort/model theo 
 
 ## Nhật ký và điểm tiếp tục
 
-- [Work log tổng](../_summary/work_log.md): nguồn tiến độ/bàn giao chung.
+- [Work log riêng VXKey](docs/work_log_vxkey.md): nguồn tiến độ/bàn giao từ2026-11-05. Canonical: `../_summary/docs/vxkey/work_log_vxkey.md` nếu symlink docs không có.
+- [Work log tổng](../_summary/master_work_log.md): chỉ đọc tham chiếu. **User yêu cầu giữ nguyên nội dung tổng; agent VXKey không ghi file đó từ turn này.** Agent tổng hợp riêng chịu trách nhiệm master log khi được giao. Chia Track A/B không đủ tránh ghi đè giữa agent; không lấy rule nhật ký tổng làm lý do bỏ chỉ đạo riêng này.
 - [Track dài hạn](docs/maintenance_track.md): trạng thái bền vững và việc còn mở.
 - [Nhật ký lỗi gõ](docs/typing_issue_log.md): nơi user ghi lỗi trong quá trình dùng.
 - Mỗi lần bàn giao phải phân biệt source/fixture/native trial với trải nghiệm dùng dài hạn. Không tự sửa lời báo lỗi của user thành một lỗi đã tái hiện hoặc đã sửa.
@@ -54,6 +55,7 @@ Native Mac, shared Funput, signer/key và root Cargo/lock tiếp tục được 
 
 ## Lịch sử cập nhật
 
+- 1.8.0 (2026-11-05): Tiếp nhận coordinator đổi log thành work_log_vxkey.md và master_work_log.md; dùng routing mới, không tạo lại file cũ. User chốt release minor 1.2.0.
+
+- 1.7.0 (2026-11-05): User yêu cầu work log riêng VXKey từ turn này, giữ nguyên master log và chuyển quyền tổng hợp sang agent riêng; cập nhật routing/track.
 - 1.6.0 (2026-11-05): Ghi nhận lệnh AFK/hoàn thiện release handoff, tách Test/production Windows, build/manifest/publish gates và plumbing code-only CI.
-- 1.5.0 (2026-11-04): User mở scope app/tray Windows và NSIS per-user sau native cơ bản; ghi owner/helper/private pipe, Test isolation và ranh giới Mac/release.
-- 1.4.0 (2026-11-04): User chuyển tiếp sang workspace Windows và cho commit/push code+docs bàn giao; thêm entry point và thứ tự native QA, giữ bảo toàn Mac/release boundary.

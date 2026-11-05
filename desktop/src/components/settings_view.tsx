@@ -397,6 +397,7 @@ export function SettingsView({
         {activeTab === 'apps' && (
           <AppsTab
             config={config}
+            appNames={snapshot.runtime.app_names}
             language={language}
             disabled={busy}
             onRememberChange={remember_per_app => handlePatch({ apps: { remember_per_app } })}

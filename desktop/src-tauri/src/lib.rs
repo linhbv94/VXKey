@@ -3,6 +3,9 @@
 mod about;
 mod clipboard;
 mod tray_state;
+mod app_names;
+#[cfg(any(target_os="macos",test))]
+mod login_item;
 #[cfg(windows)]
 pub mod windows;
 use serde_json::{Value, json};
@@ -34,7 +37,12 @@ impl Backend {
         #[cfg(windows)]
         let windows = windows::Host::start(&service.lock().map_err(|_| "unavailable")?.store.config)?;
         #[cfg(target_os = "macos")]
-        let recovery = vxkey_runtime::bridge::local::Latch::new(&data_dir).ok();
+        let recovery = {
+            let latch = login_item::macos::startup_latch(&data_dir)?;
+            // Every companion launch starts paused, including login, reopen and
+            // updater restart. Existing fault incidents are never replaced.
+            Some(latch)
+        };
         #[cfg(target_os = "macos")]
         let host = vxkey_runtime::bridge::local::Host::start(&data_dir, service.clone()).ok();
         Ok(Self(
@@ -173,6 +181,14 @@ fn vxkey_show_about(window: tauri::WebviewWindow, app: tauri::AppHandle) -> Resu
     show_about(&app)
 }
 #[tauri::command]
+fn vxkey_open_login_settings(window:tauri::WebviewWindow)->Result<(),String>{
+    if window.label()!="settings"{return Err("permission_denied".into());}
+    #[cfg(target_os="macos")]
+    {login_item::macos::open_settings()}
+    #[cfg(not(target_os="macos"))]
+    {Err("unsupported".into())}
+}
+#[tauri::command]
 fn vxkey_prepare_reset(
     window: tauri::WebviewWindow,
     state: tauri::State<'_, Backend>,
@@ -247,13 +263,24 @@ async fn vxkey_command(
     {
         let update_menu=request["changes"]["ui"].get("locale").is_some();
         let host=state.3.clone(); let service=state.0.clone();
-        let response=tauri::async_runtime::spawn_blocking(move || windows::dispatch(&host,&service,surface,request)).await.unwrap_or_else(|_| failure("unavailable"));
+        let mut response=tauri::async_runtime::spawn_blocking(move || windows::dispatch(&host,&service,surface,request)).await.unwrap_or_else(|_| failure("unavailable"));
+        if response["ok"]==true && response["data"].get("capabilities").is_some(){app_names::decorate(&mut response["data"]);}
         sync_tray(&app);
         if update_menu && response["ok"]==true {let _=install_menu(&app);}
         return response;
     }
     #[cfg(not(windows))]
     {
+    #[cfg(target_os="macos")]
+    if login_item::handles(&request) {
+        let service=state.0.clone();
+        return tauri::async_runtime::spawn_blocking(move || {
+            let Ok(mut service)=service.lock() else{return failure("unavailable")};
+            match login_item::patch(&mut service.store,surface,&request,&login_item::macos::MainApp){
+                Ok(data)=>json!({"ok":true,"request_id":null,"data":data,"error":null}),Err(code)=>failure(&code)
+            }
+        }).await.unwrap_or_else(|_|failure("unavailable"));
+    }
     #[cfg(target_os = "macos")]
     if matches!(
         request.get("command").and_then(Value::as_str),
@@ -317,6 +344,14 @@ async fn vxkey_command(
     if response["ok"] == true && response["data"].get("capabilities").is_some() {
         response["data"]["version"] = json!(env!("CARGO_PKG_VERSION"));
         response["data"]["capabilities"]["updater"] = json!(true);
+        app_names::decorate(&mut response["data"]);
+        #[cfg(target_os="macos")]
+        {
+            use login_item::OsLoginItem;
+            let status=login_item::macos::MainApp.status().unwrap_or(login_item::Status::Unavailable);
+            response["data"]["capabilities"]["autostart"]=json!(status!=login_item::Status::Unavailable);
+            response["data"]["runtime"]["launch_at_login"]=json!({"state":status.name()});
+        }
     }
     sync_tray(&app);
     if update_menu && response["ok"] == true {
@@ -399,6 +434,12 @@ pub fn may_exit(app: &tauri::AppHandle) -> bool {
     app.state::<Backend>()
         .2
         .load(std::sync::atomic::Ordering::Acquire)
+}
+pub fn start_in_tray(app:&tauri::AppHandle)->bool {
+    #[cfg(target_os="macos")]
+    {app.state::<Backend>().0.lock().map(|s|s.store.config.system.launch_companion_at_login).unwrap_or(false)}
+    #[cfg(not(target_os="macos"))]
+    {let _=app;std::env::args().any(|arg|arg=="--startup")}
 }
 pub fn request_quit(app: &tauri::AppHandle) -> Result<(), String> {
     let settings = app.get_webview_window("settings").ok_or("unavailable")?;
@@ -662,6 +703,7 @@ pub fn builder(data_dir: PathBuf) -> Result<tauri::Builder<tauri::Wry>, String> 
             vxkey_command,
             vxkey_prepare_reset,
             vxkey_show_about,
+            vxkey_open_login_settings,
             vxkey_fit_tray,
             vxkey_open_surface,
             vxkey_close_surface,

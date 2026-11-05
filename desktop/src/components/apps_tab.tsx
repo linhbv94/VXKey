@@ -7,6 +7,7 @@ interface Props {
   config: Config;
   language: 'vi' | 'en';
   disabled?: boolean;
+  appNames?: Record<string,string>;
   onRememberChange: (remember: boolean) => void;
   onForgetLanguage: (appId: string) => void;
   onSetPolicy: (appId: string, inputBypass: boolean, clipboardBlocked: boolean) => void;
@@ -17,6 +18,7 @@ export function AppsTab({
   config,
   language,
   disabled = false,
+  appNames = {},
   onRememberChange,
   onForgetLanguage,
   onSetPolicy,
@@ -41,6 +43,7 @@ export function AppsTab({
 
   const memoryKeys = Object.keys(language_memory);
   const policyKeys = Object.keys(policies);
+  const appLabel = (id:string) => appNames[id] ?? ((id.includes('\\') || id.includes('/') ? id.split(/[\\/]/).pop()!.replace(/\.exe$/i,'') : id.split('.').pop()!) || id);
 
   return (
     <div className="vx_business_tab">
@@ -73,8 +76,8 @@ export function AppsTab({
           <div className="border border-white/10 rounded-lg overflow-hidden divide-y divide-white/5 bg-white/5">
             {memoryKeys.map(appId => (
               <div key={appId} className="vx_policy_row">
-                <span className="font-mono opacity-90 truncate max-w-[280px]" title={appId}>
-                  {appId}
+                <span className="opacity-90 truncate max-w-[280px]" title={appId}>
+                  {appLabel(appId)}
                 </span>
                 <div className="vx_policy_actions">
                   <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
@@ -152,7 +155,7 @@ export function AppsTab({
                 <div key={appId} className="vx_policy_row">
                   <div className="vx_policy_identity" title={appId}>
                     <Shield size={14} className="text-cyan-400 shrink-0" />
-                    <span className="font-mono opacity-90 truncate">{appId}</span>
+                    <span className="opacity-90 truncate">{appLabel(appId)}</span>
                   </div>
                   <div className="vx_policy_actions">
                     <label className="flex items-center gap-1 text-[11px] cursor-pointer">
@@ -181,7 +184,7 @@ export function AppsTab({
                       onClick={() => onRemovePolicy(appId)}
                       className="text-rose-400 hover:text-rose-300 p-1"
                       title={language === 'vi' ? 'Xóa quy tắc' : 'Remove rule'}
-                      aria-label={language === 'vi' ? `Xóa quy tắc cho ${appId}` : `Remove rule for ${appId}`}
+                      aria-label={language === 'vi' ? `Xóa quy tắc cho ${appLabel(appId)}` : `Remove rule for ${appLabel(appId)}`}
                     >
                       <Trash2 size={14} />
                     </button>

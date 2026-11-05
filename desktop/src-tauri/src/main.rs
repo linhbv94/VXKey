@@ -27,8 +27,7 @@ fn main() {
                 }
             };
             app.run(|handle, event| {
-                #[cfg(windows)]
-                if matches!(event,tauri::RunEvent::Ready) && std::env::args().any(|arg|arg=="--startup") {
+                if matches!(event,tauri::RunEvent::Ready) && vxkey_desktop_backend::start_in_tray(handle) {
                     for window in handle.webview_windows().values(){let _=window.hide();}
                 }
                 if let tauri::RunEvent::Exit = event {
